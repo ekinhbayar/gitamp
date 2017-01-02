@@ -26,6 +26,9 @@ $injector->make(Credentials::class);*/
 
 $creds = new Credentials("YOUR_USERNAME","YOUR_PWD","YOUR_TOKEN");
 
+// @todo find out why the credentials are being instantiated multiple times
+$injector->share($creds);
+
 $injector->define(Handler::class, [
     ":origins" => ["http://localhost:1337"],
     ":audiohub" => new GitAmp(new ArtaxClient(), $creds)
