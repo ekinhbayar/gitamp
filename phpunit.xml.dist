@@ -13,7 +13,7 @@
 >
     <testsuites>
         <testsuite name="GitAmp Test Suite">
-            <directory>./tests/GitAmpTests/</directory>
+            <directory>./tests/</directory>
         </testsuite>
     </testsuites>
 
