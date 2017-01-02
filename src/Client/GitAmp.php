@@ -65,15 +65,7 @@ class GitAmp
 
     private function getAuthHeader(): array
     {
-        $auth = 'Basic %s';
-        if (empty($this->credentials->getToken())) {
-            $credentials = base64_encode(
-                $this->credentials->getUsername() . ':' . $this->credentials->getPassword()
-            );
-            return ['Authorization' => sprintf($auth, $credentials)];
-        }
-        return ['Authorization' => sprintf($auth, $this->credentials->getToken())];
+        return ['Authorization' => sprintf('Basic %s', $this->credentials->getAuthenticationString())];
     }
-
 }
 
