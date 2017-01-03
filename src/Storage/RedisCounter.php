@@ -26,31 +26,27 @@ SCRIPT;
     }
 
     public function increment(string $key): Promise {
-        $fn = function () use ($key) {
+        return resolve(function () use ($key) {
             try {
                 return yield $this->redis->incr($key);
             } catch (RedisException $e) {
                 throw new StorageFailed("Failed to increment counter.", 0, $e);
             }
-        };
-
-        return resolve($fn());
+        });
     }
 
     public function decrement(string $key): Promise {
-        $fn = function () use ($key) {
+        return resolve(function () use ($key) {
             try {
                 return yield $this->redis->eval(self::SCRIPT_DECREMENT, [$key], []);
             } catch (RedisException $e) {
                 throw new StorageFailed("Failed to decrement counter.", 0, $e);
             }
-        };
-
-        return resolve($fn());
+        });
     }
 
     public function get(string $key): Promise {
-        $fn = function () use ($key) {
+        return resolve(function () use ($key) {
             try {
                 $result = yield $this->redis->get($key);
 
@@ -58,8 +54,6 @@ SCRIPT;
             } catch (RedisException $e) {
                 throw new StorageFailed("Failed to get counter.", 0, $e);
             }
-        };
-
-        return resolve($fn());
+        });
     }
 }
