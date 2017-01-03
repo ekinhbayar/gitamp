@@ -3,6 +3,7 @@ use Aerys\Host;
 use Amp\Redis\Client;
 use Amp\Artax\Client as ArtaxClient;
 use Auryn\Injector;
+use ekinhbayar\GitAmp\Events\GithubEventType;
 use ekinhbayar\GitAmp\Github\Credentials;
 use ekinhbayar\GitAmp\Storage\Counter;
 use ekinhbayar\GitAmp\Storage\RedisCounter;
@@ -25,7 +26,7 @@ $injector->share($configuration['github']);
 
 $injector->define(Handler::class, [
     ":origins" => ["http://" . $configuration['server']['hostname'] . ":" . $configuration['server']['port']],
-    ":audiohub" => new GitAmp(new ArtaxClient(), $configuration['github'])
+    ":audiohub" => new GitAmp(new ArtaxClient(), $configuration['github'], new GithubEventType())
 ]);
 
 $injector->make(GitAmp::class);

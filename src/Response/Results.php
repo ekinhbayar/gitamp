@@ -4,15 +4,19 @@ namespace ekinhbayar\GitAmp\Response;
 
 use Amp\Artax\Response;
 use ekinhbayar\GitAmp\Events\GithubEvent;
+use ekinhbayar\GitAmp\Events\GithubEventType;
 use ExceptionalJSON\DecodeErrorException;
 
 class Results
 {
     private $results;
 
-    public function __construct( $response)
+    private $githubEventType;
+
+    public function __construct($response, GithubEventType $githubEventType)
     {
-        $this->results = $response;
+        $this->results         = $response;
+        $this->githubEventType = $githubEventType;
     }
 
     public function getStatus(Response $response)
@@ -35,8 +39,9 @@ class Results
     {
         $events = [];
         foreach (new ResultsIterator($set) as $event) {
-
-            if(!in_array($event['type'], GithubEvent::TYPES)) continue;
+            if (!$this->githubEventType->isValid($event['type'])) {
+                continue;
+            }
 
             $id = $event['id'];
             $type = $event['type'];

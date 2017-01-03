@@ -7,17 +7,6 @@ namespace ekinhbayar\GitAmp\Events;
  */
 class GithubEvent implements Event
 {
-    const TYPES = [
-        "ForkEvent", "CreateEvent", "WatchEvent", "PushEvent",
-        /*"GollumEvent",*/ "IssueCommentEvent", "IssuesEvent", "PullRequestEvent"
-        /*"DeploymentEvent", "DeploymentStatusEvent", "DownloadEvent",
-        "CommitCommentEvent", "FollowEvent",  "ForkApplyEvent", "GistEvent",
-        "MemberEvent", "MembershipEvent", "MilestoneEvent", "OrganizationEvent",
-        "PageBuildEvent", "PublicEvent", "LabelEvent", "PullRequestReviewEvent",
-        "PullRequestReviewCommentEvent", "ReleaseEvent", "RepositoryEvent",
-        "StatusEvent", "TeamEvent", "TeamAddEvent", "DeleteEvent",*/
-    ];
-
     public $id;
     public $type;
     public $actorName;
@@ -87,5 +76,4 @@ class GithubEvent implements Event
     {
         return $this->repoURL;
     }
-
 }

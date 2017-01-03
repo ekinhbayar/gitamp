@@ -6,6 +6,7 @@ use Amp\Promise;
 use Amp\Artax\Client;
 use Amp\Artax\ClientException;
 use Amp\Artax\Request;
+use ekinhbayar\GitAmp\Events\GithubEventType;
 use ekinhbayar\GitAmp\Github\Credentials;
 use ekinhbayar\GitAmp\Response\Results;
 
@@ -22,14 +23,17 @@ class GitAmp
      */
     private $client;
     private $credentials;
+    private $githubEventType;
+
     /**
      * GitAmp constructor.
      * @param Client $client
      */
-    public function __construct(Client $client, Credentials $credentials)
+    public function __construct(Client $client, Credentials $credentials, GithubEventType $githubEventType)
     {
-        $this->client = $client;
-        $this->credentials = $credentials;
+        $this->client          = $client;
+        $this->credentials     = $credentials;
+        $this->githubEventType = $githubEventType;
     }
 
     /**
@@ -58,7 +62,7 @@ class GitAmp
     public function listen(): \Generator
     {
         $request = yield $this->request();
-        $results = new Results($request);
+        $results = new Results($request, $this->githubEventType);
         $set = $results->parseResults($request);
         return $results->createEventsFromResultSet($set);
     }
