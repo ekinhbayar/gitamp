@@ -58,7 +58,7 @@ class Handler implements Websocket
 
         repeat(function() {
             $this->emit(yield from $this->gitamp->listen());
-        }, 8000);
+        }, 50000);
 
     }
 
