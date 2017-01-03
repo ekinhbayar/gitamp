@@ -21,9 +21,9 @@ class Handler implements Websocket
 
     public function __construct(Counter $counter, array $origins, GitAmp $gitamp)
     {
-        $this->origins  = $origins;
-        $this->counter  = $counter;
-        $this->gitamp = $gitamp;
+        $this->origins = $origins;
+        $this->counter = $counter;
+        $this->gitamp  = $gitamp;
     }
 
     public function onStart(Endpoint $endpoint)
@@ -54,9 +54,11 @@ class Handler implements Websocket
 
         yield $this->counter->increment("connected_users");
 
+        $this->emit(yield from $this->gitamp->listen());
+
         repeat(function() {
             $this->emit(yield from $this->gitamp->listen());
-        }, 6000);
+        }, 8000);
 
     }
 
@@ -68,14 +70,12 @@ class Handler implements Websocket
     public function emit(array $events) {
         if (!$events) return;
 
-        //foreach ($events as $event) {
-            $this->endpoint->send(null, json_encode($events));
-        //}
+        $this->endpoint->send(null, json_encode($events));
     }
 
     public function onData(int $clientId, Websocket\Message $msg) {
         // yielding $msg buffers the complete payload into a single string.
-        $ip = $this->connections[$clientId];
+        // $ip = $this->connections[$clientId];
     }
 
     public function onClose(int $clientId, int $code, string $reason) {

@@ -10,8 +10,8 @@ use ekinhbayar\GitAmp\Github\Credentials;
 use ekinhbayar\GitAmp\Response\Results;
 
 /**
- * Class Audiohub
- * @package ekinhbayar\Audiohub\Client
+ * Class GitAmp
+ * @package ekinhbayar\GitAmp\Client
  */
 class GitAmp
 {
@@ -23,7 +23,7 @@ class GitAmp
     private $client;
     private $credentials;
     /**
-     * Audiohub constructor.
+     * GitAmp constructor.
      * @param Client $client
      */
     public function __construct(Client $client, Credentials $credentials)

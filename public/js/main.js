@@ -14,7 +14,7 @@ var scale_factor = 6,
     current_notes = 0,
     max_life = 20000;
 
-var svg_background_color_online = '#0288D1',
+var svg_background_color_online = 'rgb(78, 79, 140)',
     svg_background_color_offline = '#E91E63',
     svg_text_color = '#FFFFFF',
     newuser_box_color = 'rgb(41, 128, 185)',

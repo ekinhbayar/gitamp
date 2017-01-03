@@ -15,6 +15,7 @@ use function Aerys\websocket;
 $configuration = require_once __DIR__ . '/config.php';
 
 $injector = new Injector;
+
 $injector->alias(Counter::class, RedisCounter::class);
 
 $injector->alias(Credentials::class, get_class($configuration['github']));
@@ -36,8 +37,10 @@ $injector->define(Client::class, [
 $websocket = $injector->make(Handler::class);
 
 $router = router()->get("/ws", websocket($websocket));
+
 // add document root
 $root = root(__DIR__ . "/public");
+
 (new Host)
     ->name($configuration['server']['hostname'])
     ->expose("*", $configuration['server']['port'])
