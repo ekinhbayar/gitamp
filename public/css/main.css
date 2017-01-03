@@ -13,47 +13,47 @@ article, aside, canvas, details, embed,
 figure, figcaption, footer, header, hgroup,
 menu, nav, output, ruby, section, summary,
 time, mark, audio, video {
-	margin: 0;
-	padding: 0;
-	border: 0;
-	font-size: 100%;
-	font: inherit;
-	vertical-align: baseline;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: 100%;
+    font: inherit;
+    vertical-align: baseline;
 }
 /* HTML5 display-role reset for older browsers */
 article, aside, details, figcaption, figure,
 footer, header, hgroup, menu, nav, section {
-	display: block;
+    display: block;
 }
 body {
-	line-height: 1;
+    line-height: 1;
 }
 ol, ul {
-	list-style: none;
+    list-style: none;
 }
 blockquote, q {
-	quotes: none;
+    quotes: none;
 }
 blockquote:before, blockquote:after,
 q:before, q:after {
-	content: '';
-	content: none;
+    content: '';
+    content: none;
 }
 table {
-	border-collapse: collapse;
-	border-spacing: 0;
+    border-collapse: collapse;
+    border-spacing: 0;
 }
 
 a{
-	text-decoration: none;
-	color: #0091EA;
+    text-decoration: none;
+    color: #0091EA;
 }
 
 html,body{
-	background-color: rgb(78, 79, 140);
-	font-family: 'Source Sans Pro', sans-serif;
+    background-color: rgb(78, 79, 140);
+    font-family: 'Source Sans Pro', sans-serif;
     font-weight: 400;
-	font-size: 16px;
+    font-size: 16px;
     overflow-x: hidden;
     visibility: hidden;
 }
@@ -70,25 +70,25 @@ header{
 }
 
 .header-text{
-	float: left;
-	font-size: 2em;
-	line-height: 1em;
+    float: left;
+    font-size: 2em;
+    line-height: 1em;
 }
 
 .offline-text{
-	font-size: 0.4em;
-	visibility: hidden;
+    font-size: 0.4em;
+    visibility: hidden;
 }
 
 .events-remaining{
-	float:right;
-	margin-right: 5%;
+    float:right;
+    margin-right: 5%;
     margin-top: 30px;
 }
 
 .events-remaining-text, .events-remaining-value{
-	font-size: 0.8em;
-	visibility: hidden;
+    font-size: 0.8em;
+    visibility: hidden;
 }
 
 #volumeSlider{
@@ -107,9 +107,9 @@ header{
 }
 
 #area{
-	width: 100%;
-	position: relative;
-	/*height: calc(100vh - 70px);*/
+    width: 100%;
+    position: relative;
+    /*height: calc(100vh - 70px);*/
 }
 
 circle {
@@ -129,21 +129,21 @@ circle {
 }
 
 .online-users-div{
-	text-align: center;
-	position: absolute;
-	bottom: 60px;
-	width: 100%;
-	margin: 0 auto;
+    text-align: center;
+    position: absolute;
+    bottom: 60px;
+    width: 100%;
+    margin: 0 auto;
     font-size: 0.9em;
-	z-index: 1;
+    z-index: 1;
     opacity: 0.5;
     visibility: hidden;
 }
 
 .online-users-text{
-	font-family: 'Source Sans Pro', sans-serif;
-	font-size: 1em;
-	color: #E0E0E0;
+    font-family: 'Source Sans Pro', sans-serif;
+    font-size: 1em;
+    color: #E0E0E0;
 }
 
 #config-area{
@@ -182,14 +182,14 @@ circle {
 }
 
 footer{
-	width: 100%;
-	height: 200px;
-	padding: 20px;
-	background-color: #242729;
-	color: #9FA6AD;
-	margin-top: -5px;
-	position: relative;
-	font-size: 0.9em;
+    width: 100%;
+    height: 200px;
+    padding: 20px;
+    background-color: #242729;
+    color: #9FA6AD;
+    margin-top: -5px;
+    position: relative;
+    font-size: 0.9em;
 }
 
 .footer-left-text-block{
@@ -205,10 +205,10 @@ footer{
 }
 
 .social-buttons{
-	position: absolute;
-	bottom:20px;
-	right:60px;
-	z-index: 2;
+    position: absolute;
+    bottom:20px;
+    right:60px;
+    z-index: 2;
 }
 
 
