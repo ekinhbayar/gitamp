@@ -10,46 +10,51 @@ dl, dt, dd, ol, ul, li,
 fieldset, form, label, legend,
 table, caption, tbody, tfoot, thead, tr, th, td,
 article, aside, canvas, details, embed,
-figure, figcaption, footer, header, hgroup,
+figure, figcaption, footer, header,
 menu, nav, output, ruby, section, summary,
 time, mark, audio, video {
     margin: 0;
     padding: 0;
     border: 0;
-    font-size: 100%;
     font: inherit;
+    font-size: 100%;
     vertical-align: baseline;
 }
+
 /* HTML5 display-role reset for older browsers */
 article, aside, details, figcaption, figure,
-footer, header, hgroup, menu, nav, section {
+footer, header, menu, nav, section {
     display: block;
 }
+
 body {
     line-height: 1;
 }
+
 ol, ul {
     list-style: none;
 }
+
 blockquote, q {
     quotes: none;
 }
+
 blockquote:before, blockquote:after,
 q:before, q:after {
     content: '';
-    content: none;
 }
+
 table {
     border-collapse: collapse;
     border-spacing: 0;
 }
 
-a{
+a {
     text-decoration: none;
     color: #0091EA;
 }
 
-html,body{
+html,body {
     background-color: rgb(78, 79, 140);
     font-family: 'Source Sans Pro', sans-serif;
     font-weight: 400;
@@ -58,7 +63,7 @@ html,body{
     visibility: hidden;
 }
 
-header{
+header {
     position: relative;;
     width: 100%;
     height: 35px;
@@ -69,29 +74,29 @@ header{
     padding-bottom: 20px;
 }
 
-.header-text{
+.header-text {
     float: left;
     font-size: 2em;
     line-height: 1em;
 }
 
-.offline-text{
+.offline-text {
     font-size: 0.4em;
     visibility: hidden;
 }
 
-.events-remaining{
+.events-remaining {
     float:right;
     margin-right: 5%;
     margin-top: 30px;
 }
 
-.events-remaining-text, .events-remaining-value{
+.events-remaining-text, .events-remaining-value {
     font-size: 0.8em;
     visibility: hidden;
 }
 
-#volumeSlider{
+#volumeSlider {
     cursor:pointer;
     position: absolute;
     top: 30px;
@@ -101,15 +106,14 @@ header{
     border-radius: 5px;
 }
 
-#volumeSlider:hover{
+#volumeSlider:hover {
     cursor:pointer;
     opacity: 0.9;
 }
 
-#area{
+#area {
     width: 100%;
     position: relative;
-    /*height: calc(100vh - 70px);*/
 }
 
 circle {
@@ -122,13 +126,13 @@ circle {
     -1px -1px 0 rgb(28, 39, 51),
     1px -1px 0 rgb(28, 39, 51),
     -1px 1px 0 rgb(28, 39, 51),
-    0px 1px 0 rgb(28, 39, 51),
-    1px 0px 0 rgb(28, 39, 51),
-    0px -1px 0 rgb(28, 39, 51),
-    -1px 0px 0 rgb(28, 39, 51);
+    0 1px 0 rgb(28, 39, 51),
+    1px 0 0 rgb(28, 39, 51),
+    0 -1px 0 rgb(28, 39, 51),
+    -1px 0 0 rgb(28, 39, 51);
 }
 
-.online-users-div{
+.online-users-div {
     text-align: center;
     position: absolute;
     bottom: 60px;
@@ -140,13 +144,13 @@ circle {
     visibility: hidden;
 }
 
-.online-users-text{
+.online-users-text {
     font-family: 'Source Sans Pro', sans-serif;
     font-size: 1em;
     color: #E0E0E0;
 }
 
-#config-area{
+#config-area {
     width: 100%;
     background: #FFFFFF;
     min-height: 300px;
@@ -156,32 +160,29 @@ circle {
     font-weight: 300;
 }
 
-#org-repo-filter-div{
+#org-repo-filter-div {
     width: 50%;
     margin: 0 auto;
-    margin-bottom: 0px;
 }
 
-#org-repo-filter-name{
+#org-repo-filter-name {
     width: 20%;
     color: gray;
-    padding: 5px;
-    padding-left: 10px;
+    padding: 5px 5px 5px 10px;
     border: none;
     background: #F1F1F1;
     font-family: 'Josefin Sans', sans-serif;
     font-size: 1em;
 }
 
-.site-description{
+.site-description {
     font-size: 1em;
     line-height: 1.6em;
     width: 50%;
-    margin: 0 auto;
-    margin-top: 50px;
+    margin: 50px auto 0;
 }
 
-footer{
+footer {
     width: 100%;
     height: 200px;
     padding: 20px;
@@ -192,19 +193,19 @@ footer{
     font-size: 0.9em;
 }
 
-.footer-left-text-block{
+.footer-left-text-block {
     float:left;
     line-height:1.3em;
 }
 
-.footer-right-text-block{
+.footer-right-text-block {
     float:right;
     margin-right:2%;
     text-align:right;
     line-height:1.3em;
 }
 
-.social-buttons{
+.social-buttons {
     position: absolute;
     bottom:20px;
     right:60px;
@@ -214,41 +215,35 @@ footer{
 
 @media only screen and (max-device-width: 480px) {
 
-    #config-area{
-        padding: 0px;
-        padding-top: 50px;
+    #config-area {
+        padding: 50px 0 0;
         min-height: 600px;
     }
 
-    .site-description{
+    .site-description {
         font-size: 1em;
         line-height: 1.6em;
         width: 50%;
         margin: 0 auto;
     }
 
-    .footer-left-text-block{
+    .footer-left-text-block {
         width: 100%;
         margin: 0 auto;
         line-height:1.3em;
     }
 
-    .footer-right-text-block{
+    .footer-right-text-block {
         width: 100%;
-        margin-left: 0 auto;
+        margin-left: 0;
         line-height:1.3em;
         float: left;
         text-align: left;
         margin-top: 20px;
     }
 
-    .online-users-div{
+    .online-users-div {
         margin-left: 20px;
         text-align: left;
     }
-
-    .social-buttons{
-
-    }
-
 }
