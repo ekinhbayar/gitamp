@@ -30,4 +30,17 @@ abstract class BaseEvent implements Event
         $this->eventUrl   = $eventUrl;
         $this->message    = $message;
     }
+
+    public function getAsArray(): array
+    {
+        return [
+            'id'        => $this->id,
+            'type'      => $this->type,
+            'action'    => $this->action,
+            'repoName'  => $this->repository,
+            'actorName' => $this->actorName,
+            'eventUrl'  => $this->eventUrl,
+            'message'   => $this->message,
+        ];
+    }
 }
