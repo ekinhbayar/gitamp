@@ -52,7 +52,7 @@ class Handler implements Websocket
         // And another one for multiple clients with the same IP.
         $this->ips[$handshakeData][$clientId] = true;
 
-        #yield $this->counter->increment("connected_users");
+        yield $this->counter->increment("connected_users");
 
         $this->emit(yield from $this->gitamp->listen());
 
@@ -87,7 +87,7 @@ class Handler implements Websocket
             unset($this->ips[$ip]);
         }
 
-        #yield $this->counter->decrement("connected_users");
+        yield $this->counter->decrement("connected_users");
     }
 
     public function onStop() {
