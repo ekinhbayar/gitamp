@@ -55,10 +55,10 @@ class Handler implements Websocket
 
         yield $this->counter->increment("connected_users");
 
-        $this->emit(yield from $this->gitamp->listen());
+        $this->emit(yield $this->gitamp->listen());
 
         repeat(function() {
-            $this->emit(yield from $this->gitamp->listen());
+            $this->emit(yield $this->gitamp->listen());
         }, 8000);
 
     }

@@ -6,6 +6,7 @@ use Amp\Promise;
 use Amp\Artax\Client;
 use Amp\Artax\ClientException;
 use Amp\Artax\Request;
+use Amp\Success;
 use ekinhbayar\GitAmp\Events\Factory;
 use ekinhbayar\GitAmp\Events\GithubEventType;
 use ekinhbayar\GitAmp\Github\Credentials;
@@ -63,18 +64,17 @@ class GitAmp
         }
     }
 
-    /**
-     * @return \Generator
-     */
-    public function listen(): \Generator
+    public function listen(): Promise
     {
-        $response = yield $this->request();
+        return \Amp\resolve(function() {
+            $response = yield $this->request();
 
-        $results = new Results($this->githubEventType, $this->eventFactory);
+            $results = new Results($this->githubEventType, $this->eventFactory);
 
-        $results->appendResponse($response);
+            $results->appendResponse($response);
 
-        return $results;
+            return new Success($results);
+        });
     }
 
     private function getAuthHeader(): array
