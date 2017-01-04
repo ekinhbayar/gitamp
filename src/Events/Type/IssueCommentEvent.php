@@ -8,7 +8,7 @@ class IssueCommentEvent extends BaseEvent
     {
         parent::__construct(
             (int) $event['id'],
-            self::class,
+            'IssueCommentEvent',
             $event['payload']['action'],
             $event['repo']['name'],
             $event['actor']['login'],

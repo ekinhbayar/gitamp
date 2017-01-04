@@ -8,7 +8,7 @@ class ForkEvent extends BaseEvent
     {
         parent::__construct(
             (int) $event['id'],
-            self::class,
+            'ForkEvent',
             'forked',
             $event['repo']['name'],
             $event['actor']['login'],

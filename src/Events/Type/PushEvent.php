@@ -8,7 +8,7 @@ class PushEvent extends BaseEvent
     {
         parent::__construct(
             (int) $event['id'],
-            self::class,
+            'PushEvent',
             'pushed to',
             $event['repo']['name'],
             $event['actor']['login'],

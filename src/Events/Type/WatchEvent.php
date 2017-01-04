@@ -8,7 +8,7 @@ class WatchEvent extends BaseEvent
     {
         parent::__construct(
             (int) $event['id'],
-            self::class,
+            'WatchEvent',
             $event['payload']['action'],
             $event['repo']['name'],
             $event['actor']['login'],

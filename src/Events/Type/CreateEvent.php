@@ -8,7 +8,7 @@ class CreateEvent extends BaseEvent
     {
         parent::__construct(
             (int) $event['id'],
-            self::class,
+            'CreateEvent',
             'created',
             $event['repo']['name'],
             $event['actor']['login'],

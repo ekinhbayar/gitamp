@@ -8,7 +8,7 @@ class PullRequestEvent extends BaseEvent
     {
         parent::__construct(
             (int) $event['id'],
-            self::class,
+            'PullRequestEvent',
             $event['payload']['action'],
             $event['repo']['name'],
             $event['actor']['login'],
