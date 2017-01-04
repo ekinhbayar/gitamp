@@ -12,7 +12,7 @@ return [
         'hostname' => 'localhost',
         'port'     => 6379,
     ],
-    // either use a tokenn or a username + password login
+    // either use a token or a username + password login
     // note for 2fa users. you can only use tokens
     // https://github.com/settings/tokens
     'github' => new Token('your-token'),
