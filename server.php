@@ -26,7 +26,10 @@ $injector->alias(Credentials::class, get_class($configuration['github']));
 $injector->share($configuration['github']);
 
 $injector->define(Handler::class, [
-    ":origins" => ["http://" . $configuration['server']['hostname'] . ":" . $configuration['server']['port']],
+    ":origins" => [
+        "http://" . $configuration['origins']['websocket']['hostname'] . ":" . $configuration['origins']['websocket']['port'],
+        "http://" . $configuration['origins']['server']['hostname'] . ":" . $configuration['origins']['server']['port'],
+    ],
     ":audiohub" => new GitAmp(new ArtaxClient(), $configuration['github'], new GithubEventType(), new Factory())
 ]);
 
@@ -44,7 +47,7 @@ $router = router()->get("/ws", websocket($websocket));
 $root = root(__DIR__ . "/public");
 
 (new Host)
-    ->name($configuration['server']['hostname'])
-    ->expose("*", $configuration['server']['port'])
+    ->name($configuration['origins']['server']['hostname'])
+    ->expose("*", $configuration['expose'])
     ->use($router)
     ->use($root);
