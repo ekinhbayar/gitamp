@@ -6,6 +6,7 @@ use Amp\Promise;
 use Amp\Artax\Client;
 use Amp\Artax\ClientException;
 use Amp\Artax\Request;
+use ekinhbayar\GitAmp\Events\Factory;
 use ekinhbayar\GitAmp\Events\GithubEventType;
 use ekinhbayar\GitAmp\Github\Credentials;
 use ekinhbayar\GitAmp\Response\Results;
@@ -24,16 +25,23 @@ class GitAmp
     private $client;
     private $credentials;
     private $githubEventType;
+    private $eventFactory;
 
     /**
      * GitAmp constructor.
      * @param Client $client
      */
-    public function __construct(Client $client, Credentials $credentials, GithubEventType $githubEventType)
+    public function __construct(
+        Client $client,
+        Credentials $credentials,
+        GithubEventType $githubEventType,
+        Factory $eventFactory
+    )
     {
         $this->client          = $client;
         $this->credentials     = $credentials;
         $this->githubEventType = $githubEventType;
+        $this->eventFactory    = $eventFactory;
     }
 
     /**
@@ -53,7 +61,6 @@ class GitAmp
         } catch (ClientException $e) {
             throw new RequestFailed("Failed to send GET request to API endpoint", $e->getCode(), $e);
         }
-
     }
 
     /**
@@ -61,10 +68,13 @@ class GitAmp
      */
     public function listen(): \Generator
     {
-        $request = yield $this->request();
-        $results = new Results($request, $this->githubEventType);
-        $set = $results->parseResults($request);
-        return $results->createEventsFromResultSet($set);
+        $response = yield $this->request();
+
+        $results = new Results($this->githubEventType, $this->eventFactory);
+
+        $results->appendResponse($response);
+
+        return $results;
     }
 
     private function getAuthHeader(): array
@@ -72,4 +82,3 @@ class GitAmp
         return ['Authorization' => sprintf('Basic %s', $this->credentials->getAuthenticationString())];
     }
 }
-

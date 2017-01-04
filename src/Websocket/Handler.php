@@ -7,6 +7,7 @@ use Aerys\Response;
 use Aerys\Websocket;
 use Aerys\Websocket\Endpoint;
 use ekinhbayar\GitAmp\Client\GitAmp;
+use ekinhbayar\GitAmp\Response\Results;
 use ekinhbayar\GitAmp\Storage\Counter;
 use function Amp\repeat;
 
@@ -65,12 +66,12 @@ class Handler implements Websocket
     /**
      * todo: refactor, properly handle this, also send connected_users count somehow w/ data
      *
-     * @param array $events
+     * @param Results $events
      */
-    public function emit(array $events) {
-        if (!$events) return;
+    public function emit(Results $events) {
+        if (!$events->hasEvents()) return;
 
-        $this->endpoint->send(null, json_encode($events));
+        $this->endpoint->send(null, $events->jsonEncode());
     }
 
     public function onData(int $clientId, Websocket\Message $msg) {
