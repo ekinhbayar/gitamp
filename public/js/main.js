@@ -22,6 +22,9 @@ var svg_background_color_online = 'rgb(78, 79, 140)',
     issue_color = 'rgb(46, 204, 113)',
     pull_request_color = 'rgb(46, 204, 113)',
     comment_color = 'rgb(46, 204, 113)',
+    create_color = '#0288D1',
+    watch_color = 'rgb(46, 204, 113)',
+    fork_color = '#0288D1',
     edit_color = '#fff',
     total_sounds = 51;
 
@@ -30,12 +33,13 @@ var celesta = [],
     swells = [],
     all_loaded = false;
 
-
 var socket = new WebSocket("ws://localhost:1337/ws");
 
 socket.addEventListener("message", function (data) {
-  /*$('.online-users-count').html(data.connected_users);*/
   var json = JSON.parse(data.data);
+
+  $('.online-users-count').html(json.connectedUsers);
+
   json.forEach(function(event){
     if(!isEventInQueue(event)){
       // Filter out events only specified by the user
@@ -61,6 +65,7 @@ socket.onopen = function(e){
       $('.offline-text').css('visibility', 'hidden');
       $('.events-remaining-text').css('visibility', 'visible');
       $('.events-remaining-value').css('visibility', 'visible');
+        $('.online-users-div').css('visibility', 'visible');
     }
 };
 
@@ -71,7 +76,6 @@ socket.onclose = function(e){
       $('.offline-text').css('visibility', 'visible');
       $('.events-remaining-text').css('visibility', 'visible');
       $('.events-remaining-value').css('visibility', 'visible');
-
     }
 };
 
@@ -308,6 +312,18 @@ function drawEvent(data, svg_area) {
       case "IssueCommentEvent":
         label_text = data.actorName.capitalize() + " commented in " + data.repoName;
         edit_color = '#FF5722';
+      break;
+      case "ForkEvent":
+        label_text = data.actorName.capitalize() + " forked " + data.repoName;
+        edit_color = '#0288D1';
+        break;
+      case "CreateEvent":
+        label_text = data.actorName.capitalize() + " created " + data.repoName;
+        edit_color = '#0288D1';
+      break;
+      case "WatchEvent":
+        label_text = data.actorName.capitalize() + " watched " + data.repoName;
+        edit_color = '#B2DFDB';
       break;
     }
     var csize = size;
