@@ -3,4 +3,4 @@
 namespace ekinhbayar\GitAmp\Response;
 
 
-class DecodingFailed extends \Exception {}
+class DecodingFailedException extends \Exception {}

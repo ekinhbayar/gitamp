@@ -26,7 +26,7 @@ class Results
         try {
             $events = json_try_decode($response->getBody(), true);
         } catch (DecodeErrorException $e) {
-            throw new DecodingFailed('Failed to decode response body as JSON', $e->getCode(), $e);
+            throw new DecodingFailedException('Failed to decode response body as JSON', $e->getCode(), $e);
         }
 
         foreach ($events as $event) {
