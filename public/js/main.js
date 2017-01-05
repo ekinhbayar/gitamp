@@ -36,28 +36,30 @@ var celesta = [],
 var socket = new WebSocket("ws://localhost:1337/ws");
 
 socket.addEventListener("message", function (data) {
-  var json = JSON.parse(data.data);
+    var json = JSON.parse(data.data);
 
-  $('.online-users-count').html(json.connectedUsers);
+    if (json.hasOwnProperty('connectedUsers')) {
+        $('.online-users-count').html(json.connectedUsers);
 
-  if(json.connectedUsers == null) {
-      json.forEach(function (event) {
-          if (!isEventInQueue(event)) {
-              // Filter out events only specified by the user
-              if (orgRepoFilterNames != []) {
-                  // Don't consider pushes to github.io repos when org filter is on
-                  if (new RegExp(orgRepoFilterNames.join("|")).test(event.repoName)
-                      && event.repoName.indexOf('github.io') == -1) {
-                      eventQueue.push(event);
-                  }
-              } else {
-                  eventQueue.push(event);
-              }
-          }
-      });
-  }
-      // Don't let the eventQueue grow more than 1000
-      if (eventQueue.length > 1000) eventQueue = eventQueue.slice(0, 1000);
+        return;
+    }
+
+    json.forEach(function (event) {
+        if (!isEventInQueue(event)) {
+            // Filter out events only specified by the user
+            if (orgRepoFilterNames != []) {
+                // Don't consider pushes to github.io repos when org filter is on
+                if (new RegExp(orgRepoFilterNames.join("|")).test(event.repoName) && event.repoName.indexOf('github.io') == -1) {
+                    eventQueue.push(event);
+                }
+            } else {
+                eventQueue.push(event);
+            }
+        }
+    });
+
+    // Don't let the eventQueue grow more than 1000
+    if (eventQueue.length > 1000) eventQueue = eventQueue.slice(0, 1000);
 });
 
 socket.onopen = function(e){
