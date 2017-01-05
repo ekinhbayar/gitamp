@@ -13,11 +13,12 @@ use function Amp\repeat;
 
 class Handler implements Websocket
 {
-    private $origins;
+
     private $endpoint;
     private $connections;
     private $ips;
     private $counter;
+    private $origins;
     private $gitamp;
 
     public function __construct(Counter $counter, array $origins, GitAmp $gitamp)
@@ -32,6 +33,10 @@ class Handler implements Websocket
         $this->endpoint = $endpoint;
         $this->connections = [];
         $this->ips = [];
+
+        repeat(function () {
+            $this->emit(yield $this->gitamp->listen());
+        }, 25000);
     }
 
     public function onHandshake(Request $request, Response $response)
@@ -53,18 +58,14 @@ class Handler implements Websocket
         // And another one for multiple clients with the same IP.
         $this->ips[$handshakeData][$clientId] = true;
 
-        yield $this->counter->increment("connected_users");
-
+        // send initial results
         $this->emit(yield $this->gitamp->listen());
 
-        repeat(function() {
-            $this->emit(yield $this->gitamp->listen());
-        }, 25000);
+        yield $this->counter->increment("connected_users");
+        $this->sendConnectedUsersCount(yield $this->counter->get("connected_users"));
     }
 
     /**
-     * todo: refactor, properly handle this, also send connected_users count somehow w/ data
-     *
      * @param Results $events
      */
     public function emit(Results $events) {
@@ -73,9 +74,12 @@ class Handler implements Websocket
         $this->endpoint->send(null, $events->jsonEncode());
     }
 
+    public function sendConnectedUsersCount(int $count) {
+        $this->endpoint->send(null, json_encode(['connectedUsers' => $count]));
+    }
+
     public function onData(int $clientId, Websocket\Message $msg) {
         // yielding $msg buffers the complete payload into a single string.
-        // $ip = $this->connections[$clientId];
     }
 
     public function onClose(int $clientId, int $code, string $reason) {
@@ -88,6 +92,7 @@ class Handler implements Websocket
         }
 
         yield $this->counter->decrement("connected_users");
+        $this->sendConnectedUsersCount(yield $this->counter->get("connected_users"));
     }
 
     public function onStop() {

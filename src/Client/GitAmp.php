@@ -60,7 +60,7 @@ class GitAmp
             return $this->client->request($request);
 
         } catch (ClientException $e) {
-            throw new RequestFailed("Failed to send GET request to API endpoint", $e->getCode(), $e);
+            throw new RequestFailedException("Failed to send GET request to API endpoint", $e->getCode(), $e);
         }
     }
 

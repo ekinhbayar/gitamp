@@ -48,6 +48,6 @@ $root = root(__DIR__ . "/public");
 
 (new Host)
     ->name($configuration['origins']['server'])
-    ->expose("*", $configuration['expose'])
+    ->expose($configuration['expose']['ip'], $configuration['expose']['port'])
     ->use($router)
     ->use($root);

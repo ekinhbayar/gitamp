@@ -3,4 +3,4 @@
 namespace ekinhbayar\GitAmp\Client;
 
 
-class RequestFailed extends \Exception { }
+class RequestFailedException extends \Exception { }

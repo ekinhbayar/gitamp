@@ -15,18 +15,18 @@ var scale_factor = 6,
     max_life = 20000;
 
 var svg_background_color_online  = 'black',
-    svg_background_color_offline = 'black',   // todo ?
+    svg_background_color_offline = 'black',
     svg_text_color               = '#FFFFFF',
     newuser_box_color            = '#00C0C0', // cyan
     push_color                   = '#22B65D', // green
     issue_color                  = '#ADD913', // lime
     pull_request_color           = '#8F19BB', // violet
     comment_color                = '#FF4901', // orange
+    create_color                 = '#0184FF', // blue
+    watch_color                  = '#E60062', // magenta
+    fork_color                   = '#0184FF',
     edit_color                   = '#FFFFFF',
-    total_sounds                 = 51;
-
-// #E60062 magenta
-// #0184FF blue
+    total_sounds = 51;
 
 var celesta = [],
     clav = [],
@@ -36,24 +36,28 @@ var celesta = [],
 var socket = new WebSocket("ws://localhost:1337/ws");
 
 socket.addEventListener("message", function (data) {
-  /*$('.online-users-count').html(data.connected_users);*/
   var json = JSON.parse(data.data);
-  json.forEach(function(event){
-    if(!isEventInQueue(event)){
-      // Filter out events only specified by the user
-      if(orgRepoFilterNames != []){
-        // Don't consider pushes to github.io repos when org filter is on
-        if(new RegExp(orgRepoFilterNames.join("|")).test(event.repoName)
-           && event.repoName.indexOf('github.io') == -1){
-          eventQueue.push(event);
-        }
-      }else{
-        eventQueue.push(event);
-      }
-    }
-  });
-  // Don't let the eventQueue grow more than 1000
-  if (eventQueue.length > 1000) eventQueue = eventQueue.slice(0, 1000);
+
+  $('.online-users-count').html(json.connectedUsers);
+
+  if(json.connectedUsers == null) {
+      json.forEach(function (event) {
+          if (!isEventInQueue(event)) {
+              // Filter out events only specified by the user
+              if (orgRepoFilterNames != []) {
+                  // Don't consider pushes to github.io repos when org filter is on
+                  if (new RegExp(orgRepoFilterNames.join("|")).test(event.repoName)
+                      && event.repoName.indexOf('github.io') == -1) {
+                      eventQueue.push(event);
+                  }
+              } else {
+                  eventQueue.push(event);
+              }
+          }
+      });
+      // Don't let the eventQueue grow more than 1000
+      if (eventQueue.length > 1000) eventQueue = eventQueue.slice(0, 1000);
+  }
 });
 
 socket.onopen = function(e){
@@ -63,6 +67,7 @@ socket.onopen = function(e){
       $('.offline-text').css('visibility', 'hidden');
       $('.events-remaining-text').css('visibility', 'visible');
       $('.events-remaining-value').css('visibility', 'visible');
+      $('.online-users-div').css('visibility', 'visible');
     }
 };
 
@@ -73,7 +78,6 @@ socket.onclose = function(e){
       $('.offline-text').css('visibility', 'visible');
       $('.events-remaining-text').css('visibility', 'visible');
       $('.events-remaining-value').css('visibility', 'visible');
-
     }
 };
 
@@ -310,6 +314,18 @@ function drawEvent(data, svg_area) {
       case "IssueCommentEvent":
         label_text = data.actorName.capitalize() + " commented in " + data.repoName;
         edit_color = '#FF5722';
+      break;
+      case "ForkEvent":
+        label_text = data.actorName.capitalize() + " forked " + data.repoName;
+        edit_color = '#0288D1';
+        break;
+      case "CreateEvent":
+        label_text = data.actorName.capitalize() + " created " + data.repoName;
+        edit_color = '#0288D1';
+      break;
+      case "WatchEvent":
+        label_text = data.actorName.capitalize() + " watched " + data.repoName;
+        edit_color = '#B2DFDB';
       break;
     }
     var csize = size;
