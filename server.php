@@ -33,8 +33,6 @@ $injector->define(Handler::class, [
     ":audiohub" => new GitAmp(new ArtaxClient(), $configuration['github'], new GithubEventType(), new Factory())
 ]);
 
-$injector->make(GitAmp::class);
-
 $injector->define(Client::class, [
     ":uri" => "tcp://" . $configuration['redis']['hostname'] . ":" . $configuration['redis']['port']
 ]);
