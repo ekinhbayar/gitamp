@@ -34,7 +34,7 @@ class Handler implements Websocket
         $this->connections = [];
         $this->ips = [];
 
-        $this->counter->set("connected_users", 0);
+        $this->counter->set('connected_users', 0);
 
         repeat(function () {
             $this->emit(yield $this->gitamp->listen());
@@ -51,7 +51,7 @@ class Handler implements Websocket
             return null;
         }
 
-        return $request->getConnectionInfo()["client_addr"];
+        return $request->getConnectionInfo()['client_addr'];
     }
 
     public function onOpen(int $clientId, $handshakeData) {
@@ -63,8 +63,8 @@ class Handler implements Websocket
         // send initial results
         $this->emit(yield $this->gitamp->listen());
 
-        yield $this->counter->increment("connected_users");
-        $this->sendConnectedUsersCount(yield $this->counter->get("connected_users"));
+        yield $this->counter->increment('connected_users');
+        $this->sendConnectedUsersCount(yield $this->counter->get('connected_users'));
     }
 
     /**
@@ -93,8 +93,8 @@ class Handler implements Websocket
             unset($this->ips[$ip]);
         }
 
-        yield $this->counter->decrement("connected_users");
-        $this->sendConnectedUsersCount(yield $this->counter->get("connected_users"));
+        yield $this->counter->decrement('connected_users');
+        $this->sendConnectedUsersCount(yield $this->counter->get('connected_users'));
     }
 
     public function onStop() {

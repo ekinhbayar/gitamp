@@ -22,14 +22,14 @@ $injector->alias(Credentials::class, get_class($configuration['github']));
 $injector->share($configuration['github']);
 
 $injector->define(Handler::class, [
-    ":origins" => [
-        "http://" . $configuration['origins']['websocket'],
-        "http://" . $configuration['origins']['server'] ,
+    ':origins' => [
+        'http://' . $configuration['origins']['websocket'],
+        'http://' . $configuration['origins']['server'] ,
     ],
 ]);
 
 $injector->define(Client::class, [
-    ":uri" => "tcp://" . $configuration['redis']['hostname'] . ":" . $configuration['redis']['port']
+    ':uri' => 'tcp://' . $configuration['redis']['hostname'] . ':' . $configuration['redis']['port']
 ]);
 
 $websocket = $injector->make(Handler::class);
@@ -40,4 +40,4 @@ $router = router()->get("/ws", websocket($websocket));
     ->name($configuration['origins']['server'])
     ->expose($configuration['expose']['ip'], $configuration['expose']['port'])
     ->use($router)
-    ->use(root(__DIR__ . "/public"));
+    ->use(root(__DIR__ . '/public'));

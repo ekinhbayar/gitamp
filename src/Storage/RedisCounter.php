@@ -30,7 +30,7 @@ SCRIPT;
             try {
                 return yield $this->redis->incr($key);
             } catch (RedisException $e) {
-                throw new StorageFailedException("Failed to increment counter.", 0, $e);
+                throw new StorageFailedException('Failed to increment counter.', 0, $e);
             }
         });
     }
@@ -40,7 +40,7 @@ SCRIPT;
             try {
                 return yield $this->redis->eval(self::SCRIPT_DECREMENT, [$key], []);
             } catch (RedisException $e) {
-                throw new StorageFailedException("Failed to decrement counter.", 0, $e);
+                throw new StorageFailedException('Failed to decrement counter.', 0, $e);
             }
         });
     }
@@ -52,7 +52,7 @@ SCRIPT;
 
                 return empty($result) ? 0 : (int) $result;
             } catch (RedisException $e) {
-                throw new StorageFailedException("Failed to get counter.", 0, $e);
+                throw new StorageFailedException('Failed to get counter.', 0, $e);
             }
         });
     }
@@ -62,7 +62,7 @@ SCRIPT;
             try {
                 return yield $this->redis->set($key, $val);
             } catch (RedisException $e) {
-                throw new StorageFailedException("Failed to set counter value.", 0, $e);
+                throw new StorageFailedException('Failed to set counter value.', 0, $e);
             }
         });
     }

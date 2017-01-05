@@ -33,14 +33,14 @@ class GitAmp
      */
     public function __construct(Client $client, Credentials $credentials, Factory $eventFactory)
     {
-        $this->client          = $client;
-        $this->credentials     = $credentials;
-        $this->eventFactory    = $eventFactory;
+        $this->client       = $client;
+        $this->credentials  = $credentials;
+        $this->eventFactory = $eventFactory;
     }
 
     /**
      * @return Promise
-     * @throws RequestFailed
+     * @throws RequestFailedException
      */
     public function request(): Promise
     {
@@ -53,7 +53,7 @@ class GitAmp
             return $this->client->request($request);
 
         } catch (ClientException $e) {
-            throw new RequestFailedException("Failed to send GET request to API endpoint", $e->getCode(), $e);
+            throw new RequestFailedException('Failed to send GET request to API endpoint', $e->getCode(), $e);
         }
     }
 
