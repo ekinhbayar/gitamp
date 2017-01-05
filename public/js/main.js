@@ -13,8 +13,8 @@ var scale_factor = 6,
     current_notes = 0,
     max_life = 20000;
 
-var svg_background_color_online  = 'black',
-    svg_background_color_offline = 'black',
+var svg_background_color_online  = '#232323',
+    svg_background_color_offline = '#232323',
     svg_text_color               = '#FFFFFF',
     edit_color                   = '#FFFFFF',
     total_sounds = 51;
