@@ -140,8 +140,6 @@ $(function(){
       if (loaded_sounds == total_sounds) {
           all_loaded = true;
           setTimeout(playFromQueueExchange1, Math.floor(Math.random() * 1000));
-          // Starting the second exchange makes music a bad experience
-          // setTimeout(playFromQueueExchange2, Math.floor(Math.random() * 2000));
       }
   };
 
@@ -238,17 +236,6 @@ function playFromQueueExchange1(){
       drawEvent(event, svg);
   }
   setTimeout(playFromQueueExchange1, Math.floor(Math.random() * 1000) + 500);
-  $('.events-remaining-value').html(eventQueue.length);
-}
-
-function playFromQueueExchange2(){
-  var event = eventQueue.shift();
-  if(event != null && event.message != null && svg != null){
-    playSound(event.message.length, event.type);
-    if(!document.hidden)
-      drawEvent(event, svg);
-  }
-  setTimeout(playFromQueueExchange2, Math.floor(Math.random() * 800) + 500);
   $('.events-remaining-value').html(eventQueue.length);
 }
 
