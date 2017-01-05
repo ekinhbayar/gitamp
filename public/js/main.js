@@ -5,7 +5,6 @@ var drawingArea;
 var width;
 var height;
 var volume = 0.6;
-var ULTIMATE_DREAM_KILLER = false;  // https://github.com/debugger22/github-audio/pull/19
 var orgRepoFilterNames = [];
 
 var scale_factor = 6,
@@ -98,20 +97,6 @@ function isEventInQueue(event){
   }
   return false;
 }
-
-/**
- * This function adds a filter for events that we don't want to hear.
- *
- * To extend this function, simply add return true for events that should be filtered.
- */
-function shouldEventBeIgnored(event){
-  // This adds an easter egg to only play closed PRs
-  if (!!ULTIMATE_DREAM_KILLER)
-    return (event.type !== "PullRequestEvent" || event.action !== "closed");
-
-  return false;
-}
-
 
 $(function(){
   element = document.documentElement;
@@ -247,7 +232,7 @@ function playSound(size, type) {
 
 function playFromQueueExchange1(){
   var event = eventQueue.shift();
-  if(event != null && event.message != null && !shouldEventBeIgnored(event) && svg != null){
+  if(event != null && event.message != null && svg != null){
     playSound(event.message.length*1.1, event.type);
     if(!document.hidden)
       drawEvent(event, svg);
@@ -258,7 +243,7 @@ function playFromQueueExchange1(){
 
 function playFromQueueExchange2(){
   var event = eventQueue.shift();
-  if(event != null && event.message != null && !shouldEventBeIgnored(event) && svg != null){
+  if(event != null && event.message != null && svg != null){
     playSound(event.message.length, event.type);
     if(!document.hidden)
       drawEvent(event, svg);
