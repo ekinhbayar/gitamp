@@ -40,22 +40,24 @@ socket.addEventListener("message", function (data) {
 
   $('.online-users-count').html(json.connectedUsers);
 
-  json.forEach(function(event){
-    if(!isEventInQueue(event)){
-      // Filter out events only specified by the user
-      if(orgRepoFilterNames != []){
-        // Don't consider pushes to github.io repos when org filter is on
-        if(new RegExp(orgRepoFilterNames.join("|")).test(event.repoName)
-           && event.repoName.indexOf('github.io') == -1){
-          eventQueue.push(event);
-        }
-      }else{
-        eventQueue.push(event);
-      }
-    }
-  });
-  // Don't let the eventQueue grow more than 1000
-  if (eventQueue.length > 1000) eventQueue = eventQueue.slice(0, 1000);
+  if(json.connectedUsers == null) {
+      json.forEach(function (event) {
+          if (!isEventInQueue(event)) {
+              // Filter out events only specified by the user
+              if (orgRepoFilterNames != []) {
+                  // Don't consider pushes to github.io repos when org filter is on
+                  if (new RegExp(orgRepoFilterNames.join("|")).test(event.repoName)
+                      && event.repoName.indexOf('github.io') == -1) {
+                      eventQueue.push(event);
+                  }
+              } else {
+                  eventQueue.push(event);
+              }
+          }
+      });
+      // Don't let the eventQueue grow more than 1000
+      if (eventQueue.length > 1000) eventQueue = eventQueue.slice(0, 1000);
+  }
 });
 
 socket.onopen = function(e){
@@ -65,7 +67,7 @@ socket.onopen = function(e){
       $('.offline-text').css('visibility', 'hidden');
       $('.events-remaining-text').css('visibility', 'visible');
       $('.events-remaining-value').css('visibility', 'visible');
-        $('.online-users-div').css('visibility', 'visible');
+      $('.online-users-div').css('visibility', 'visible');
     }
 };
 
