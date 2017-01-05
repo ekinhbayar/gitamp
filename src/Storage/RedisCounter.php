@@ -56,4 +56,14 @@ SCRIPT;
             }
         });
     }
+
+    public function set(string $key, int $val): Promise {
+        return resolve(function () use ($key, $val) {
+            try {
+                return yield $this->redis->set($key, $val);
+            } catch (RedisException $e) {
+                throw new StorageFailedException("Failed to set counter value.", 0, $e);
+            }
+        });
+    }
 }

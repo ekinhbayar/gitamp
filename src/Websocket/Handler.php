@@ -34,6 +34,8 @@ class Handler implements Websocket
         $this->connections = [];
         $this->ips = [];
 
+        $this->counter->set("connected_users", 0);
+
         repeat(function () {
             $this->emit(yield $this->gitamp->listen());
         }, 25000);
