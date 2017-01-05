@@ -2,14 +2,11 @@
 
 use Aerys\Host;
 use Amp\Redis\Client;
-use Amp\Artax\Client as ArtaxClient;
 use Auryn\Injector;
-use ekinhbayar\GitAmp\Events\Factory;
 use ekinhbayar\GitAmp\Github\Credentials;
 use ekinhbayar\GitAmp\Storage\Counter;
 use ekinhbayar\GitAmp\Storage\RedisCounter;
 use ekinhbayar\GitAmp\Websocket\Handler;
-use ekinhbayar\GitAmp\Client\GitAmp;
 use function Aerys\root;
 use function Aerys\router;
 use function Aerys\websocket;
@@ -22,7 +19,6 @@ $injector->alias(Counter::class, RedisCounter::class);
 
 $injector->alias(Credentials::class, get_class($configuration['github']));
 
-// @todo find out why the credentials are being instantiated multiple times
 $injector->share($configuration['github']);
 
 $injector->define(Handler::class, [
@@ -30,7 +26,6 @@ $injector->define(Handler::class, [
         "http://" . $configuration['origins']['websocket'],
         "http://" . $configuration['origins']['server'] ,
     ],
-    ":audiohub" => new GitAmp(new ArtaxClient(), $configuration['github'], new Factory())
 ]);
 
 $injector->define(Client::class, [
