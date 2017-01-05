@@ -14,7 +14,18 @@ return [
         'hostname' => 'localhost',
         'port'     => 6379,
     ],
-    'expose' => 1337,
+    /**
+     * Assign the IP and port on which to listen.
+     * Use :
+    "0.0.0.0" for all IPv4 interfaces
+    "::"      for all IPv6 interfaces
+    "*"       for all IPv4 & IPv6
+     *
+     */
+    'expose' => [
+        'ip' => '*',
+        'port' => 1337
+    ],
     /**
      * Either use a token or a username + password login.
      * Note for 2fa users, you can only use tokens.
