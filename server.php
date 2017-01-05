@@ -1,4 +1,5 @@
-<?php
+<?php declare(strict_types=1);
+
 use Aerys\Host;
 use Amp\Redis\Client;
 use Amp\Artax\Client as ArtaxClient;
