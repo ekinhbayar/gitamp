@@ -14,22 +14,24 @@ var scale_factor = 6,
     current_notes = 0,
     max_life = 20000;
 
-var svg_background_color_online = 'rgb(78, 79, 140)',
-    svg_background_color_offline = '#E91E63',
-    svg_text_color = '#FFFFFF',
-    newuser_box_color = 'rgb(41, 128, 185)',
-    push_color = 'rgb(155, 89, 182)',
-    issue_color = 'rgb(46, 204, 113)',
-    pull_request_color = 'rgb(46, 204, 113)',
-    comment_color = 'rgb(46, 204, 113)',
-    edit_color = '#fff',
-    total_sounds = 51;
+var svg_background_color_online  = 'black',
+    svg_background_color_offline = 'black',   // todo ?
+    svg_text_color               = '#FFFFFF',
+    newuser_box_color            = '#00C0C0', // cyan
+    push_color                   = '#22B65D', // green
+    issue_color                  = '#ADD913', // lime
+    pull_request_color           = '#8F19BB', // violet
+    comment_color                = '#FF4901', // orange
+    edit_color                   = '#FFFFFF',
+    total_sounds                 = 51;
+
+// #E60062 magenta
+// #0184FF blue
 
 var celesta = [],
     clav = [],
     swells = [],
     all_loaded = false;
-
 
 var socket = new WebSocket("ws://localhost:1337/ws");
 
