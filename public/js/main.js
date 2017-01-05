@@ -55,40 +55,34 @@ socket.addEventListener("message", function (data) {
               }
           }
       });
+  }
       // Don't let the eventQueue grow more than 1000
       if (eventQueue.length > 1000) eventQueue = eventQueue.slice(0, 1000);
-  }
 });
 
 socket.onopen = function(e){
-    if(svg != null){
-      $('svg').css('background-color', svg_background_color_online);
-      $('header').css('background-color', svg_background_color_online);
-      $('.offline-text').css('visibility', 'hidden');
-      $('.events-remaining-text').css('visibility', 'visible');
-      $('.events-remaining-value').css('visibility', 'visible');
-      $('.online-users-div').css('visibility', 'visible');
-    }
+    $('svg').css('background-color', svg_background_color_online);
+    $('header').css('background-color', svg_background_color_online);
+    $('.offline-text').css('visibility', 'hidden');
+    $('.events-remaining-text').css('visibility', 'visible');
+    $('.events-remaining-value').css('visibility', 'visible');
+    $('.online-users-div').css('visibility', 'visible');
 };
 
 socket.onclose = function(e){
-    if(svg != null){
-      $('svg').css('background-color', svg_background_color_offline);
-      $('header').css('background-color', svg_background_color_offline);
-      $('.offline-text').css('visibility', 'visible');
-      $('.events-remaining-text').css('visibility', 'visible');
-      $('.events-remaining-value').css('visibility', 'visible');
-    }
+    $('svg').css('background-color', svg_background_color_offline);
+    $('header').css('background-color', svg_background_color_offline);
+    $('.offline-text').css('visibility', 'visible');
+    $('.events-remaining-text').css('visibility', 'visible');
+    $('.events-remaining-value').css('visibility', 'visible');
 };
 
 socket.onerror = function(e){
-    if(svg != null){
-      $('svg').css('background-color', svg_background_color_offline);
-      $('header').css('background-color', svg_background_color_offline);
-      $('.offline-text').css('visibility', 'visible');
-      $('.events-remaining-text').css('visibility', 'visible');
-      $('.events-remaining-value').css('visibility', 'visible');
-    }
+    $('svg').css('background-color', svg_background_color_offline);
+    $('header').css('background-color', svg_background_color_offline);
+    $('.offline-text').css('visibility', 'visible');
+    $('.events-remaining-text').css('visibility', 'visible');
+    $('.events-remaining-value').css('visibility', 'visible');
 };
 
 
