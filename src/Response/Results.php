@@ -4,20 +4,17 @@ namespace ekinhbayar\GitAmp\Response;
 
 use Amp\Artax\Response;
 use ekinhbayar\GitAmp\Events\Factory;
-use ekinhbayar\GitAmp\Events\GithubEventType;
+use ekinhbayar\GitAmp\Events\UnknownEventException;
 use ExceptionalJSON\DecodeErrorException;
 
 class Results
 {
-    private $githubEventType;
-
     private $eventFactory;
 
     private $events = [];
 
-    public function __construct(GithubEventType $githubEventType, Factory $eventFactory)
+    public function __construct(Factory $eventFactory)
     {
-        $this->githubEventType = $githubEventType;
         $this->eventFactory    = $eventFactory;
     }
 
@@ -36,11 +33,11 @@ class Results
 
     private function appendEvent(array $event)
     {
-        if (!$this->githubEventType->isValid($event['type'])) {
-            return;
+        try {
+            $this->events[] = $this->eventFactory->build($event);
+        } catch(UnknownEventException $e) {
+            // maybe log unknown events?
         }
-
-        $this->events[] = $this->eventFactory->build($event);
     }
 
     public function hasEvents(): bool

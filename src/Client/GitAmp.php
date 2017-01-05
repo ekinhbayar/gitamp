@@ -25,23 +25,16 @@ class GitAmp
      */
     private $client;
     private $credentials;
-    private $githubEventType;
     private $eventFactory;
 
     /**
      * GitAmp constructor.
      * @param Client $client
      */
-    public function __construct(
-        Client $client,
-        Credentials $credentials,
-        GithubEventType $githubEventType,
-        Factory $eventFactory
-    )
+    public function __construct(Client $client, Credentials $credentials, Factory $eventFactory)
     {
         $this->client          = $client;
         $this->credentials     = $credentials;
-        $this->githubEventType = $githubEventType;
         $this->eventFactory    = $eventFactory;
     }
 
@@ -69,7 +62,7 @@ class GitAmp
         return \Amp\resolve(function() {
             $response = yield $this->request();
 
-            $results = new Results($this->githubEventType, $this->eventFactory);
+            $results = new Results($this->eventFactory);
 
             $results->appendResponse($response);
 
