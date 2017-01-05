@@ -313,15 +313,15 @@ function drawEvent(data, svg_area) {
       break;
       case "ForkEvent":
         label_text = data.actorName.capitalize() + " forked " + data.repoName;
-        edit_color = '#0288D1';
+        edit_color = '#0184FF';
         break;
       case "CreateEvent":
         label_text = data.actorName.capitalize() + " created " + data.repoName;
-        edit_color = '#0288D1';
+        edit_color = '#0184FF';
       break;
       case "WatchEvent":
         label_text = data.actorName.capitalize() + " watched " + data.repoName;
-        edit_color = '#B2DFDB';
+        edit_color = '#E60062';
       break;
     }
     var csize = size;
