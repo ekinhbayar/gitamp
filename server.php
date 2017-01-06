@@ -29,15 +29,27 @@ $injector->define(Handler::class, [
 ]);
 
 $injector->define(Client::class, [
-    ':uri' => 'tcp://' . $configuration['redis']['hostname'] . ':' . $configuration['redis']['port']
+    ':uri' => $configuration['redis']
 ]);
 
 $websocket = $injector->make(Handler::class);
 
 $router = router()->get("/ws", websocket($websocket));
 
-(new Host)
-    ->name($configuration['origins']['server'])
+$host = new Host();
+$host->name($configuration['hostname']);
+
+if (isset($configuration['ssl'])) {
+    $host
+        ->expose($configuration['ssl']['ip'], $configuration['ssl']['port'])
+        ->encrypt($configuration['ssl']['certificate'], $configuration['ssl']['key'])
+        ->redirect('https://' . $configuration['hostname']);
+    ;
+}
+
+$host
+    //->name($configuration['origins']['server'])
     ->expose($configuration['expose']['ip'], $configuration['expose']['port'])
     ->use($router)
-    ->use(root(__DIR__ . '/public'));
+    ->use(root(__DIR__ . '/public'))
+;

@@ -25,7 +25,13 @@ var celesta = [],
     swells = [],
     all_loaded = false;
 
-var socket = new WebSocket("ws://localhost:1337/ws");
+var protocol = 'ws://';
+
+if (window.location.protocol === "https:") {
+    protocol = 'wss://';
+}
+
+var socket = new WebSocket(protocol + window.location.host + '/ws');
 
 socket.addEventListener("message", function (data) {
     var json = JSON.parse(data.data);
