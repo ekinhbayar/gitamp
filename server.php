@@ -21,11 +21,19 @@ $injector->alias(Credentials::class, get_class($configuration['github']));
 
 $injector->share($configuration['github']);
 
+// @todo unuglify this
+if (isset($configuration['ssl'])) {
+    $origin = 'https://' . $configuration['hostname'];
+
+    if ($configuration['ssl']['port'] !== 443) $origin .= ':' . $configuration['ssl']['port'];
+} else {
+    $origin = 'http://' . $configuration['hostname'];
+
+    if ($configuration['expose']['port'] !== 80) $origin .= ':' . $configuration['expose']['port'];
+}
+
 $injector->define(Handler::class, [
-    ':origins' => [
-        'http://' . $configuration['origins']['websocket'],
-        'http://' . $configuration['origins']['server'] ,
-    ],
+    ':origin' => $origin,
 ]);
 
 $injector->define(Client::class, [
@@ -36,19 +44,26 @@ $websocket = $injector->make(Handler::class);
 
 $router = router()->get("/ws", websocket($websocket));
 
-$host = new Host();
-$host->name($configuration['hostname']);
-
 if (isset($configuration['ssl'])) {
-    $host
+    (new Host())
+        ->name($configuration['hostname'])
+        ->expose($configuration['expose']['ip'], $configuration['expose']['port'])
+        ->redirect('https://' . $configuration['hostname'])
+    ;
+
+    (new Host())
+        ->name($configuration['hostname'])
         ->expose($configuration['ssl']['ip'], $configuration['ssl']['port'])
         ->encrypt($configuration['ssl']['certificate'], $configuration['ssl']['key'])
-        ->redirect('https://' . $configuration['hostname']);
+        ->use($router)
+        ->use(root(__DIR__ . '/public'))
     ;
+
+    return;
 }
 
-$host
-    //->name($configuration['origins']['server'])
+(new Host())
+    ->name($configuration['hostname'])
     ->expose($configuration['expose']['ip'], $configuration['expose']['port'])
     ->use($router)
     ->use(root(__DIR__ . '/public'))

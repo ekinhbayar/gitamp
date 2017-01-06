@@ -18,12 +18,12 @@ class Handler implements Websocket
     private $connections;
     private $ips;
     private $counter;
-    private $origins;
+    private $origin;
     private $gitamp;
 
-    public function __construct(Counter $counter, array $origins, GitAmp $gitamp)
+    public function __construct(Counter $counter, string $origin, GitAmp $gitamp)
     {
-        $this->origins = $origins;
+        $this->origin = $origin;
         $this->counter = $counter;
         $this->gitamp  = $gitamp;
     }
@@ -43,11 +43,10 @@ class Handler implements Websocket
 
     public function onHandshake(Request $request, Response $response)
     {
-        $origin = $request->getHeader("origin");
-
-        if (!in_array($origin, $this->origins, true)) {
+        if ($request->getHeader("origin") !== $this->origin) {
             $response->setStatus(403);
             $response->end("<h1>origin not allowed</h1>");
+
             return null;
         }
 

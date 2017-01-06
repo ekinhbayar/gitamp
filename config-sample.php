@@ -7,10 +7,6 @@ use ekinhbayar\GitAmp\Github\User;
 
 return [
     'hostname' => 'localhost',
-    'origins' => [
-        'websocket' => 'localhost:1337',
-        'server' => 'localhost',
-    ],
     'redis' => 'tcp://localhost:6379',
     /**
      * Assign the IP and port on which to listen.
