@@ -4,4 +4,5 @@ namespace ekinhbayar\GitAmp\Events;
 
 interface Event
 {
+    public function getAsArray(): array;
 }
