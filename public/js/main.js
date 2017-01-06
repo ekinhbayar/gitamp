@@ -62,7 +62,6 @@ socket.addEventListener("message", function (data) {
 socket.onopen = function(e){
     $('svg').css('background-color', svg_background_color_online);
     $('header').css('background-color', svg_background_color_online);
-    $('.offline-text').css('visibility', 'hidden');
     $('.events-remaining-text').css('visibility', 'visible');
     $('.events-remaining-value').css('visibility', 'visible');
     $('.online-users-div').css('visibility', 'visible');
@@ -71,7 +70,6 @@ socket.onopen = function(e){
 socket.onclose = function(e){
     $('svg').css('background-color', svg_background_color_offline);
     $('header').css('background-color', svg_background_color_offline);
-    $('.offline-text').css('visibility', 'visible');
     $('.events-remaining-text').css('visibility', 'visible');
     $('.events-remaining-value').css('visibility', 'visible');
 };
@@ -79,7 +77,6 @@ socket.onclose = function(e){
 socket.onerror = function(e){
     $('svg').css('background-color', svg_background_color_offline);
     $('header').css('background-color', svg_background_color_offline);
-    $('.offline-text').css('visibility', 'visible');
     $('.events-remaining-text').css('visibility', 'visible');
     $('.events-remaining-value').css('visibility', 'visible');
 };
@@ -180,15 +177,6 @@ $(function(){
   }
 
   Howler.volume(volume);
-
-  // Make $('header') and footer visible
-  $('body').css('visibility', 'visible');
-
-  $('#org-repo-filter-name').on('input', function() {
-    orgRepoFilterNames = $('#org-repo-filter-name').val().split(' ');
-    eventQueue = [];
-  });
-
 });
 
 /**
