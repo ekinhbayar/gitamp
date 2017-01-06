@@ -6,7 +6,6 @@ var width;
 var height;
 var volume = 0.6;
 var orgRepoFilterNames = [];
-var header = $('header');
 
 var scale_factor = 6,
     note_overlap = 2,
@@ -14,8 +13,8 @@ var scale_factor = 6,
     current_notes = 0,
     max_life = 20000;
 
-var svg_background_color_online  = 'black',
-    svg_background_color_offline = 'black',
+var svg_background_color_online  = '#232323',
+    svg_background_color_offline = '#232323',
     svg_text_color               = '#FFFFFF',
     edit_color                   = '#FFFFFF',
     total_sounds = 51;
@@ -62,7 +61,7 @@ socket.addEventListener("message", function (data) {
 
 socket.onopen = function(e){
     $('svg').css('background-color', svg_background_color_online);
-    header.css('background-color', svg_background_color_online);
+    $('header').css('background-color', svg_background_color_online);
     $('.offline-text').css('visibility', 'hidden');
     $('.events-remaining-text').css('visibility', 'visible');
     $('.events-remaining-value').css('visibility', 'visible');
@@ -71,7 +70,7 @@ socket.onopen = function(e){
 
 socket.onclose = function(e){
     $('svg').css('background-color', svg_background_color_offline);
-    header.css('background-color', svg_background_color_offline);
+    $('header').css('background-color', svg_background_color_offline);
     $('.offline-text').css('visibility', 'visible');
     $('.events-remaining-text').css('visibility', 'visible');
     $('.events-remaining-value').css('visibility', 'visible');
@@ -79,7 +78,7 @@ socket.onclose = function(e){
 
 socket.onerror = function(e){
     $('svg').css('background-color', svg_background_color_offline);
-    header.css('background-color', svg_background_color_offline);
+    $('header').css('background-color', svg_background_color_offline);
     $('.offline-text').css('visibility', 'visible');
     $('.events-remaining-text').css('visibility', 'visible');
     $('.events-remaining-value').css('visibility', 'visible');
@@ -98,11 +97,11 @@ function isEventInQueue(event){
 
 $(function(){
   element = document.documentElement;
-  drawingArea = document.getElementsByTagName('#area')[0];
+  drawingArea = document.getElementsByTagName('#area');
   width  = window.innerWidth || element.clientWidth || drawingArea.clientWidth;
-  height = (window.innerHeight - header.height()) || (element.clientHeight - header.height()) || (drawingArea.clientHeight - header.height());
+  height = (window.innerHeight - $('header').height()) || (element.clientHeight - $('header').height()) || (drawingArea.clientHeight - $('header').height());
   $('svg').css('background-color', svg_background_color_online);
-  header.css('background-color', svg_background_color_online);
+  $('header').css('background-color', svg_background_color_online);
   $('svg text').css('color', svg_text_color);
   $('#volumeSlider').slider({
     'max': 100,
@@ -126,7 +125,7 @@ $(function(){
   // For window resizes
   var update_window = function() {
       width  = window.innerWidth || element.clientWidth || drawingArea.clientWidth;
-      height = (window.innerHeight - header.height()) || (element.clientHeight - header.height()) || (drawingArea.clientHeight - header.height());
+      height = (window.innerHeight - $('header').height()) || (element.clientHeight - $('header').height()) || (drawingArea.clientHeight - $('header').height());
       svg.attr("width", width).attr("height", height);
   };
   window.onresize = update_window;
@@ -182,7 +181,7 @@ $(function(){
 
   Howler.volume(volume);
 
-  // Make header and footer visible
+  // Make $('header') and footer visible
   $('body').css('visibility', 'visible');
 
   $('#org-repo-filter-name').on('input', function() {
