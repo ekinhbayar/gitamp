@@ -58,13 +58,11 @@ if (isset($configuration['ssl'])) {
         ->use($router)
         ->use(root(__DIR__ . '/public'))
     ;
-
-    return;
+} else {
+    (new Host())
+        ->name($configuration['hostname'])
+        ->expose($configuration['expose']['ip'], $configuration['expose']['port'])
+        ->use($router)
+        ->use(root(__DIR__ . '/public'))
+    ;
 }
-
-(new Host())
-    ->name($configuration['hostname'])
-    ->expose($configuration['expose']['ip'], $configuration['expose']['port'])
-    ->use($router)
-    ->use(root(__DIR__ . '/public'))
-;
