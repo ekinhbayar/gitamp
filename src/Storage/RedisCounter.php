@@ -1,4 +1,4 @@
-<?php declare(strict_types=1);
+<?php declare(strict_types = 1);
 
 namespace ekinhbayar\GitAmp\Storage;
 
@@ -26,7 +26,7 @@ SCRIPT;
     }
 
     public function increment(string $key): Promise {
-        return resolve(function () use ($key) {
+        return resolve(function() use ($key) {
             try {
                 return yield $this->redis->incr($key);
             } catch (RedisException $e) {
@@ -36,7 +36,7 @@ SCRIPT;
     }
 
     public function decrement(string $key): Promise {
-        return resolve(function () use ($key) {
+        return resolve(function() use ($key) {
             try {
                 return yield $this->redis->eval(self::SCRIPT_DECREMENT, [$key], []);
             } catch (RedisException $e) {
@@ -46,7 +46,7 @@ SCRIPT;
     }
 
     public function get(string $key): Promise {
-        return resolve(function () use ($key) {
+        return resolve(function() use ($key) {
             try {
                 $result = yield $this->redis->get($key);
 
@@ -58,7 +58,7 @@ SCRIPT;
     }
 
     public function set(string $key, int $val): Promise {
-        return resolve(function () use ($key, $val) {
+        return resolve(function() use ($key, $val) {
             try {
                 return yield $this->redis->set($key, $val);
             } catch (RedisException $e) {
