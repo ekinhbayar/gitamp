@@ -3,6 +3,7 @@
 namespace ekinhbayar\GitAmpTests\Client;
 
 use Amp\Artax\Client;
+use Amp\Promise;
 use ekinhbayar\GitAmp\Client\GitAmp;
 use ekinhbayar\GitAmp\Events\Factory;
 use PHPUnit\Framework\TestCase;
@@ -21,24 +22,17 @@ class RequestTest extends TestCase
         $this->gitamp = null;
     }
 
-    public function testAuthHeader()
-    {
-        $header = yield $this->gitamp->getAuthHeader();
-
-        $this->assertSame('Basic token', $header);
-    }
-
     public function testRequestReturnsPromise()
     {
-        $promise = yield $this->gitamp->request();
+        $promise = $this->gitamp->request();
 
-        $this->assertSame('Promise', get_class($promise));
+        $this->assertInstanceOf(Promise::class, $promise);
     }
 
     public function testListenReturnsPromise()
     {
-        $promise = yield $this->gitamp->listen();
+        $promise = $this->gitamp->listen();
 
-        $this->assertSame('Promise', get_class($promise));
+        $this->assertInstanceOf(Promise::class, $promise);
     }
 }
