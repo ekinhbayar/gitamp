@@ -240,17 +240,6 @@ function playFromQueueExchange1(){
   $('.events-remaining-value').html(eventQueue.length);
 }
 
-// This method capitalizes the string in place
-String.prototype.capitalize = function(all){
-    if(all){
-      return this.split(' ').map(function(e){
-        return e.capitalize().join(' ');
-      });
-    }else{
-         return this.charAt(0).toUpperCase() + this.slice(1);
-    }
-};
-
 function drawEvent(data, svg_area) {
     var starting_opacity = 1;
     var opacity = 1 / (100 / data.message.length);
@@ -264,35 +253,35 @@ function drawEvent(data, svg_area) {
 
     switch(data.type){
       case "PushEvent":
-        label_text = data.actorName.capitalize() + " pushed to " + data.repoName;
+        label_text = data.actorName + " pushed to " + data.repoName;
         edit_color = '#22B65D';
       break;
       case "PullRequestEvent":
-        label_text = data.actorName.capitalize() + " " +
+        label_text = data.actorName + " " +
           data.action + " " + " a PR for " + data.repoName;
           edit_color = '#8F19BB';
           ring_anim_duration = 10000;
           ring_radius = 600;
       break;
       case "IssuesEvent":
-        label_text = data.actorName.capitalize() + " " +
+        label_text = data.actorName + " " +
           data.action + " an issue in " + data.repoName;
           edit_color = '#ADD913';
       break;
       case "IssueCommentEvent":
-        label_text = data.actorName.capitalize() + " commented in " + data.repoName;
+        label_text = data.actorName + " commented in " + data.repoName;
         edit_color = '#FF4901';
       break;
       case "ForkEvent":
-        label_text = data.actorName.capitalize() + " forked " + data.repoName;
+        label_text = data.actorName + " forked " + data.repoName;
         edit_color = '#0184FF';
         break;
       case "CreateEvent":
-        label_text = data.actorName.capitalize() + " created " + data.repoName;
+        label_text = data.actorName + " created " + data.repoName;
         edit_color = '#00C0C0';
       break;
       case "WatchEvent":
-        label_text = data.actorName.capitalize() + " watched " + data.repoName;
+        label_text = data.actorName + " watched " + data.repoName;
         edit_color = '#E60062';
       break;
     }
