@@ -1,9 +1,10 @@
-<?php declare(strict_types=1);
+<?php declare(strict_types = 1);
 
 namespace ekinhbayar\GitAmpTests\Client;
 
 use Amp\Artax\Client;
 use Amp\Promise;
+use ekinhbayar\GitAmp\Github\Token;
 use ekinhbayar\GitAmp\Client\GitAmp;
 use ekinhbayar\GitAmp\Events\Factory;
 use PHPUnit\Framework\TestCase;
@@ -14,7 +15,7 @@ class RequestTest extends TestCase
 
     public function setUp()
     {
-        $this->gitamp = new GitAmp(new Client, new \ekinhbayar\GitAmp\Github\Token('token'), new Factory());
+        $this->gitamp = new GitAmp(new Client, new Token('token'), new Factory());
     }
 
     public function tearDown()

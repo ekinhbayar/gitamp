@@ -1,8 +1,6 @@
-<?php declare(strict_types=1);
-
+<?php declare(strict_types = 1);
 
 namespace ekinhbayar\GitAmpTests\Storage;
-
 
 use Amp\Promise;
 use Amp\Redis\Client;
@@ -33,18 +31,14 @@ class RedisCounterTest extends TestCase
     public function testIncrement()
     {
         $this->assertEquals(0, wait($this->redis->get('test')));
-
         $this->redis->increment('test');
-
         $this->assertEquals(1, wait($this->redis->get('test')));
     }
 
     public function testDecrement()
     {
         $this->assertEquals(1, wait($this->redis->get('test')));
-
         $this->redis->decrement('test');
-
         $this->assertEquals(0, wait($this->redis->get('test')));
     }
 }
