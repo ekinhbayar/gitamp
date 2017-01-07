@@ -4,8 +4,11 @@
 namespace ekinhbayar\GitAmpTests\Storage;
 
 
+use Amp\Promise;
 use Amp\Redis\Client;
+use ekinhbayar\GitAmp\Storage\RedisCounter;
 use PHPUnit\Framework\TestCase;
+use function Amp\wait;
 
 class RedisCounterTest extends TestCase
 {
@@ -13,7 +16,7 @@ class RedisCounterTest extends TestCase
 
     public function setUp()
     {
-        $this->redis = new Client('tcp://localhost:6379');
+        $this->redis = new RedisCounter(new Client('tcp://localhost:6379'));
     }
 
     public function tearDown()
@@ -21,21 +24,27 @@ class RedisCounterTest extends TestCase
         $this->redis = null;
     }
 
+    public function testSet()
+    {
+        $this->assertInstanceOf(Promise::class, $this->redis->set('test', 0));
+        $this->assertEquals(0, wait($this->redis->get('test')));
+    }
+
     public function testIncrement()
     {
-        yield $this->redis->set('test', 0);
-        yield $this->redis->increment('test');
-        $count = yield $this->redis->get('test');
+        $this->assertEquals(0, wait($this->redis->get('test')));
 
-        $this->assertEquals(1, $count);
+        $this->redis->increment('test');
+
+        $this->assertEquals(1, wait($this->redis->get('test')));
     }
 
     public function testDecrement()
     {
-        yield $this->redis->set('test', 3);
-        yield $this->redis->decrement('test');
-        $count = yield $this->redis->get('test');
+        $this->assertEquals(1, wait($this->redis->get('test')));
 
-        $this->assertEquals(2, $count);
+        $this->redis->decrement('test');
+
+        $this->assertEquals(0, wait($this->redis->get('test')));
     }
 }
