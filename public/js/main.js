@@ -464,12 +464,16 @@ const GitAmp = (function(exports, $) {
             protocol = 'wss://';
         }
 
-        this.connection = new WebSocket(protocol + exports.location.host + '/ws');
+        try {
+            this.connection = new WebSocket(protocol + exports.location.host + '/ws');
 
-        this.connection.addEventListener('message', this.handleMessage.bind(this));
-        this.connection.addEventListener('open', this.handleOpen.bind(this));
-        this.connection.addEventListener('close', this.handleClose.bind(this));
-        this.connection.addEventListener('error', this.handleError.bind(this));
+            this.connection.addEventListener('message', this.handleMessage.bind(this));
+            this.connection.addEventListener('open', this.handleOpen.bind(this));
+            this.connection.addEventListener('close', this.reconnect.bind(this));
+            this.connection.addEventListener('error', this.reconnect.bind(this));
+        } catch(e) {
+            this.connection = null;
+        }
     };
 
     Connection.prototype.registerHandler = function(handler) {
@@ -492,20 +496,13 @@ const GitAmp = (function(exports, $) {
         }
     };
 
-    Connection.prototype.handleClose = function() {
-        this.connection = null;
-    };
+    Connection.prototype.reconnect = function() {
+        // prevent piling up reconnect
+        if (this.connection.readyState === 0 || this.connection.readyState === 1) {
+            return;
+        }
 
-    Connection.prototype.handleError = function() {
-        this.handleClose();
-
-        const reTryInterval = setInterval(function() {
-            if (this.connection !== null) {
-                clearInterval(reTryInterval);
-
-                return;
-            }
-
+        setTimeout(function() {
             this.start();
         }.bind(this), 5000);
     };
@@ -541,11 +538,15 @@ const GitAmp = (function(exports, $) {
 
     Application.prototype.loop = function() {
         setTimeout(function() {
+            this.loop();
+
+            if (!this.queue.count()) {
+                return;
+            }
+
             this.processEvent(this.queue.get());
 
             document.getElementsByClassName('events-remaining-value')[0].textContent = this.queue.count();
-
-            this.loop();
         }.bind(this), Math.floor(Math.random() * 1000) + 500);
     };
 
