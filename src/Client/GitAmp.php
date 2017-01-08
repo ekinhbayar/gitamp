@@ -11,25 +11,14 @@ use ekinhbayar\GitAmp\Events\Factory;
 use ekinhbayar\GitAmp\Github\Credentials;
 use ekinhbayar\GitAmp\Response\Results;
 
-/**
- * Class GitAmp
- * @package ekinhbayar\GitAmp\Client
- */
 class GitAmp
 {
     const API_ENDPOINT = 'https://api.github.com/events';
 
-    /**
-     * @var Client
-     */
     private $client;
     private $credentials;
     private $eventFactory;
 
-    /**
-     * GitAmp constructor.
-     * @param Client $client
-     */
     public function __construct(Client $client, Credentials $credentials, Factory $eventFactory)
     {
         $this->client       = $client;
@@ -37,10 +26,6 @@ class GitAmp
         $this->eventFactory = $eventFactory;
     }
 
-    /**
-     * @return Promise
-     * @throws RequestFailedException
-     */
     public function request(): Promise
     {
         try {
