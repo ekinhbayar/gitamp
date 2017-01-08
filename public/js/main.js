@@ -461,9 +461,6 @@ const GitAmp = (function(exports, $) {
     };
 
     Connection.prototype.handleOpen = function() {
-        //document.getElementsByTagName('svg')[0].style.backgroundColor = svg_background_color_online;
-        //document.getElementsByTagName('header')[0].style.backgroundColor = svg_background_color_online;
-
         const elements = document.querySelectorAll('.events-remaining-text, .events-remaining-value, .online-users-div');
 
         for (let i = 0; i < elements.length; i++) {
@@ -472,9 +469,6 @@ const GitAmp = (function(exports, $) {
     };
 
     Connection.prototype.handleClose = function() {
-        //document.getElementsByTagName('svg')[0].style.backgroundColor = svg_background_color_offline;
-        //document.getElementsByTagName('header')[0].style.backgroundColor = svg_background_color_offline;
-
         this.connection = null;
     };
 
