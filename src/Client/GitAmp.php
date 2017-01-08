@@ -41,11 +41,11 @@ class GitAmp
             $promise = $this->client->request($request);
 
             $promise->when(function($error, $result) {
-                if($result->getStatus() !== 200) {
+                if ($result->getStatus() !== 200) {
                     throw new RequestFailedException(
                         'A non-200 response status ('
                         . $result->getStatus() . ' - '
-                        . $result->getReason() .') was encountered'
+                        . $result->getReason() . ') was encountered'
                     );
                 }
             });

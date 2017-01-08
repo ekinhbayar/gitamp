@@ -8,16 +8,6 @@ use Amp\Redis\RedisException;
 use function Amp\resolve;
 
 class RedisCounter implements Counter {
-    const SCRIPT_DECREMENT = <<<SCRIPT
-local count = redis.call('decr', KEYS[1])
-
-if count == 0 then
-    redis.call('del', KEYS[1])
-    return 0
-else
-    return count
-end
-SCRIPT;
 
     private $redis;
 
@@ -38,7 +28,7 @@ SCRIPT;
     public function decrement(string $key): Promise {
         return resolve(function() use ($key) {
             try {
-                return yield $this->redis->eval(self::SCRIPT_DECREMENT, [$key], []);
+                return yield $this->redis->decr($key);
             } catch (RedisException $e) {
                 throw new StorageFailedException('Failed to decrement counter.', 0, $e);
             }
@@ -67,3 +57,4 @@ SCRIPT;
         });
     }
 }
+

@@ -25,11 +25,15 @@ $injector->share($configuration['github']);
 if (isset($configuration['ssl'])) {
     $origin = 'https://' . $configuration['hostname'];
 
-    if ($configuration['ssl']['port'] !== 443) $origin .= ':' . $configuration['ssl']['port'];
+    if ($configuration['ssl']['port'] !== 443) {
+        $origin .= ':' . $configuration['ssl']['port'];
+    }
 } else {
     $origin = 'http://' . $configuration['hostname'];
 
-    if ($configuration['expose']['port'] !== 80) $origin .= ':' . $configuration['expose']['port'];
+    if ($configuration['expose']['port'] !== 80) {
+        $origin .= ':' . $configuration['expose']['port'];
+    }
 }
 
 $injector->define(Handler::class, [

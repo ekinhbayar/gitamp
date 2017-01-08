@@ -28,7 +28,7 @@ return [
         'certificate' => '/path/to/certificate.pem',
         'key' => '/path/to/key.pem',
     ],
-    */
+     */
     /**
      * Either use a token or a username + password login.
      * Note for 2fa users, you can only use tokens.
