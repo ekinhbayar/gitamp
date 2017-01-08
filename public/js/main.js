@@ -335,7 +335,7 @@ const GitAmp = (function(exports, $) {
         };
 
         Gui.prototype.getHeight = function() {
-            return exports.innerHeight - $('header').height();
+            return exports.innerHeight;
         };
 
         Gui.prototype.resize = function() {
