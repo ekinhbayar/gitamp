@@ -21,7 +21,8 @@ const GitAmp = (function(exports, $) {
             this.sounds = {
                 celesta: this.initializeCelesta(),
                 clav: this.initializeClav(),
-                swells: this.initializeSwells()
+                swells: this.initializeSwells(),
+                easterEggs: this.initializeEasterEggs()
             };
 
             //noinspection JSUnresolvedVariable
@@ -86,6 +87,26 @@ const GitAmp = (function(exports, $) {
             return sounds;
         };
 
+        AudioPlayer.prototype.initializeEasterEggs = function() {
+            const sounds = {};
+
+            const eggs = ['celesta', 'clav', 'swell'];
+
+            for (let i = 0; i < eggs.length; i++) {
+                //noinspection JSUnresolvedFunction
+                sounds[eggs[i]] = new Howl({
+                    src : [
+                        '/sounds/egg/' + eggs[i] + '.ogg',
+                        '/sounds/egg/' + eggs[i] + '.mp3'
+                    ],
+                    volume : 0.7,
+                    buffer: true
+                });
+            }
+
+            return sounds;
+        };
+
         AudioPlayer.prototype.getSoundIndex = function(size, type) {
             const pitch = 100 - Math.min(maxPitch, Math.log(size + logUsed) / Math.log(logUsed));
             let index   = Math.floor(pitch / 100.0 * this.sounds[type].length);
@@ -121,6 +142,21 @@ const GitAmp = (function(exports, $) {
 
         AudioPlayer.prototype.playSwell = function() {
             this.playSound(this.sounds.swells[Math.round(Math.random() * (this.sounds.swells.length - 1))]);
+        };
+
+        AudioPlayer.prototype.playCelestaEgg = function() {
+            //noinspection JSUnresolvedVariable
+            this.playSound(this.sounds.easterEggs.celesta);
+        };
+
+        AudioPlayer.prototype.playClavEgg = function() {
+            //noinspection JSUnresolvedVariable
+            this.playSound(this.sounds.easterEggs.clav);
+        };
+
+        AudioPlayer.prototype.playSwellEgg = function() {
+            //noinspection JSUnresolvedVariable
+            this.playSound(this.sounds.easterEggs.swell);
         };
 
         return AudioPlayer;
@@ -553,6 +589,16 @@ const GitAmp = (function(exports, $) {
     Application.prototype.processEvent = function(event) {
         if (!event.getMessage()) {
             return;
+        }
+
+        if (event.getRepositoryName() === 'ekinhbayar/gitamp') {
+            if (event.getType() === 'IssuesEvent' || event.getType() === 'IssueCommentEvent') {
+                this.audio.playClavEgg();
+            } else if(event.getType() === 'PushEvent') {
+                this.audio.playCelestaEgg();
+            }else{
+                this.audio.playSwellEgg();
+            }
         }
 
         if (event.getType() === 'IssuesEvent' || event.getType() === 'IssueCommentEvent') {
