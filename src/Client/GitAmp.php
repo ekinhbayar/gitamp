@@ -8,7 +8,6 @@ use Amp\Artax\ClientException;
 use Amp\Artax\Request;
 use Amp\Success;
 use ekinhbayar\GitAmp\Events\Factory;
-use ekinhbayar\GitAmp\Events\GithubEventType;
 use ekinhbayar\GitAmp\Github\Credentials;
 use ekinhbayar\GitAmp\Response\Results;
 
