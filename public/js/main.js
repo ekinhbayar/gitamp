@@ -5,6 +5,10 @@ const GitAmp = (function(exports, $) {
      * AudioPlayer
      */
     const AudioPlayer = (function() {
+        // something somewhere needs a global volume variable
+        // not sure what thing it is, but adding this line works
+        exports.volume = 0.6;
+
         const maxPitch = 100.0;
         const logUsed  = 1.0715307808111486871978099;
 
@@ -21,7 +25,7 @@ const GitAmp = (function(exports, $) {
             };
 
             //noinspection JSUnresolvedVariable
-            exports.Howler.volume(volume);
+            exports.Howler.volume(0.7);
         }
 
         AudioPlayer.prototype.initializeCelesta = function() {
@@ -126,8 +130,18 @@ const GitAmp = (function(exports, $) {
      * Gui
      */
     const Gui = (function() {
+        const scaleFactor = 6;
+        const textColor   = '#ffffff';
+        const maxLife     = 20000;
+
         function Gui() {
+            //noinspection JSUnresolvedVariable
+            this.svg = exports.d3.select('#area').append('svg');
+
+            exports.addEventListener('resize', this.resize.bind(this));
+
             this.setupVolumeSlider();
+            this.resize();
         }
 
         Gui.prototype.setupVolumeSlider = function() {
@@ -145,6 +159,139 @@ const GitAmp = (function(exports, $) {
                     exports.Howler.volume(ui.value/100.0);
                 }
             });
+        };
+
+        Gui.prototype.getWidth = function() {
+            return exports.innerWidth;
+        };
+
+        Gui.prototype.getHeight = function() {
+            return exports.innerHeight - $('header').height();
+        };
+
+        Gui.prototype.resize = function() {
+            this.svg.attr('width', this.getWidth());
+            this.svg.attr('height', this.getHeight());
+        };
+
+        Gui.prototype.drawEvent = function(event) {
+            let opacity = 1 / (100 / event.getMessage().length);
+
+            if (opacity > 0.5) {
+                opacity = 0.5;
+            }
+
+            let size = event.getMessage().length;
+            let label_text;
+            let ring_radius = 80;
+            let ring_anim_duration = 3000;
+
+            let edit_color = '#FFFFFF';
+
+            switch(event.getType()){
+                case "PushEvent":
+                    label_text = event.getActorName() + " pushed to " + event.getRepositoryName();
+                    edit_color = '#22B65D';
+                    break;
+                case "PullRequestEvent":
+                    label_text = event.getActorName() + " " +
+                        event.getAction() + " " + " a PR for " + event.getRepositoryName();
+                    edit_color = '#8F19BB';
+                    ring_anim_duration = 10000;
+                    ring_radius = 600;
+                    break;
+                case "IssuesEvent":
+                    label_text = event.getActorName() + " " +
+                        event.getAction() + " an issue in " + event.getRepositoryName();
+                    edit_color = '#ADD913';
+                    break;
+                case "IssueCommentEvent":
+                    label_text = event.getActorName() + " commented in " + event.getRepositoryName();
+                    edit_color = '#FF4901';
+                    break;
+                case "ForkEvent":
+                    label_text = event.getActorName() + " forked " + event.getRepositoryName();
+                    edit_color = '#0184FF';
+                    break;
+                case "CreateEvent":
+                    label_text = event.getActorName() + " created " + event.getRepositoryName();
+                    edit_color = '#00C0C0';
+                    break;
+                case "WatchEvent":
+                    label_text = event.getActorName() + " watched " + event.getRepositoryName();
+                    edit_color = '#E60062';
+                    break;
+            }
+
+            let no_label = false;
+
+            size = Math.max(Math.sqrt(Math.abs(size)) * scaleFactor, 3);
+
+            //noinspection JSUnresolvedFunction
+            Math.seedrandom(event.getMessage());
+            let x = Math.random() * (this.getWidth() - size) + size;
+            let y = Math.random() * (this.getHeight() - size) + size;
+
+            let circle_group = this.svg.append('g')
+                .attr('transform', 'translate(' + x + ', ' + y + ')')
+                .attr('fill', edit_color)
+                .style('opacity', 1);
+
+            let ring = circle_group.append('circle');
+            ring.attr({r: size, stroke: 'none'});
+            ring.transition()
+                .attr('r', size + ring_radius)
+                .style('opacity', 0)
+                .ease(Math.sqrt)
+                .duration(ring_anim_duration)
+                .remove();
+
+            let circle_container = circle_group.append('a');
+            circle_container.attr('xlink:href', event.getUrl());
+            circle_container.attr('target', '_blank');
+            circle_container.attr('fill', textColor);
+
+            let circle = circle_container.append('circle');
+            circle.classed(event.getType(), true);
+            circle.attr('r', size)
+                .attr('fill', edit_color)
+                .transition()
+                .duration(maxLife)
+                .style('opacity', 0)
+                .remove();
+
+            circle_container.on('mouseover', function() {
+                circle_container.append('text')
+                    .text(label_text)
+                    .classed('label', true)
+                    .attr('text-anchor', 'middle')
+                    .attr('font-size', '0.8em')
+                    .transition()
+                    .delay(1000)
+                    .style('opacity', 0)
+                    .duration(2000)
+                    .each(function() { no_label = true; })
+                    .remove();
+            });
+
+            let text = circle_container.append('text')
+                .text(label_text)
+                .classed('article-label', true)
+                .attr('text-anchor', 'middle')
+                .attr('font-size', '0.8em')
+                .transition()
+                .delay(2000)
+                .style('opacity', 0)
+                .duration(5000)
+                .each(function() { no_label = true; })
+                .remove();
+
+            // Remove HTML of decayed events
+            // Keep it less than 50
+            let $area = $('#area');
+            if($area.find('svg g').length > 50){
+                $area.find('svg g:lt(10)').remove();
+            }
         };
 
         return Gui;
@@ -314,8 +461,8 @@ const GitAmp = (function(exports, $) {
     };
 
     Connection.prototype.handleOpen = function() {
-        document.getElementsByTagName('svg')[0].style.backgroundColor = svg_background_color_online;
-        document.getElementsByTagName('header')[0].style.backgroundColor = svg_background_color_online;
+        //document.getElementsByTagName('svg')[0].style.backgroundColor = svg_background_color_online;
+        //document.getElementsByTagName('header')[0].style.backgroundColor = svg_background_color_online;
 
         const elements = document.querySelectorAll('.events-remaining-text, .events-remaining-value, .online-users-div');
 
@@ -325,8 +472,8 @@ const GitAmp = (function(exports, $) {
     };
 
     Connection.prototype.handleClose = function() {
-        document.getElementsByTagName('svg')[0].style.backgroundColor = svg_background_color_offline;
-        document.getElementsByTagName('header')[0].style.backgroundColor = svg_background_color_offline;
+        //document.getElementsByTagName('svg')[0].style.backgroundColor = svg_background_color_offline;
+        //document.getElementsByTagName('header')[0].style.backgroundColor = svg_background_color_offline;
 
         this.connection = null;
     };
@@ -397,169 +544,12 @@ const GitAmp = (function(exports, $) {
             this.audio.playSwell();
         }
 
-        drawEvent(event, svg);
+        this.gui.drawEvent(event);
     };
 
     return Application;
 }(window, jQuery));
 
-var svg = d3.select("#area").append("svg");
-
 $(function() {
     new GitAmp().run();
 });
-
-var element;
-var drawingArea;
-var width;
-var height;
-var volume = 0.6;
-
-var scale_factor = 6,
-    max_life = 20000;
-
-var svg_background_color_online  = '#232323',
-    svg_background_color_offline = '#232323',
-    svg_text_color               = '#FFFFFF',
-    edit_color                   = '#FFFFFF';
-
-$(function(){
-  element = document.documentElement;
-  drawingArea = document.getElementsByTagName('#area');
-  width  = window.innerWidth || element.clientWidth || drawingArea.clientWidth;
-  height = (window.innerHeight - $('header').height()) || (element.clientHeight - $('header').height()) || (drawingArea.clientHeight - $('header').height());
-  $('svg').css('background-color', svg_background_color_online);
-  $('header').css('background-color', svg_background_color_online);
-  $('svg text').css('color', svg_text_color);
-
-  // Main drawing area
-  //svg = d3.select("#area").append("svg");
-  svg.attr({width: width, height: height});
-  svg.style('background-color', svg_background_color_online);
-
-  // For window resizes
-  var update_window = function() {
-      width  = window.innerWidth || element.clientWidth || drawingArea.clientWidth;
-      height = (window.innerHeight - $('header').height()) || (element.clientHeight - $('header').height()) || (drawingArea.clientHeight - $('header').height());
-      svg.attr("width", width).attr("height", height);
-  };
-  window.onresize = update_window;
-  update_window();
-});
-
-function drawEvent(event, svg_area) {
-    var starting_opacity = 1;
-    var opacity = 1 / (100 / event.getMessage().length);
-    if (opacity > 0.5) opacity = 0.5;
-
-    var size = event.getMessage().length;
-    var label_text;
-    var ring_radius = 80;
-    var ring_anim_duration = 3000;
-    svg_text_color = '#FFFFFF';
-
-    switch(event.getType()){
-        case "PushEvent":
-            label_text = event.getActorName() + " pushed to " + event.getRepositoryName();
-            edit_color = '#22B65D';
-            break;
-        case "PullRequestEvent":
-            label_text = event.getActorName() + " " +
-                event.getAction() + " " + " a PR for " + event.getRepositoryName();
-            edit_color = '#8F19BB';
-            ring_anim_duration = 10000;
-            ring_radius = 600;
-            break;
-        case "IssuesEvent":
-            label_text = event.getActorName() + " " +
-                event.getAction() + " an issue in " + event.getRepositoryName();
-            edit_color = '#ADD913';
-            break;
-        case "IssueCommentEvent":
-            label_text = event.getActorName() + " commented in " + event.getRepositoryName();
-            edit_color = '#FF4901';
-            break;
-        case "ForkEvent":
-            label_text = event.getActorName() + " forked " + event.getRepositoryName();
-            edit_color = '#0184FF';
-            break;
-        case "CreateEvent":
-            label_text = event.getActorName() + " created " + event.getRepositoryName();
-            edit_color = '#00C0C0';
-            break;
-        case "WatchEvent":
-            label_text = event.getActorName() + " watched " + event.getRepositoryName();
-            edit_color = '#E60062';
-            break;
-    }
-
-    var no_label = false;
-    var type = event.getType();
-
-    var abs_size = Math.abs(size);
-    size = Math.max(Math.sqrt(abs_size) * scale_factor, 3);
-
-    Math.seedrandom(event.getMessage());
-    var x = Math.random() * (width - size) + size;
-    var y = Math.random() * (height - size) + size;
-
-    var circle_group = svg_area.append('g')
-        .attr('transform', 'translate(' + x + ', ' + y + ')')
-        .attr('fill', edit_color)
-        .style('opacity', starting_opacity);
-
-    var ring = circle_group.append('circle');
-    ring.attr({r: size, stroke: 'none'});
-    ring.transition()
-        .attr('r', size + ring_radius)
-        .style('opacity', 0)
-        .ease(Math.sqrt)
-        .duration(ring_anim_duration)
-        .remove();
-
-    var circle_container = circle_group.append('a');
-    circle_container.attr('xlink:href', event.getUrl());
-    circle_container.attr('target', '_blank');
-    circle_container.attr('fill', svg_text_color);
-
-    var circle = circle_container.append('circle');
-    circle.classed(type, true);
-    circle.attr('r', size)
-        .attr('fill', edit_color)
-        .transition()
-        .duration(max_life)
-        .style('opacity', 0)
-        .remove();
-
-    circle_container.on('mouseover', function() {
-        circle_container.append('text')
-            .text(label_text)
-            .classed('label', true)
-            .attr('text-anchor', 'middle')
-            .attr('font-size', '0.8em')
-            .transition()
-            .delay(1000)
-            .style('opacity', 0)
-            .duration(2000)
-            .each(function() { no_label = true; })
-            .remove();
-    });
-
-    var text = circle_container.append('text')
-        .text(label_text)
-        .classed('article-label', true)
-        .attr('text-anchor', 'middle')
-        .attr('font-size', '0.8em')
-        .transition()
-        .delay(2000)
-        .style('opacity', 0)
-        .duration(5000)
-        .each(function() { no_label = true; })
-        .remove();
-
-    // Remove HTML of decayed events
-    // Keep it less than 50
-    if($('#area svg g').length > 50){
-        $('#area svg g:lt(10)').remove();
-    }
-}
