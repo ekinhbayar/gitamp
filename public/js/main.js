@@ -7,7 +7,7 @@ const GitAmp = (function(exports, $) {
     const AudioPlayer = (function() {
         // something somewhere needs a global volume variable
         // not sure what thing it is, but adding this line works
-        exports.volume = 0.6;
+        exports.volume = localStorage.getItem('volume');
 
         const maxPitch = 100.0;
         const logUsed  = 1.0715307808111486871978099;
@@ -26,7 +26,7 @@ const GitAmp = (function(exports, $) {
             };
 
             //noinspection JSUnresolvedVariable
-            exports.Howler.volume(0.7);
+            exports.Howler.volume(localStorage.getItem('volume'));
         }
 
         AudioPlayer.prototype.initializeCelesta = function() {
@@ -314,14 +314,18 @@ const GitAmp = (function(exports, $) {
             $('#volumeSlider').slider({
                 max: 100,
                 min: 0,
-                value: volume * 100,
+                value: localStorage.getItem('volume') * 100,
                 slide: function (event, ui) {
                     //noinspection JSUnresolvedVariable
                     exports.Howler.volume(ui.value/100.0);
+
+                    localStorage.setItem('volume', ui.value/100.0);
                 },
                 change: function (event, ui) {
                     //noinspection JSUnresolvedVariable
                     exports.Howler.volume(ui.value/100.0);
+
+                    localStorage.setItem('volume', ui.value/100.0);
                 }
             });
         };
@@ -547,6 +551,10 @@ const GitAmp = (function(exports, $) {
      * Application
      */
     function Application() {
+        if (localStorage.getItem('volume') === null) {
+            localStorage.setItem('volume', 0.6);
+        }
+
         this.queue = new EventQueue();
         this.audio = new AudioPlayer();
         this.gui   = new Gui();
