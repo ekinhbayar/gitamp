@@ -134,6 +134,135 @@ const GitAmp = (function(exports, $) {
         const textColor   = '#ffffff';
         const maxLife     = 20000;
 
+        function Event(event, svg) {
+            this.event = event;
+            this.svg   = svg;
+        }
+
+        Event.prototype.getSize = function() {
+            return Math.max(Math.sqrt(Math.abs(this.event.getMessage().length)) * scaleFactor, 3);
+        };
+
+        Event.prototype.getText = function() {
+            switch(this.event.getType()){
+                case 'PushEvent':
+                    return this.event.getActorName() + ' pushed to ' + this.event.getRepositoryName();
+                case 'PullRequestEvent':
+                    return this.event.getActorName() + ' ' + this.event.getAction() + ' ' + ' a PR for ' + this.event.getRepositoryName();
+                case 'IssuesEvent':
+                    return this.event.getActorName() + ' ' + this.event.getAction() + ' an issue in ' + this.event.getRepositoryName();
+                case 'IssueCommentEvent':
+                    return this.event.getActorName() + ' commented in ' + this.event.getRepositoryName();
+                case 'ForkEvent':
+                    return this.event.getActorName() + ' forked ' + this.event.getRepositoryName();
+                case 'CreateEvent':
+                    return this.event.getActorName() + ' created ' + this.event.getRepositoryName();
+                case 'WatchEvent':
+                    return this.event.getActorName() + ' watched ' + this.event.getRepositoryName();
+            }
+        };
+
+        Event.prototype.getBackgroundColor = function() {
+            switch(this.event.getType()){
+                case 'PushEvent':
+                    return '#22B65D';
+                case 'PullRequestEvent':
+                    return '#8F19BB';
+                case 'IssuesEvent':
+                    return '#ADD913';
+                case 'IssueCommentEvent':
+                    return '#FF4901';
+                case 'ForkEvent':
+                    return '#0184FF';
+                case 'CreateEvent':
+                    return '#00C0C0';
+                case 'WatchEvent':
+                    return '#E60062';
+            }
+        };
+
+        Event.prototype.getRingAnimationDuration = function() {
+            if (this.event.getType() === 'PullRequestEvent') {
+                return 10000;
+            }
+
+            return 3000;
+        };
+
+        Event.prototype.getRingRadius = function() {
+            if (this.event.getType() === 'PullRequestEvent') {
+                return 600;
+            }
+
+            return 80;
+        };
+
+        Event.prototype.draw = function(width, height) {
+            let no_label = false;
+            let size     = this.getSize();
+
+            const self = this;
+
+            //noinspection JSUnresolvedFunction
+            Math.seedrandom(this.event.getMessage());
+            let x = Math.random() * (width - size) + size;
+            let y = Math.random() * (height - size) + size;
+
+            let circle_group = this.svg.append('g')
+                .attr('transform', 'translate(' + x + ', ' + y + ')')
+                .attr('fill', this.getBackgroundColor())
+                .style('opacity', 1);
+
+            let ring = circle_group.append('circle');
+            ring.attr({r: size, stroke: 'none'});
+            ring.transition()
+                .attr('r', size + this.getRingRadius())
+                .style('opacity', 0)
+                .ease(Math.sqrt)
+                .duration(this.getRingAnimationDuration())
+                .remove();
+
+            let circle_container = circle_group.append('a');
+            circle_container.attr('xlink:href', this.event.getUrl());
+            circle_container.attr('target', '_blank');
+            circle_container.attr('fill', textColor);
+
+            let circle = circle_container.append('circle');
+            circle.classed(this.event.getType(), true);
+            circle.attr('r', size)
+                .attr('fill', this.getBackgroundColor())
+                .transition()
+                .duration(maxLife)
+                .style('opacity', 0)
+                .remove();
+
+            circle_container.on('mouseover', function() {
+                circle_container.append('text')
+                    .text(self.getText())
+                    .classed('label', true)
+                    .attr('text-anchor', 'middle')
+                    .attr('font-size', '0.8em')
+                    .transition()
+                    .delay(1000)
+                    .style('opacity', 0)
+                    .duration(2000)
+                    .each(function() { no_label = true; })
+                    .remove();
+            });
+
+            circle_container.append('text')
+                .text(this.getText())
+                .classed('article-label', true)
+                .attr('text-anchor', 'middle')
+                .attr('font-size', '0.8em')
+                .transition()
+                .delay(2000)
+                .style('opacity', 0)
+                .duration(5000)
+                .each(function() { no_label = true; })
+                .remove();
+        };
+
         function Gui() {
             //noinspection JSUnresolvedVariable
             this.svg = exports.d3.select('#area').append('svg');
@@ -175,116 +304,7 @@ const GitAmp = (function(exports, $) {
         };
 
         Gui.prototype.drawEvent = function(event) {
-            let opacity = 1 / (100 / event.getMessage().length);
-
-            if (opacity > 0.5) {
-                opacity = 0.5;
-            }
-
-            let size = event.getMessage().length;
-            let label_text;
-            let ring_radius = 80;
-            let ring_anim_duration = 3000;
-
-            let edit_color = '#FFFFFF';
-
-            switch(event.getType()){
-                case "PushEvent":
-                    label_text = event.getActorName() + " pushed to " + event.getRepositoryName();
-                    edit_color = '#22B65D';
-                    break;
-                case "PullRequestEvent":
-                    label_text = event.getActorName() + " " +
-                        event.getAction() + " " + " a PR for " + event.getRepositoryName();
-                    edit_color = '#8F19BB';
-                    ring_anim_duration = 10000;
-                    ring_radius = 600;
-                    break;
-                case "IssuesEvent":
-                    label_text = event.getActorName() + " " +
-                        event.getAction() + " an issue in " + event.getRepositoryName();
-                    edit_color = '#ADD913';
-                    break;
-                case "IssueCommentEvent":
-                    label_text = event.getActorName() + " commented in " + event.getRepositoryName();
-                    edit_color = '#FF4901';
-                    break;
-                case "ForkEvent":
-                    label_text = event.getActorName() + " forked " + event.getRepositoryName();
-                    edit_color = '#0184FF';
-                    break;
-                case "CreateEvent":
-                    label_text = event.getActorName() + " created " + event.getRepositoryName();
-                    edit_color = '#00C0C0';
-                    break;
-                case "WatchEvent":
-                    label_text = event.getActorName() + " watched " + event.getRepositoryName();
-                    edit_color = '#E60062';
-                    break;
-            }
-
-            let no_label = false;
-
-            size = Math.max(Math.sqrt(Math.abs(size)) * scaleFactor, 3);
-
-            //noinspection JSUnresolvedFunction
-            Math.seedrandom(event.getMessage());
-            let x = Math.random() * (this.getWidth() - size) + size;
-            let y = Math.random() * (this.getHeight() - size) + size;
-
-            let circle_group = this.svg.append('g')
-                .attr('transform', 'translate(' + x + ', ' + y + ')')
-                .attr('fill', edit_color)
-                .style('opacity', 1);
-
-            let ring = circle_group.append('circle');
-            ring.attr({r: size, stroke: 'none'});
-            ring.transition()
-                .attr('r', size + ring_radius)
-                .style('opacity', 0)
-                .ease(Math.sqrt)
-                .duration(ring_anim_duration)
-                .remove();
-
-            let circle_container = circle_group.append('a');
-            circle_container.attr('xlink:href', event.getUrl());
-            circle_container.attr('target', '_blank');
-            circle_container.attr('fill', textColor);
-
-            let circle = circle_container.append('circle');
-            circle.classed(event.getType(), true);
-            circle.attr('r', size)
-                .attr('fill', edit_color)
-                .transition()
-                .duration(maxLife)
-                .style('opacity', 0)
-                .remove();
-
-            circle_container.on('mouseover', function() {
-                circle_container.append('text')
-                    .text(label_text)
-                    .classed('label', true)
-                    .attr('text-anchor', 'middle')
-                    .attr('font-size', '0.8em')
-                    .transition()
-                    .delay(1000)
-                    .style('opacity', 0)
-                    .duration(2000)
-                    .each(function() { no_label = true; })
-                    .remove();
-            });
-
-            let text = circle_container.append('text')
-                .text(label_text)
-                .classed('article-label', true)
-                .attr('text-anchor', 'middle')
-                .attr('font-size', '0.8em')
-                .transition()
-                .delay(2000)
-                .style('opacity', 0)
-                .duration(5000)
-                .each(function() { no_label = true; })
-                .remove();
+            new Event(event, this.svg).draw(this.getWidth(), this.getHeight());
 
             // Remove HTML of decayed events
             // Keep it less than 50
