@@ -304,6 +304,10 @@ const GitAmp = (function(exports, $) {
         };
 
         Gui.prototype.drawEvent = function(event) {
+            if (document.hidden) {
+                return;
+            }
+
             new Event(event, this.svg).draw(this.getWidth(), this.getHeight());
 
             // Remove HTML of decayed events
