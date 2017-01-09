@@ -13,83 +13,77 @@ use function Amp\wait;
 
 class RedisCounterTest extends TestCase
 {
+    private $client;
+
+    public function setUp()
+    {
+        $this->client = $this->createMock(Client::class);
+    }
 
     public function testGet()
     {
-        $redisClient = $this->createMock(Client::class);
-
-        $redisClient
+        $this->client
             ->expects($this->exactly(2))
             ->method('get')
             ->with($this->equalTo('test'))
             ->will($this->returnValue(new Success(10)))
         ;
 
-        $redisCounter = new RedisCounter($redisClient);
+        $redisCounter = new RedisCounter($this->client);
 
         $this->assertInstanceOf(Promise::class, $redisCounter->get('test'));
 
-        $this->assertSame(
-            10, wait($redisCounter->get('test'))
-        );
+        $this->assertSame(10, wait($redisCounter->get('test')));
     }
 
     public function testSet()
     {
-        $redisClient = $this->createMock(Client::class);
-
-        $redisClient
+        $this->client
             ->expects($this->once())
             ->method('set')
             ->with($this->equalTo('test'), $this->equalTo(5))
         ;
 
-        $redisCounter = new RedisCounter($redisClient);
+        $redisCounter = new RedisCounter($this->client);
 
         wait($redisCounter->set('test', 5));
     }
 
     public function testIncrement()
     {
-        $redisClient = $this->createMock(Client::class);
-
-        $redisClient
+        $this->client
             ->expects($this->once())
             ->method('incr')
             ->with($this->equalTo('test'))
         ;
 
-        $redisCounter = new RedisCounter($redisClient);
+        $redisCounter = new RedisCounter($this->client);
 
         wait($redisCounter->increment('test'));
     }
 
     public function testDecrement()
     {
-        $redisClient = $this->createMock(Client::class);
-
-        $redisClient
+        $this->client
             ->expects($this->once())
             ->method('decr')
             ->with($this->equalTo('test'))
         ;
 
-        $redisCounter = new RedisCounter($redisClient);
+        $redisCounter = new RedisCounter($this->client);
 
         wait($redisCounter->decrement('test'));
     }
 
     public function testSetThrowsOnFailedStorage()
     {
-        $redisClient = $this->createMock(Client::class);
-
-        $redisClient
+        $this->client
             ->expects($this->once())
             ->method('set')
             ->will($this->throwException(new RedisException()))
         ;
 
-        $redisCounter = new RedisCounter($redisClient);
+        $redisCounter = new RedisCounter($this->client);
 
         $this->expectException(StorageFailedException::class);
         $this->expectExceptionMessage('Failed to set counter value.');
@@ -99,15 +93,13 @@ class RedisCounterTest extends TestCase
 
     public function testGetThrowsOnFailedStorage()
     {
-        $redisClient = $this->createMock(Client::class);
-
-        $redisClient
+        $this->client
             ->expects($this->once())
             ->method('get')
             ->will($this->throwException(new RedisException()))
         ;
 
-        $redisCounter = new RedisCounter($redisClient);
+        $redisCounter = new RedisCounter($this->client);
 
         $this->expectException(StorageFailedException::class);
         $this->expectExceptionMessage('Failed to get counter.');
@@ -117,15 +109,13 @@ class RedisCounterTest extends TestCase
 
     public function testIncrementThrowsOnFailedStorage()
     {
-        $redisClient = $this->createMock(Client::class);
-
-        $redisClient
+        $this->client
             ->expects($this->once())
             ->method('incr')
             ->will($this->throwException(new RedisException()))
         ;
 
-        $redisCounter = new RedisCounter($redisClient);
+        $redisCounter = new RedisCounter($this->client);
 
         $this->expectException(StorageFailedException::class);
         $this->expectExceptionMessage('Failed to increment counter.');
@@ -135,15 +125,13 @@ class RedisCounterTest extends TestCase
 
     public function testDecrementThrowsOnFailedStorage()
     {
-        $redisClient = $this->createMock(Client::class);
-
-        $redisClient
+        $this->client
             ->expects($this->once())
             ->method('decr')
             ->will($this->throwException(new RedisException()))
         ;
 
-        $redisCounter = new RedisCounter($redisClient);
+        $redisCounter = new RedisCounter($this->client);
 
         $this->expectException(StorageFailedException::class);
         $this->expectExceptionMessage('Failed to decrement counter.');
@@ -151,4 +139,3 @@ class RedisCounterTest extends TestCase
         wait($redisCounter->decrement('foo'));
     }
 }
-
