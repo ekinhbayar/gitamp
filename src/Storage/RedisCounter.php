@@ -1,4 +1,4 @@
-<?php declare(strict_types=1);
+<?php declare(strict_types = 1);
 
 namespace ekinhbayar\GitAmp\Storage;
 
@@ -8,16 +8,6 @@ use Amp\Redis\RedisException;
 use function Amp\resolve;
 
 class RedisCounter implements Counter {
-    const SCRIPT_DECREMENT = <<<SCRIPT
-local count = redis.call('decr', KEYS[1])
-
-if count == 0 then
-    redis.call('del', KEYS[1])
-    return 0
-else
-    return count
-end
-SCRIPT;
 
     private $redis;
 
@@ -26,7 +16,7 @@ SCRIPT;
     }
 
     public function increment(string $key): Promise {
-        return resolve(function () use ($key) {
+        return resolve(function() use ($key) {
             try {
                 return yield $this->redis->incr($key);
             } catch (RedisException $e) {
@@ -36,9 +26,9 @@ SCRIPT;
     }
 
     public function decrement(string $key): Promise {
-        return resolve(function () use ($key) {
+        return resolve(function() use ($key) {
             try {
-                return yield $this->redis->eval(self::SCRIPT_DECREMENT, [$key], []);
+                return yield $this->redis->decr($key);
             } catch (RedisException $e) {
                 throw new StorageFailedException('Failed to decrement counter.', 0, $e);
             }
@@ -46,7 +36,7 @@ SCRIPT;
     }
 
     public function get(string $key): Promise {
-        return resolve(function () use ($key) {
+        return resolve(function() use ($key) {
             try {
                 $result = yield $this->redis->get($key);
 
@@ -58,7 +48,7 @@ SCRIPT;
     }
 
     public function set(string $key, int $val): Promise {
-        return resolve(function () use ($key, $val) {
+        return resolve(function() use ($key, $val) {
             try {
                 return yield $this->redis->set($key, $val);
             } catch (RedisException $e) {
@@ -67,3 +57,4 @@ SCRIPT;
         });
     }
 }
+

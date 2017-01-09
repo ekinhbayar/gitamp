@@ -1,4 +1,4 @@
-<?php declare(strict_types=1);
+<?php declare(strict_types = 1);
 
 namespace ekinhbayar\GitAmp\Client;
 
@@ -26,7 +26,11 @@ class GitAmp
         $this->eventFactory = $eventFactory;
     }
 
-    public function request(): Promise
+    /**
+     * @return Promise
+     * @throws RequestFailedException
+     */
+    private function request(): Promise
     {
         try {
             $request = (new Request)
@@ -34,7 +38,19 @@ class GitAmp
                 ->setUri(self::API_ENDPOINT)
                 ->setAllHeaders($this->getAuthHeader());
 
-            return $this->client->request($request);
+            $promise = $this->client->request($request);
+
+            $promise->when(function($error, $result) {
+                if ($result->getStatus() !== 200) {
+                    throw new RequestFailedException(
+                        'A non-200 response status ('
+                        . $result->getStatus() . ' - '
+                        . $result->getReason() . ') was encountered'
+                    );
+                }
+            });
+
+            return $promise;
 
         } catch (ClientException $e) {
             throw new RequestFailedException('Failed to send GET request to API endpoint', $e->getCode(), $e);
@@ -59,3 +75,4 @@ class GitAmp
         return ['Authorization' => sprintf('Basic %s', $this->credentials->getAuthenticationString())];
     }
 }
+

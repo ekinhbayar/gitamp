@@ -1,4 +1,4 @@
-<?php declare(strict_types=1);
+<?php declare(strict_types = 1);
 
 namespace ekinhbayar\GitAmp\Response;
 
@@ -15,7 +15,7 @@ class Results
 
     public function __construct(Factory $eventFactory)
     {
-        $this->eventFactory    = $eventFactory;
+        $this->eventFactory = $eventFactory;
     }
 
     public function appendResponse(Response $response)
@@ -35,7 +35,7 @@ class Results
     {
         try {
             $this->events[] = $this->eventFactory->build($event);
-        } catch(UnknownEventException $e) {
+        } catch (UnknownEventException $e) {
             // maybe log unknown events?
         }
     }

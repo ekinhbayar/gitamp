@@ -1,4 +1,4 @@
-<?php declare(strict_types=1);
+<?php declare(strict_types = 1);
 
 namespace ekinhbayar\GitAmp\Events\Type;
 
@@ -20,8 +20,10 @@ abstract class BaseEvent implements Event
 
     protected $message;
 
-    public function __construct(int $id, string $type, string $action, string $repository, string $actorName, string $eventUrl, string $message)
-    {
+    public function __construct(
+        int $id, string $type, string $action, string $repository,
+        string $actorName, string $eventUrl, string $message
+    ) {
         $this->id         = $id;
         $this->type       = $type;
         $this->action     = $action;

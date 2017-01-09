@@ -1,4 +1,4 @@
-<?php declare(strict_types=1);
+<?php declare(strict_types = 1);
 
 namespace ekinhbayar\GitAmp\Websocket;
 
@@ -36,7 +36,7 @@ class Handler implements Websocket
 
         $this->counter->set('connected_users', 0);
 
-        repeat(function () {
+        repeat(function() {
             $this->emit(yield $this->gitamp->listen());
         }, 25000);
     }
@@ -70,7 +70,9 @@ class Handler implements Websocket
      * @param Results $events
      */
     public function emit(Results $events) {
-        if (!$events->hasEvents()) return;
+        if (!$events->hasEvents()) {
+            return;
+        }
 
         $this->endpoint->send(null, $events->jsonEncode());
     }
