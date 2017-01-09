@@ -16,9 +16,7 @@ class RedisCounterTest extends TestCase
 
     public function testGet()
     {
-        $redisClient =  $this->getMockBuilder(Client::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $redisClient = $this->createMock(Client::class);
 
         $redisClient
             ->expects($this->exactly(2))
@@ -38,10 +36,7 @@ class RedisCounterTest extends TestCase
 
     public function testSet()
     {
-        $redisClient =  $this->getMockBuilder(Client::class)
-            ->disableOriginalConstructor()
-            ->setMethods(['set','get'])
-            ->getMock();
+        $redisClient = $this->createMock(Client::class);
 
         $redisClient
             ->expects($this->once())
@@ -56,9 +51,7 @@ class RedisCounterTest extends TestCase
 
     public function testIncrement()
     {
-        $redisClient =  $this->getMockBuilder(Client::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $redisClient = $this->createMock(Client::class);
 
         $redisClient
             ->expects($this->once())
@@ -73,9 +66,7 @@ class RedisCounterTest extends TestCase
 
     public function testDecrement()
     {
-        $redisClient =  $this->getMockBuilder(Client::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $redisClient = $this->createMock(Client::class);
 
         $redisClient
             ->expects($this->once())
@@ -90,9 +81,7 @@ class RedisCounterTest extends TestCase
 
     public function testSetThrowsOnFailedStorage()
     {
-        $redisClient =  $this->getMockBuilder(Client::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $redisClient = $this->createMock(Client::class);
 
         $redisClient
             ->expects($this->once())
@@ -110,9 +99,7 @@ class RedisCounterTest extends TestCase
 
     public function testGetThrowsOnFailedStorage()
     {
-        $redisClient =  $this->getMockBuilder(Client::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $redisClient = $this->createMock(Client::class);
 
         $redisClient
             ->expects($this->once())
@@ -130,9 +117,7 @@ class RedisCounterTest extends TestCase
 
     public function testIncrementThrowsOnFailedStorage()
     {
-        $redisClient =  $this->getMockBuilder(Client::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $redisClient = $this->createMock(Client::class);
 
         $redisClient
             ->expects($this->once())
@@ -150,9 +135,7 @@ class RedisCounterTest extends TestCase
 
     public function testDecrementThrowsOnFailedStorage()
     {
-        $redisClient =  $this->getMockBuilder(Client::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $redisClient = $this->createMock(Client::class);
 
         $redisClient
             ->expects($this->once())
