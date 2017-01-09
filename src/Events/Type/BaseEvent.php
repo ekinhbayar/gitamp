@@ -4,7 +4,7 @@ namespace ekinhbayar\GitAmp\Events\Type;
 
 use ekinhbayar\GitAmp\Events\Event;
 
-abstract class BaseEvent implements Event
+class BaseEvent implements Event
 {
     protected $id;
 
@@ -21,8 +21,13 @@ abstract class BaseEvent implements Event
     protected $message;
 
     public function __construct(
-        int $id, string $type, string $action, string $repository,
-        string $actorName, string $eventUrl, string $message
+        int $id,
+        string $type,
+        string $action,
+        string $repository,
+        string $actorName,
+        string $eventUrl,
+        string $message
     ) {
         $this->id         = $id;
         $this->type       = $type;

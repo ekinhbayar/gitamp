@@ -13,7 +13,7 @@ class PullRequestEvent extends BaseEvent
             $event['repo']['name'],
             $event['actor']['login'],
             $event['payload']['pull_request']['html_url'],
-            $message = $event['payload']['pull_request']['title']
+            $event['payload']['pull_request']['title']
         );
     }
 }
