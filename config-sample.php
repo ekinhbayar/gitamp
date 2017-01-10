@@ -11,9 +11,9 @@ return [
     /**
      * Assign the IP and port on which to listen.
      * Use :
-    "0.0.0.0" for all IPv4 interfaces
-    "::"      for all IPv6 interfaces
-    "*"       for all IPv4 & IPv6
+        "0.0.0.0" for all IPv4 interfaces
+        "::"      for all IPv6 interfaces
+        "*"       for all IPv4 & IPv6
      *
      */
     'expose' => [

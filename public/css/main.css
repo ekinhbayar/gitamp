@@ -83,6 +83,10 @@ header {
     z-index: 100;
 }
 
+.repo-link {
+    color: white;
+}
+
 .header-text {
     float: left;
     font-size: 2em;
