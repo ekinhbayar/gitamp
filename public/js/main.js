@@ -529,7 +529,7 @@ const GitAmp = (function(exports, $) {
     };
 
     Connection.prototype.handleOpen = function() {
-        const elements = document.querySelectorAll('.events-remaining-text, .events-remaining-value, .online-users-div');
+        const elements = document.querySelectorAll('.online-users-div');
 
         for (let i = 0; i < elements.length; i++) {
             elements[i].style.visibility = 'visible';
