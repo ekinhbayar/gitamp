@@ -6,7 +6,7 @@ return Symfony\CS\Config\Config::create()
     ->level(Symfony\CS\FixerInterface::NONE_LEVEL)
     ->fixers([
         "psr2",
-        "-braces",
+        "braces",
         "-psr0",
     ])
         ->finder(
