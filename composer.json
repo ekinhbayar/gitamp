@@ -28,7 +28,8 @@
     "amphp/redis": "^0.2.5"
   },
   "require-dev": {
-    "phpunit/phpunit": "^5"
+    "phpunit/phpunit": "^5",
+    "friendsofphp/php-cs-fixer": "^2"
   },
   "autoload": {
     "psr-4": {
