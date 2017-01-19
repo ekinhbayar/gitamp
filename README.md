@@ -16,6 +16,7 @@ Requires:
 
 ## Usage
 
+- Run `composer install`
 - Copy the config.sample.php file and change the settings
 - Run the server using `vendor/bin/aerys -c server.php`
 - Open your browser and go to http://localhost:1337 (for default settings)
@@ -24,3 +25,15 @@ Requires:
 ## Development
 
 - Run the server using `vendor/bin/aerys -c server.php -d` for debugging output
+
+## GitAmp as a Service
+
+To run GitAmp as a systemd unit:
+
+- Copy the [gitamp.sample.service](https://github.com/ekinhbayar/gitamp/blob/master/gitamp.sample.service) to `/etc/systemd/system/gitamp.service`.
+- Replace the paths with your installation location.
+- Enable it by running `systemctl enable gitamp` && start with `systemctl start gitamp`
+
+If you want to run it after reboots as well, symlink the service file under `multi-user.target.wants` via 
+
+`ln -sf /etc/systemd/system/gitamp.service /etc/systemd/system/multi-user.target.wants/gitamp.service`
