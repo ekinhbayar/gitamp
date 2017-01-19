@@ -1,0 +1,12 @@
+[Unit]
+Description=GitAmp as a service (GAAS)
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/path/to/php /path/to/gitamp/vendor/bin/aerys -c /path/to/gitamp/server.php -d
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+
