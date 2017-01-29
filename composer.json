@@ -20,6 +20,8 @@
   "prefer-stable": true,
   "require": {
     "php": "^7",
+    "psr/log": "^1",
+    "monolog/monolog": "^1",
     "daverandom/exceptional-json": "^1",
     "nikic/fast-route": "^1",
     "rdlowrey/auryn": "^1",

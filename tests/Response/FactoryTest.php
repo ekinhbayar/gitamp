@@ -8,6 +8,7 @@ use ekinhbayar\GitAmp\Response\Factory;
 use ekinhbayar\GitAmp\Response\Results;
 use ekinhbayar\GitAmp\Events\Factory as EventFactory;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
 
 class FactoryTest extends TestCase
 {
@@ -33,7 +34,9 @@ class FactoryTest extends TestCase
             ->will($this->returnValue($events))
         ;
 
-        $results = (new Factory(new EventFactory()))->build($response);
+        $logger = $this->createMock(LoggerInterface::class);
+
+        $results = (new Factory(new EventFactory(), $logger))->build($response);
 
         $this->assertInstanceOf(Results::class, $results);
     }
@@ -60,7 +63,9 @@ class FactoryTest extends TestCase
             ->will($this->returnValue($events))
         ;
 
-        $results = (new Factory(new EventFactory()))->build($response);
+        $logger = $this->createMock(LoggerInterface::class);
+
+        $results = (new Factory(new EventFactory(), $logger))->build($response);
 
         $this->assertInstanceOf(Results::class, $results);
     }

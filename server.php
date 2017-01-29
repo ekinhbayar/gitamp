@@ -7,6 +7,9 @@ use ekinhbayar\GitAmp\Github\Credentials;
 use ekinhbayar\GitAmp\Storage\Counter;
 use ekinhbayar\GitAmp\Storage\RedisCounter;
 use ekinhbayar\GitAmp\Websocket\Handler;
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
+use Psr\Log\LoggerInterface;
 use function Aerys\root;
 use function Aerys\router;
 use function Aerys\websocket;
@@ -20,6 +23,17 @@ $injector->alias(Counter::class, RedisCounter::class);
 $injector->alias(Credentials::class, get_class($configuration['github']));
 
 $injector->share($configuration['github']);
+
+$injector->alias(LoggerInterface::class, Logger::class);
+$injector->share(Logger::class);
+
+$injector->delegate(Logger::class, function() {
+    $logger = new Logger('gitamp');
+
+    $logger->pushHandler(new StreamHandler('php://stdout', Logger::DEBUG));
+
+    return $logger;
+});
 
 // @todo unuglify this
 if (isset($configuration['ssl'])) {

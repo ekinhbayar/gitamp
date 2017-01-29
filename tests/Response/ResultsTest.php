@@ -9,10 +9,13 @@ use PHPUnit\Framework\TestCase;
 use ekinhbayar\GitAmp\Events\Factory;
 use ekinhbayar\GitAmp\Response\Results;
 use ekinhbayar\GitAmp\Response\DecodingFailedException;
+use Psr\Log\LoggerInterface;
 
 class ResultsTest extends TestCase
 {
     private $eventData;
+
+    private $logger;
 
     public function setUp()
     {
@@ -45,6 +48,8 @@ class ResultsTest extends TestCase
             "id": "12345"
           }
         ]';
+
+        $this->logger = $this->createMock(LoggerInterface::class);
     }
 
     public function testAppendResponseThrowsOnInvalidJSON()
@@ -60,7 +65,7 @@ class ResultsTest extends TestCase
         $this->expectException(DecodingFailedException::class);
         $this->expectExceptionMessage('Failed to decode response body as JSON');
 
-        (new Results(new Factory()))->appendResponse($response);
+        (new Results(new Factory(), $this->logger))->appendResponse($response);
     }
 
     public function testAppendResponseUnknownEventExceptionDoesNotBubbleUp()
@@ -81,12 +86,12 @@ class ResultsTest extends TestCase
             ->willThrowException(new UnknownEventException())
         ;
 
-        (new Results($eventFactory))->appendResponse($response);
+        (new Results($eventFactory, $this->logger))->appendResponse($response);
     }
 
     public function testHasEventsFalse()
     {
-        $results = new Results(new Factory());
+        $results = new Results(new Factory(), $this->logger);
 
         $this->assertFalse($results->hasEvents());
     }
@@ -109,7 +114,7 @@ class ResultsTest extends TestCase
             ->will($this->returnValue($this->createMock(PullRequestEvent::class)))
         ;
 
-        $results = new Results($eventFactory);
+        $results = new Results($eventFactory, $this->logger);
 
         $results->appendResponse($response);
 
@@ -118,7 +123,7 @@ class ResultsTest extends TestCase
 
     public function testJsonEncodeWithoutEvents()
     {
-        $results = new Results(new Factory());
+        $results = new Results(new Factory(), $this->logger);
 
         $this->assertSame('[]', $results->jsonEncode());
     }
@@ -151,7 +156,7 @@ class ResultsTest extends TestCase
             ->will($this->returnValue($event))
         ;
 
-        $results = new Results($eventFactory);
+        $results = new Results($eventFactory, $this->logger);
 
         $results->appendResponse($response);
 
