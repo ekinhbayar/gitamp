@@ -52,30 +52,35 @@ class GitAmp
             $promise = $this->client->request($request);
 
             $promise->when(function($error, $result) {
-                if ($error) {
-                    $this->logger->error('Call to webservice failed', ['error' => $error]);
-
-                    throw new RequestFailedException('Call to webservice failed');
-                }
-
-                /** @var Response $result */
-                if ($result->getStatus() !== 200) {
-                    $message = sprintf(
-                        'A non-200 response status (%s - %s) was encountered',
-                        $result->getStatus(),
-                        $result->getReason()
-                    );
-
-                    $this->logger->critical($message, ['result' => $result]);
-
-                    throw new RequestFailedException($message);
-                }
+                $this->checkForRequestErrors($error, $result);
             });
 
             return $promise;
 
         } catch (ClientException $e) {
             throw new RequestFailedException('Failed to send GET request to API endpoint', $e->getCode(), $e);
+        }
+    }
+
+    private function checkForRequestErrors($error, $result)
+    {
+        if ($error) {
+            $this->logger->error('Call to webservice failed', ['error' => $error]);
+
+            throw new RequestFailedException('Call to webservice failed');
+        }
+
+        /** @var Response $result */
+        if ($result->getStatus() !== 200) {
+            $message = sprintf(
+                'A non-200 response status (%s - %s) was encountered',
+                $result->getStatus(),
+                $result->getReason()
+            );
+
+            $this->logger->critical($message, ['result' => $result]);
+
+            throw new RequestFailedException($message);
         }
     }
 
