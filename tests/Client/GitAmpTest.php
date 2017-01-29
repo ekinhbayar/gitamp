@@ -14,6 +14,7 @@ use ekinhbayar\GitAmp\Response\Factory;
 use ekinhbayar\GitAmp\Response\Results;
 use PHPUnit\Framework\TestCase;
 use function Amp\wait;
+use Psr\Log\LoggerInterface;
 
 class GitAmpTest extends TestCase
 {
@@ -21,10 +22,13 @@ class GitAmpTest extends TestCase
 
     private $factory;
 
+    private $logger;
+
     public function setUp()
     {
         $this->credentials = new Token('token');
         $this->factory     = $this->createMock(Factory::class);
+        $this->logger      = $this->createMock(LoggerInterface::class);
     }
 
     public function testListenThrowsOnFailedRequest()
@@ -37,7 +41,7 @@ class GitAmpTest extends TestCase
             ->will($this->throwException(new ClientException()))
         ;
 
-        $gitamp = new GitAmp($httpClient, $this->credentials, $this->factory);
+        $gitamp = new GitAmp($httpClient, $this->credentials, $this->factory, $this->logger);
 
         $this->expectException(RequestFailedException::class);
         $this->expectExceptionMessage('Failed to send GET request to API endpoint');
@@ -69,7 +73,7 @@ class GitAmpTest extends TestCase
             ->will($this->returnValue(new Success($response)))
         ;
 
-        $gitamp = new GitAmp($httpClient, $this->credentials, $this->factory);
+        $gitamp = new GitAmp($httpClient, $this->credentials, $this->factory, $this->logger);
 
         $this->expectException(RequestFailedException::class);
         $this->expectExceptionMessage('A non-200 response status (403 - invalid) was encountered');
@@ -97,7 +101,7 @@ class GitAmpTest extends TestCase
 
         $this->assertInstanceOf(
             Promise::class,
-            (new GitAmp($httpClient, $this->credentials, $this->factory))->listen()
+            (new GitAmp($httpClient, $this->credentials, $this->factory, $this->logger))->listen()
         );
     }
 
@@ -121,7 +125,7 @@ class GitAmpTest extends TestCase
 
         $this->assertInstanceOf(
             Results::class,
-            wait((new GitAmp($httpClient, $this->credentials, $this->factory))->listen())
+            wait((new GitAmp($httpClient, $this->credentials, $this->factory, $this->logger))->listen())
         );
     }
 }

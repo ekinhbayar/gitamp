@@ -3,7 +3,6 @@
 namespace ekinhbayar\GitAmpTests\Response;
 
 use Amp\Artax\Response;
-use ekinhbayar\GitAmp\Events\UnknownEventException;
 use ekinhbayar\GitAmp\Response\Factory;
 use ekinhbayar\GitAmp\Response\Results;
 use ekinhbayar\GitAmp\Events\Factory as EventFactory;

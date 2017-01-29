@@ -2,6 +2,7 @@
 
 namespace ekinhbayar\GitAmp\Client;
 
+use Amp\Artax\Response;
 use Amp\Promise;
 use Amp\Artax\Client;
 use Amp\Artax\ClientException;
@@ -9,6 +10,7 @@ use Amp\Artax\Request;
 use Amp\Success;
 use ekinhbayar\GitAmp\Response\Factory;
 use ekinhbayar\GitAmp\Github\Credentials;
+use Psr\Log\LoggerInterface;
 
 class GitAmp
 {
@@ -20,11 +22,19 @@ class GitAmp
 
     private $resultFactory;
 
-    public function __construct(Client $client, Credentials $credentials, Factory $resultFactory)
+    private $logger;
+
+    public function __construct(
+        Client $client,
+        Credentials $credentials,
+        Factory $resultFactory,
+        LoggerInterface $logger
+    )
     {
         $this->client        = $client;
         $this->credentials   = $credentials;
         $this->resultFactory = $resultFactory;
+        $this->logger        = $logger;
     }
 
     /**
@@ -42,12 +52,23 @@ class GitAmp
             $promise = $this->client->request($request);
 
             $promise->when(function($error, $result) {
+                if ($error) {
+                    $this->logger->error('Call to webservice failed', ['error' => $error]);
+
+                    throw new RequestFailedException('Call to webservice failed');
+                }
+
+                /** @var Response $result */
                 if ($result->getStatus() !== 200) {
-                    throw new RequestFailedException(
-                        'A non-200 response status ('
-                        . $result->getStatus() . ' - '
-                        . $result->getReason() . ') was encountered'
+                    $message = sprintf(
+                        'A non-200 response status (%s - %s) was encountered',
+                        $result->getStatus(),
+                        $result->getReason()
                     );
+
+                    $this->logger->critical($message, ['result' => $result]);
+
+                    throw new RequestFailedException($message);
                 }
             });
 
