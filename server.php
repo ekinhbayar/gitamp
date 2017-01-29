@@ -84,3 +84,9 @@ if (isset($configuration['ssl'])) {
         ->use(root(__DIR__ . '/public'))
     ;
 }
+
+$logger = $injector->make(LoggerInterface::class);
+
+\Amp\onError(function(Throwable $e) use ($logger) {
+    $logger->emergency('GitAmp blew up', ['exception' => $e]);
+});
