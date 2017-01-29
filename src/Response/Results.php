@@ -3,17 +3,15 @@
 namespace ekinhbayar\GitAmp\Response;
 
 use Amp\Artax\Response;
-use ekinhbayar\GitAmp\Events\Factory;
+use ekinhbayar\GitAmp\Events\Factory as EventFactory;
 use ekinhbayar\GitAmp\Events\UnknownEventException;
 use ExceptionalJSON\DecodeErrorException;
 
 class Results
 {
-    private $eventFactory;
-
     private $events = [];
 
-    public function __construct(Factory $eventFactory)
+    public function __construct(EventFactory $eventFactory)
     {
         $this->eventFactory = $eventFactory;
     }

@@ -7,23 +7,24 @@ use Amp\Artax\Client;
 use Amp\Artax\ClientException;
 use Amp\Artax\Request;
 use Amp\Success;
-use ekinhbayar\GitAmp\Events\Factory;
+use ekinhbayar\GitAmp\Response\Factory;
 use ekinhbayar\GitAmp\Github\Credentials;
-use ekinhbayar\GitAmp\Response\Results;
 
 class GitAmp
 {
     const API_ENDPOINT = 'https://api.github.com/events';
 
     private $client;
-    private $credentials;
-    private $eventFactory;
 
-    public function __construct(Client $client, Credentials $credentials, Factory $eventFactory)
+    private $credentials;
+
+    private $resultFactory;
+
+    public function __construct(Client $client, Credentials $credentials, Factory $resultFactory)
     {
-        $this->client       = $client;
-        $this->credentials  = $credentials;
-        $this->eventFactory = $eventFactory;
+        $this->client        = $client;
+        $this->credentials   = $credentials;
+        $this->resultFactory = $resultFactory;
     }
 
     /**
@@ -62,11 +63,7 @@ class GitAmp
         return \Amp\resolve(function() {
             $response = yield $this->request();
 
-            $results = new Results($this->eventFactory);
-
-            $results->appendResponse($response);
-
-            return new Success($results);
+            return new Success($this->resultFactory->build($response));
         });
     }
 

@@ -10,7 +10,7 @@ use Amp\Success;
 use ekinhbayar\GitAmp\Client\RequestFailedException;
 use ekinhbayar\GitAmp\Github\Token;
 use ekinhbayar\GitAmp\Client\GitAmp;
-use ekinhbayar\GitAmp\Events\Factory;
+use ekinhbayar\GitAmp\Response\Factory;
 use ekinhbayar\GitAmp\Response\Results;
 use PHPUnit\Framework\TestCase;
 use function Amp\wait;
@@ -24,7 +24,7 @@ class GitAmpTest extends TestCase
     public function setUp()
     {
         $this->credentials = new Token('token');
-        $this->factory     = new Factory();
+        $this->factory     = $this->createMock(Factory::class);
     }
 
     public function testListenThrowsOnFailedRequest()
@@ -87,12 +87,6 @@ class GitAmpTest extends TestCase
             ->will($this->returnValue(200))
         ;
 
-        $response
-            ->expects($this->once())
-            ->method('getBody')
-            ->will($this->returnValue('[]'))
-        ;
-
         $httpClient = $this->createMock(Client::class);
 
         $httpClient
@@ -115,12 +109,6 @@ class GitAmpTest extends TestCase
             ->expects($this->once())
             ->method('getStatus')
             ->will($this->returnValue(200))
-        ;
-
-        $response
-            ->expects($this->once())
-            ->method('getBody')
-            ->will($this->returnValue('[]'))
         ;
 
         $httpClient = $this->createMock(Client::class);
