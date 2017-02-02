@@ -30,7 +30,7 @@ $injector->share(Logger::class);
 $injector->delegate(Logger::class, function() {
     $logger = new Logger('gitamp');
 
-    $logger->pushHandler(new StreamHandler('php://stdout', Logger::DEBUG));
+    $logger->pushHandler(new StreamHandler('php://stdout', Logger::INFO));
 
     return $logger;
 });

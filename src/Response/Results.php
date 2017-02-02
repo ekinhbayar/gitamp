@@ -42,7 +42,7 @@ class Results
         try {
             $this->events[] = $this->eventFactory->build($event);
         } catch (UnknownEventException $e) {
-            $this->logger->info('Unknown event encountered', ['exception' => $e]);
+            $this->logger->debug('Unknown event encountered', ['exception' => $e]);
         }
     }
 
