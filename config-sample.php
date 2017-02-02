@@ -1,11 +1,11 @@
 <?php
 
+use Monolog\Logger;
 use ekinhbayar\GitAmp\Github\Token;
 use ekinhbayar\GitAmp\Github\User;
 
-
-
 return [
+    'logLevel' => Logger::INFO,
     'hostname' => 'localhost',
     'redis' => 'tcp://localhost:6379',
     /**

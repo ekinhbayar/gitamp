@@ -14,6 +14,8 @@ use function Aerys\root;
 use function Aerys\router;
 use function Aerys\websocket;
 
+//require_once __DIR__ . '/vendor/autoload.php';
+
 $configuration = require_once __DIR__ . '/config.php';
 
 $injector = new Injector;
@@ -27,10 +29,10 @@ $injector->share($configuration['github']);
 $injector->alias(LoggerInterface::class, Logger::class);
 $injector->share(Logger::class);
 
-$injector->delegate(Logger::class, function() {
+$injector->delegate(Logger::class, function() use ($configuration) {
     $logger = new Logger('gitamp');
 
-    $logger->pushHandler(new StreamHandler('php://stdout', Logger::INFO));
+    $logger->pushHandler(new StreamHandler('php://stdout', $configuration['logLevel']));
 
     return $logger;
 });
