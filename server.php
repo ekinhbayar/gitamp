@@ -62,12 +62,32 @@ $injector->define(Client::class, [
 
 $websocket = $injector->make(Handler::class);
 
-$router = router()->get("/ws", websocket($websocket));
+$router = router()->get('/ws', websocket($websocket));
+
+$requestLogger = new class implements \Aerys\Bootable {
+    private $logger;
+
+    public function boot(\Aerys\Server $server, \Psr\Log\LoggerInterface $logger)
+    {
+        $this->logger = $logger;
+    }
+
+    public function __invoke(\Aerys\Request $req, \Aerys\Response $res)
+    {
+        $this->logger->debug('Incoming request', [
+            'method'     => $req->getMethod(),
+            'headers'    => $req->getAllHeaders(),
+            'parameters' => $req->getAllParams(),
+            'body'       => $req->getBody(),
+        ]);
+    }
+};
 
 if (isset($configuration['ssl'])) {
     (new Host())
         ->name($configuration['hostname'])
         ->expose($configuration['expose']['ip'], $configuration['expose']['port'])
+        ->use($requestLogger)
         ->redirect('https://' . $configuration['hostname'])
     ;
 
@@ -75,6 +95,7 @@ if (isset($configuration['ssl'])) {
         ->name($configuration['hostname'])
         ->expose($configuration['ssl']['ip'], $configuration['ssl']['port'])
         ->encrypt($configuration['ssl']['certificate'], $configuration['ssl']['key'])
+        ->use($requestLogger)
         ->use($router)
         ->use(root(__DIR__ . '/public'))
     ;
@@ -82,6 +103,7 @@ if (isset($configuration['ssl'])) {
     (new Host())
         ->name($configuration['hostname'])
         ->expose($configuration['expose']['ip'], $configuration['expose']['port'])
+        ->use($requestLogger)
         ->use($router)
         ->use(root(__DIR__ . '/public'))
     ;
