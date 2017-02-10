@@ -76,6 +76,7 @@ $requestLogger = new class implements \Aerys\Bootable {
     {
         $this->logger->debug('Incoming request', [
             'method'     => $req->getMethod(),
+            'uri'        => $req->getUri(),
             'headers'    => $req->getAllHeaders(),
             'parameters' => $req->getAllParams(),
             'body'       => $req->getBody(),
