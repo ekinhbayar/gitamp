@@ -45,7 +45,7 @@ class BaseEvent implements Event
             'type'      => $this->type,
             'action'    => $this->action,
             'repoName'  => $this->repository,
-            'actorName' => ucfirst($this->actorName),
+            'actorName' => \ucfirst($this->actorName),
             'eventUrl'  => $this->eventUrl,
             'message'   => $this->message,
         ];

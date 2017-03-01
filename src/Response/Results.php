@@ -25,7 +25,7 @@ class Results
     public function appendResponse(Response $response)
     {
         try {
-            $events = json_try_decode($response->getBody(), true);
+            $events = \json_try_decode($response->getBody(), true);
         } catch (DecodeErrorException $e) {
             $this->logger->emergency('Failed to decode response body as JSON', ['exception' => $e]);
 
@@ -48,7 +48,7 @@ class Results
 
     public function hasEvents(): bool
     {
-        return (bool) count($this->events);
+        return (bool) \count($this->events);
     }
 
     public function jsonEncode(): string
@@ -59,6 +59,6 @@ class Results
             $events[] = $event->getAsArray();
         }
 
-        return json_encode($events);
+        return \json_encode($events);
     }
 }
