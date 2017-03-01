@@ -15,8 +15,6 @@ class Handler implements Websocket
 {
 
     private $endpoint;
-    private $connections;
-    private $ips;
     private $counter;
     private $origin;
     private $gitamp;
@@ -31,8 +29,6 @@ class Handler implements Websocket
     public function onStart(Endpoint $endpoint)
     {
         $this->endpoint = $endpoint;
-        $this->connections = [];
-        $this->ips = [];
 
         $this->counter->set('connected_users', 0);
 
@@ -54,11 +50,6 @@ class Handler implements Websocket
     }
 
     public function onOpen(int $clientId, $handshakeData) {
-        // We keep one map for all connected clients.
-        $this->connections[$clientId] = $handshakeData;
-        // And another one for multiple clients with the same IP.
-        $this->ips[$handshakeData][$clientId] = true;
-
         // send initial results
         $this->emit(yield $this->gitamp->listen());
 
@@ -86,14 +77,6 @@ class Handler implements Websocket
     }
 
     public function onClose(int $clientId, int $code, string $reason) {
-        // Always clean up data when clients disconnect, otherwise we'll leak memory.
-        $ip = $this->connections[$clientId];
-        unset($this->connections[$clientId]);
-        unset($this->ips[$ip][$clientId]);
-        if (empty($this->ips[$ip])) {
-            unset($this->ips[$ip]);
-        }
-
         yield $this->counter->decrement('connected_users');
         $this->sendConnectedUsersCount(yield $this->counter->get('connected_users'));
     }
