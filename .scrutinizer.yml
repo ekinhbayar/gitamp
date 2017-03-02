@@ -30,21 +30,15 @@ checks:
         avoid_multiple_statements_on_same_line: true
         avoid_fixme_comments: true
         align_assignments: true
-
 coding_style:
     php:
         spaces:
             around_operators:
                 concatenation: true
-
+tools:
+    external_code_coverage: true
 build:
     environment:
         php:
             version: "7.0"
-    tests:
-        override:
-            -
-                command: 'phpdbg -qrr vendor/bin/phpunit --coverage-text --coverage-clover=some-file'
-                coverage:
-                    file: 'some-file'
-                    format: 'clover'
+script: phpunit --coverage-clover=coverage.clover
