@@ -41,4 +41,3 @@ build:
     environment:
         php:
             version: "7.0"
-script: phpunit --coverage-clover=coverage.clover
