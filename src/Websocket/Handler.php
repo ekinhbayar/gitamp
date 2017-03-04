@@ -13,15 +13,17 @@ use function Amp\repeat;
 
 class Handler implements Websocket
 {
-
     private $endpoint;
+
     private $counter;
+
     private $origin;
+
     private $gitamp;
 
     public function __construct(Counter $counter, string $origin, GitAmp $gitamp)
     {
-        $this->origin = $origin;
+        $this->origin  = $origin;
         $this->counter = $counter;
         $this->gitamp  = $gitamp;
     }
@@ -49,18 +51,21 @@ class Handler implements Websocket
         return $request->getConnectionInfo()['client_addr'];
     }
 
-    public function onOpen(int $clientId, $handshakeData) {
+    public function onOpen(int $clientId, $handshakeData)
+    {
         // send initial results
         $this->emit(yield $this->gitamp->listen());
 
         yield $this->counter->increment('connected_users');
+
         $this->sendConnectedUsersCount(yield $this->counter->get('connected_users'));
     }
 
     /**
      * @param Results $events
      */
-    public function emit(Results $events) {
+    public function emit(Results $events)
+    {
         if (!$events->hasEvents()) {
             return;
         }
@@ -68,20 +73,25 @@ class Handler implements Websocket
         $this->endpoint->send(null, $events->jsonEncode());
     }
 
-    public function sendConnectedUsersCount(int $count) {
+    public function sendConnectedUsersCount(int $count)
+    {
         $this->endpoint->send(null, \json_encode(['connectedUsers' => $count]));
     }
 
-    public function onData(int $clientId, Websocket\Message $msg) {
+    public function onData(int $clientId, Websocket\Message $msg)
+    {
         // yielding $msg buffers the complete payload into a single string.
     }
 
-    public function onClose(int $clientId, int $code, string $reason) {
+    public function onClose(int $clientId, int $code, string $reason)
+    {
         yield $this->counter->decrement('connected_users');
+
         $this->sendConnectedUsersCount(yield $this->counter->get('connected_users'));
     }
 
-    public function onStop() {
+    public function onStop()
+    {
         // intentionally left blank
     }
 }
