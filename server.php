@@ -5,7 +5,7 @@ use Amp\Redis\Client;
 use Auryn\Injector;
 use ekinhbayar\GitAmp\Github\Credentials;
 use ekinhbayar\GitAmp\Storage\Counter;
-use ekinhbayar\GitAmp\Storage\RedisCounter;
+use ekinhbayar\GitAmp\Storage\NativeCounter;
 use ekinhbayar\GitAmp\Websocket\Handler;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
@@ -14,13 +14,11 @@ use function Aerys\root;
 use function Aerys\router;
 use function Aerys\websocket;
 
-//require_once __DIR__ . '/vendor/autoload.php';
-
 $configuration = require_once __DIR__ . '/config.php';
 
 $injector = new Injector;
 
-$injector->alias(Counter::class, RedisCounter::class);
+$injector->alias(Counter::class, NativeCounter::class);
 
 $injector->alias(Credentials::class, get_class($configuration['github']));
 

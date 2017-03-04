@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "d48375fab4f366658bf074eed8f1aae5",
+    "content-hash": "0cc837c225ee09e27bb393acd076df43",
     "packages": [
         {
             "name": "amphp/aerys",
@@ -421,56 +421,6 @@
             "description": "Asynchronous process manager",
             "homepage": "https://github.com/amphp/process",
             "time": "2016-09-24T10:49:26+00:00"
-        },
-        {
-            "name": "amphp/redis",
-            "version": "v0.2.5",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/amphp/redis.git",
-                "reference": "a957abe7d257a205746e12dd29cb94dd6264fe46"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/amphp/redis/zipball/a957abe7d257a205746e12dd29cb94dd6264fe46",
-                "reference": "a957abe7d257a205746e12dd29cb94dd6264fe46",
-                "shasum": ""
-            },
-            "require": {
-                "amphp/amp": "^1",
-                "amphp/socket": "^0.9"
-            },
-            "require-dev": {
-                "fabpot/php-cs-fixer": "^1.9",
-                "phpunit/phpunit": "^4.8|^5.2"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Amp\\Redis\\": "lib"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Niklas Keller",
-                    "email": "me@kelunik.com",
-                    "role": "Creator / Lead Developer"
-                }
-            ],
-            "description": "Async Redis client.",
-            "homepage": "https://github.com/amphp/redis",
-            "keywords": [
-                "amp",
-                "amphp",
-                "async",
-                "client",
-                "redis"
-            ],
-            "time": "2016-05-06T19:03:43+00:00"
         },
         {
             "name": "amphp/socket",

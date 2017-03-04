@@ -32,7 +32,7 @@ class Handler implements Websocket
     {
         $this->endpoint = $endpoint;
 
-        $this->counter->set('connected_users', 0);
+        $this->counter->set(0);
 
         repeat(function() {
             $this->emit(yield $this->gitamp->listen());
@@ -55,9 +55,9 @@ class Handler implements Websocket
     {
         $this->emit(yield $this->gitamp->listen());
 
-        yield $this->counter->increment('connected_users');
+        $this->counter->increment();
 
-        $this->sendConnectedUsersCount(yield $this->counter->get('connected_users'));
+        $this->sendConnectedUsersCount($this->counter->get());
     }
 
     private function emit(Results $events)
@@ -81,9 +81,9 @@ class Handler implements Websocket
 
     public function onClose(int $clientId, int $code, string $reason)
     {
-        yield $this->counter->decrement('connected_users');
+        $this->counter->decrement();
 
-        $this->sendConnectedUsersCount(yield $this->counter->get('connected_users'));
+        $this->sendConnectedUsersCount($this->counter->get());
     }
 
     public function onStop()
