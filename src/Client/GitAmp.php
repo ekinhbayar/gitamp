@@ -98,4 +98,3 @@ class GitAmp
         return ['Authorization' => \sprintf('Basic %s', $this->credentials->getAuthenticationString())];
     }
 }
-
