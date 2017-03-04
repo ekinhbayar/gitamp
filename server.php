@@ -3,6 +3,7 @@
 use Aerys\Host;
 use Auryn\Injector;
 use ekinhbayar\GitAmp\Github\Credentials;
+use ekinhbayar\GitAmp\Http\Origin;
 use ekinhbayar\GitAmp\Log\Request as RequestLogger;
 use ekinhbayar\GitAmp\Storage\Counter;
 use ekinhbayar\GitAmp\Storage\NativeCounter;
@@ -35,23 +36,8 @@ $injector->delegate(Logger::class, function() use ($configuration) {
     return $logger;
 });
 
-// @todo unuglify this
-if (isset($configuration['ssl'])) {
-    $origin = 'https://' . $configuration['hostname'];
-
-    if ($configuration['ssl']['port'] !== 443) {
-        $origin .= ':' . $configuration['ssl']['port'];
-    }
-} else {
-    $origin = 'http://' . $configuration['hostname'];
-
-    if ($configuration['expose']['port'] !== 80) {
-        $origin .= ':' . $configuration['expose']['port'];
-    }
-}
-
 $injector->define(Handler::class, [
-    ':origin' => $origin,
+    ':origin' => (new Origin($configuration))->get(),
 ]);
 
 $injector->define(Client::class, [
