@@ -16,6 +16,6 @@ class User implements Credentials
 
     public function getAuthenticationString(): string
     {
-        return base64_encode($this->username . ':' . $this->password);
+        return \base64_encode($this->username . ':' . $this->password);
     }
 }

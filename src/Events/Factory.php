@@ -17,6 +17,6 @@ class Factory
 
     private function isValidType(string $type): bool
     {
-        return class_exists($type);
+        return \class_exists($type);
     }
 }

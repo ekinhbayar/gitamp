@@ -72,7 +72,7 @@ class GitAmp
 
         /** @var Response $result */
         if ($result->getStatus() !== 200) {
-            $message = sprintf(
+            $message = \sprintf(
                 'A non-200 response status (%s - %s) was encountered',
                 $result->getStatus(),
                 $result->getReason()
@@ -95,7 +95,7 @@ class GitAmp
 
     private function getAuthHeader(): array
     {
-        return ['Authorization' => sprintf('Basic %s', $this->credentials->getAuthenticationString())];
+        return ['Authorization' => \sprintf('Basic %s', $this->credentials->getAuthenticationString())];
     }
 }
 

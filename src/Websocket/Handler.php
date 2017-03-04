@@ -69,7 +69,7 @@ class Handler implements Websocket
     }
 
     public function sendConnectedUsersCount(int $count) {
-        $this->endpoint->send(null, json_encode(['connectedUsers' => $count]));
+        $this->endpoint->send(null, \json_encode(['connectedUsers' => $count]));
     }
 
     public function onData(int $clientId, Websocket\Message $msg) {
