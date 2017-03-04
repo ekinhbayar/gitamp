@@ -84,5 +84,4 @@ class Handler implements Websocket
     public function onStop() {
         // intentionally left blank
     }
-
 }
