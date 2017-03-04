@@ -4,7 +4,8 @@ namespace ekinhbayar\GitAmp\Log;
 
 use Aerys\Bootable;
 use Aerys\Request as AerysRequest;
-use Aerys\Response;use Aerys\Server;
+use Aerys\Response;
+use Aerys\Server;
 use Psr\Log\LoggerInterface;
 
 class Request implements Bootable
