@@ -1,9 +1,9 @@
 <?php declare(strict_types = 1);
 
 use Aerys\Host;
-use Amp\Redis\Client;
 use Auryn\Injector;
 use ekinhbayar\GitAmp\Github\Credentials;
+use ekinhbayar\GitAmp\Log\Request as RequestLogger;
 use ekinhbayar\GitAmp\Storage\Counter;
 use ekinhbayar\GitAmp\Storage\NativeCounter;
 use ekinhbayar\GitAmp\Websocket\Handler;
@@ -62,25 +62,7 @@ $websocket = $injector->make(Handler::class);
 
 $router = router()->get('/ws', websocket($websocket));
 
-$requestLogger = new class implements \Aerys\Bootable {
-    private $logger;
-
-    public function boot(\Aerys\Server $server, \Psr\Log\LoggerInterface $logger)
-    {
-        $this->logger = $logger;
-    }
-
-    public function __invoke(\Aerys\Request $req, \Aerys\Response $res)
-    {
-        $this->logger->debug('Incoming request', [
-            'method'     => $req->getMethod(),
-            'uri'        => $req->getUri(),
-            'headers'    => $req->getAllHeaders(),
-            'parameters' => $req->getAllParams(),
-            'body'       => $req->getBody(),
-        ]);
-    }
-};
+$requestLogger = new RequestLogger();
 
 if (isset($configuration['ssl'])) {
     (new Host())
