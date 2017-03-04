@@ -41,7 +41,7 @@ class Handler implements Websocket
 
     public function onHandshake(Request $request, Response $response)
     {
-        if ($request->getHeader("origin") !== $this->origin) {
+        if ($request->getHeader('origin') !== $this->origin) {
             $response->setStatus(403);
             $response->end('<h1>origin not allowed</h1>');
 
