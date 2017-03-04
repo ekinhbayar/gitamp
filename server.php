@@ -40,10 +40,6 @@ $injector->define(Handler::class, [
     ':origin' => (new Origin($configuration))->get(),
 ]);
 
-$injector->define(Client::class, [
-    ':uri' => $configuration['redis']
-]);
-
 $websocket = $injector->make(Handler::class);
 
 $router = router()->get('/ws', websocket($websocket));
