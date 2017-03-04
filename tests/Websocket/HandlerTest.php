@@ -5,6 +5,7 @@ namespace ekinhbayar\GitAmpTests\Websocket;
 use Aerys\Request;
 use Aerys\Response;
 use Aerys\Websocket\Endpoint;
+use Aerys\Websocket\Message;
 use Amp\Success;
 use ekinhbayar\GitAmp\Client\GitAmp;
 use ekinhbayar\GitAmp\Response\Results;
@@ -117,6 +118,13 @@ class HandlerTest extends TestCase
         $this->markTestIncomplete('This should be implemented once we have replaced the repeat call.');
     }
 
+    public function testOnDataReturnsNothing()
+    {
+        $handler = new Handler($this->counter, $this->origin, $this->gitamp);
+
+        $this->assertNull($handler->onData(1, $this->createMock(Message::class)));
+    }
+
     public function testOnCloseDecrementsUserCount()
     {
         $this->counter
@@ -132,5 +140,12 @@ class HandlerTest extends TestCase
 
             \Amp\repeat('\Amp\stop', 27000);
         });
+    }
+
+    public function testOnStopReturnsNothing()
+    {
+        $handler = new Handler($this->counter, $this->origin, $this->gitamp);
+
+        $this->assertNull($handler->onStop());
     }
 }
