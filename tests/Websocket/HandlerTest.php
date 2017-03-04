@@ -108,7 +108,29 @@ class HandlerTest extends TestCase
         \Amp\run(function() use ($handler) {
             yield $handler->onStart($this->createMock(Endpoint::class));
 
-            \Amp\stop();
+            \Amp\repeat('\Amp\stop', 25000);
+        });
+    }
+
+    public function testOnStartEmitsEvents()
+    {
+        $this->markTestIncomplete('This should be implemented once we have replaced the repeat call.');
+    }
+
+    public function testOnCloseDecrementsUserCount()
+    {
+        $this->counter
+            ->expects($this->once())
+            ->method('decrement')
+            ->with('connected_users')
+        ;
+
+        $handler = new Handler($this->counter, $this->origin, $this->gitamp);
+
+        \Amp\run(function() use ($handler) {
+            yield from $handler->onClose(1, 0, 'foo');
+
+            \Amp\repeat('\Amp\stop', 27000);
         });
     }
 }
