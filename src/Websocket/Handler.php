@@ -53,7 +53,6 @@ class Handler implements Websocket
 
     public function onOpen(int $clientId, $handshakeData)
     {
-        // send initial results
         $this->emit(yield $this->gitamp->listen());
 
         yield $this->counter->increment('connected_users');
