@@ -4,7 +4,10 @@ namespace ekinhbayar\GitAmpTests\Websocket;
 
 use Aerys\Request;
 use Aerys\Response;
+use Aerys\Websocket\Endpoint;
+use Amp\Success;
 use ekinhbayar\GitAmp\Client\GitAmp;
+use ekinhbayar\GitAmp\Response\Results;
 use ekinhbayar\GitAmp\Storage\Counter;
 use ekinhbayar\GitAmp\Websocket\Handler;
 use PHPUnit\Framework\TestCase;
@@ -76,5 +79,36 @@ class HandlerTest extends TestCase
         ;
 
         $this->assertSame('127.0.0.1', $handler->onHandshake($request, $response));
+    }
+
+    public function testOnStartResetsConnectedUserCounter()
+    {
+        $this->counter
+            ->expects($this->once())
+            ->method('set')
+            ->with('connected_users', 0)
+        ;
+
+        $results = $this->createMock(Results::class);
+
+        $results
+            ->expects($this->once())
+            ->method('hasEvents')
+            ->will($this->returnValue(false))
+        ;
+
+        $this->gitamp
+            ->expects($this->once())
+            ->method('listen')
+            ->will($this->returnValue(new Success($results)))
+        ;
+
+        $handler = new Handler($this->counter, $this->origin, $this->gitamp);
+
+        \Amp\run(function() use ($handler) {
+            yield $handler->onStart($this->createMock(Endpoint::class));
+
+            \Amp\stop();
+        });
     }
 }
