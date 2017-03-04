@@ -61,7 +61,7 @@ class Handler implements Websocket
         $this->sendConnectedUsersCount(yield $this->counter->get('connected_users'));
     }
 
-    public function emit(Results $events)
+    private function emit(Results $events)
     {
         if (!$events->hasEvents()) {
             return;
@@ -70,7 +70,7 @@ class Handler implements Websocket
         $this->endpoint->send(null, $events->jsonEncode());
     }
 
-    public function sendConnectedUsersCount(int $count)
+    private function sendConnectedUsersCount(int $count)
     {
         $this->endpoint->send(null, \json_encode(['connectedUsers' => $count]));
     }
