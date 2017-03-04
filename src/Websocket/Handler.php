@@ -43,7 +43,7 @@ class Handler implements Websocket
     {
         if ($request->getHeader("origin") !== $this->origin) {
             $response->setStatus(403);
-            $response->end("<h1>origin not allowed</h1>");
+            $response->end('<h1>origin not allowed</h1>');
 
             return null;
         }
