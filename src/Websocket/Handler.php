@@ -61,9 +61,6 @@ class Handler implements Websocket
         $this->sendConnectedUsersCount(yield $this->counter->get('connected_users'));
     }
 
-    /**
-     * @param Results $events
-     */
     public function emit(Results $events)
     {
         if (!$events->hasEvents()) {
