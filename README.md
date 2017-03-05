@@ -14,7 +14,6 @@ Clone of [github.audio](https://github.audio).
 Requires:
 
  - PHP 7
- - Redis
 
 ## Usage
 
@@ -39,3 +38,9 @@ To run GitAmp as a systemd unit:
 If you want to run it after reboots as well, symlink the service file under `multi-user.target.wants` via 
 
 `ln -sf /etc/systemd/system/gitamp.service /etc/systemd/system/multi-user.target.wants/gitamp.service`
+
+## Issues
+
+All features requests, bug reports or questions can be posted in [GitHub issues](https://github.com/ekinhbayar/gitamp/issues).
+
+For security related reports please send a mail to security@gitamp.audio instead of using GitHub's issues.
