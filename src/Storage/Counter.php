@@ -2,8 +2,6 @@
 
 namespace ekinhbayar\GitAmp\Storage;
 
-use Amp\Promise;
-
 interface Counter
 {
     public function increment();
