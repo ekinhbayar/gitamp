@@ -3,6 +3,10 @@
 namespace ekinhbayar\GitAmpTests\Response;
 
 use Amp\Artax\Response;
+use Amp\ByteStream\InputStream;
+use Amp\ByteStream\Message;
+use function Amp\Promise\wait;
+use Amp\Success;
 use ekinhbayar\GitAmp\Response\Factory;
 use ekinhbayar\GitAmp\Response\Results;
 use ekinhbayar\GitAmp\Events\Factory as EventFactory;
@@ -25,17 +29,33 @@ class FactoryTest extends TestCase
             ],
         ]);
 
+        $inputStream = $this->createMock(InputStream::class);
+        $inputStream
+            ->expects($this->at(0))
+            ->method('read')
+            ->willReturn(new Success($events))
+        ;
+        $inputStream
+            ->expects($this->at(1))
+            ->method('read')
+            ->willReturn(new Success(null))
+        ;
+
+        $message = new Message($inputStream);
+
         $response = $this->createMock(Response::class);
 
         $response
             ->expects($this->once())
             ->method('getBody')
-            ->will($this->returnValue($events))
+            ->will($this->returnValue($message))
         ;
 
         $logger = $this->createMock(LoggerInterface::class);
 
-        $results = (new Factory(new EventFactory(), $logger))->build($response);
+        $factory = new Factory(new EventFactory(), $logger);
+
+        $results = wait($factory->build($response));
 
         $this->assertInstanceOf(Results::class, $results);
     }

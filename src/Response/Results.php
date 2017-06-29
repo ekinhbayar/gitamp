@@ -22,10 +22,10 @@ class Results
         $this->logger       = $logger;
     }
 
-    public function appendResponse(Response $response)
+    public function appendResponse(Response $response): \Generator
     {
         try {
-            $events = \json_try_decode($response->getBody(), true);
+            $events = \json_try_decode(yield $response->getBody(), true);
         } catch (DecodeErrorException $e) {
             $this->logger->emergency('Failed to decode response body as JSON', ['exception' => $e]);
 
