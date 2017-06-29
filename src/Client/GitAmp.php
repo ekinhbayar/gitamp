@@ -87,7 +87,7 @@ class GitAmp
         return \Amp\call(function() {
             $response = yield $this->request();
 
-            return new Success($this->resultFactory->build($response));
+            return yield $this->resultFactory->build($response);
         });
     }
 

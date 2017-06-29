@@ -5,6 +5,8 @@ namespace ekinhbayar\GitAmpTests\Client;
 use Amp\Artax\Client;
 use Amp\Artax\HttpException;
 use Amp\Artax\Response;
+use Amp\ByteStream\InMemoryStream;
+use Amp\ByteStream\Message;
 use Amp\Promise;
 use Amp\Success;
 use ekinhbayar\GitAmp\Client\RequestFailedException;
@@ -114,6 +116,10 @@ class GitAmpTest extends TestCase
             ->method('getStatus')
             ->will($this->returnValue(200))
         ;
+
+        $response
+            ->method('getBody')
+            ->willReturn(new Message(new InMemoryStream("mock data")));
 
         $httpClient = $this->createMock(Client::class);
 
