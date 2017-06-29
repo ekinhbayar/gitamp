@@ -3,7 +3,7 @@
 namespace ekinhbayar\GitAmpTests\Client;
 
 use Amp\Artax\Client;
-use Amp\Artax\ClientException;
+use Amp\Artax\HttpException;
 use Amp\Artax\Response;
 use Amp\Promise;
 use Amp\Success;
@@ -13,7 +13,7 @@ use ekinhbayar\GitAmp\Client\GitAmp;
 use ekinhbayar\GitAmp\Response\Factory;
 use ekinhbayar\GitAmp\Response\Results;
 use PHPUnit\Framework\TestCase;
-use function Amp\wait;
+use function Amp\Promise\wait;
 use Psr\Log\LoggerInterface;
 
 class GitAmpTest extends TestCase
@@ -38,7 +38,7 @@ class GitAmpTest extends TestCase
         $httpClient
             ->expects($this->once())
             ->method('request')
-            ->will($this->throwException(new ClientException()))
+            ->will($this->throwException(new HttpException()))
         ;
 
         $gitamp = new GitAmp($httpClient, $this->credentials, $this->factory, $this->logger);

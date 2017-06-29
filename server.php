@@ -74,6 +74,6 @@ if (isset($configuration['ssl'])) {
 
 $logger = $injector->make(LoggerInterface::class);
 
-\Amp\onError(function(Throwable $e) use ($logger) {
+Amp\Loop::setErrorHandler(function(Throwable $e) use ($logger) {
     $logger->emergency('GitAmp blew up', ['exception' => $e]);
 });

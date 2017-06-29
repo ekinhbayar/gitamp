@@ -6,6 +6,7 @@ use Aerys\Request;
 use Aerys\Response;
 use Aerys\Websocket\Endpoint;
 use Aerys\Websocket\Message;
+use Amp\Loop;
 use Amp\Success;
 use ekinhbayar\GitAmp\Client\GitAmp;
 use ekinhbayar\GitAmp\Response\Results;
@@ -77,7 +78,7 @@ class HandlerTest extends TestCase
         $this->assertSame('127.0.0.1', $handler->onHandshake($request, $response));
     }
 
-    public function testOnStartResetsConnectedUserCounter()
+    public function testOnOpenResetsConnectedUserCounter()
     {
         $this->counter
             ->expects($this->once())
@@ -98,17 +99,17 @@ class HandlerTest extends TestCase
 
         $handler = new Handler($this->counter, $this->origin, $this->gitamp);
 
-        \Amp\run(function () use ($handler) {
-            yield $handler->onStart($this->createMock(Endpoint::class));
+        Loop::run(function () use ($handler) {
+            $handler->onOpen(0, null);
 
-            \Amp\repeat('\Amp\stop', 25000);
+            Loop::repeat(27000, function () { Loop::stop(); });
         });
     }
 
-    public function testOnStartEmitsEvents()
+    /*public function testOnStartEmitsEvents()
     {
         $this->markTestIncomplete('This should be implemented once we have replaced the repeat call.');
-    }
+    }*/
 
     public function testOnDataReturnsNothing()
     {
@@ -125,12 +126,12 @@ class HandlerTest extends TestCase
 
         $handler = new Handler($this->counter, $this->origin, $this->gitamp);
 
-        \Amp\run(function () use ($handler) {
+        Loop::run(function () use ($handler) {
             $handler->onStart($this->createMock(Endpoint::class));
 
             $handler->onClose(1, 0, 'foo');
 
-            \Amp\repeat('\Amp\stop', 27000);
+            Loop::repeat(2000, function () { Loop::stop(); });
         });
     }
 

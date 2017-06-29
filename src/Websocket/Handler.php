@@ -2,6 +2,7 @@
 
 namespace ekinhbayar\GitAmp\Websocket;
 
+use Amp\Loop;
 use Aerys\Request;
 use Aerys\Response;
 use Aerys\Websocket;
@@ -9,7 +10,6 @@ use Aerys\Websocket\Endpoint;
 use ekinhbayar\GitAmp\Client\GitAmp;
 use ekinhbayar\GitAmp\Response\Results;
 use ekinhbayar\GitAmp\Storage\Counter;
-use function Amp\repeat;
 
 class Handler implements Websocket
 {
@@ -33,10 +33,6 @@ class Handler implements Websocket
         $this->endpoint = $endpoint;
 
         $this->counter->set(0);
-
-        repeat(function() {
-            $this->emit(yield $this->gitamp->listen());
-        }, 25000);
     }
 
     public function onHandshake(Request $request, Response $response)
@@ -55,6 +51,10 @@ class Handler implements Websocket
     {
         $this->emit(yield $this->gitamp->listen());
 
+        Loop::repeat(25000, function() {
+            $this->emit(yield $this->gitamp->listen());
+        });
+
         $this->counter->increment();
 
         $this->sendConnectedUsersCount($this->counter->get());
@@ -66,12 +66,12 @@ class Handler implements Websocket
             return;
         }
 
-        $this->endpoint->send(null, $events->jsonEncode());
+        $this->endpoint->broadcast($events->jsonEncode());
     }
 
     private function sendConnectedUsersCount(int $count)
     {
-        $this->endpoint->send(null, \json_encode(['connectedUsers' => $count]));
+        $this->endpoint->broadcast(\json_encode(['connectedUsers' => $count]));
     }
 
     public function onData(int $clientId, Websocket\Message $msg)

@@ -5,7 +5,7 @@ namespace ekinhbayar\GitAmp\Client;
 use Amp\Artax\Response;
 use Amp\Promise;
 use Amp\Artax\Client;
-use Amp\Artax\ClientException;
+use Amp\Artax\HttpException;
 use Amp\Artax\Request;
 use Amp\Success;
 use ekinhbayar\GitAmp\Response\Factory;
@@ -44,20 +44,18 @@ class GitAmp
     private function request(): Promise
     {
         try {
-            $request = (new Request)
-                ->setMethod('GET')
-                ->setUri(self::API_ENDPOINT)
-                ->setAllHeaders($this->getAuthHeader());
+            $request = (new Request(self::API_ENDPOINT, 'GET'))
+                ->withAllHeaders($this->getAuthHeader());
 
             $promise = $this->client->request($request);
 
-            $promise->when(function($error, $result) {
+            $promise->onResolve(function($error, $result) {
                 $this->checkForRequestErrors($error, $result);
             });
 
             return $promise;
 
-        } catch (ClientException $e) {
+        } catch (HttpException $e) {
             throw new RequestFailedException('Failed to send GET request to API endpoint', $e->getCode(), $e);
         }
     }
@@ -86,7 +84,7 @@ class GitAmp
 
     public function listen(): Promise
     {
-        return \Amp\resolve(function() {
+        return \Amp\call(function() {
             $response = yield $this->request();
 
             return new Success($this->resultFactory->build($response));
