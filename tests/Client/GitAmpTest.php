@@ -129,6 +129,12 @@ class GitAmpTest extends TestCase
             ->will($this->returnValue(new Success($response)))
         ;
 
+        $this->factory
+            ->expects($this->once())
+            ->method('build')
+            ->will($this->returnValue(new Success($this->createMock(Results::class))))
+        ;
+
         $this->assertInstanceOf(
             Results::class,
             wait((new GitAmp($httpClient, $this->credentials, $this->factory, $this->logger))->listen())

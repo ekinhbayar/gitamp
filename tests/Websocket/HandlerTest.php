@@ -99,8 +99,10 @@ class HandlerTest extends TestCase
 
         $handler = new Handler($this->counter, $this->origin, $this->gitamp);
 
+        $handler->onStart($this->createMock(Endpoint::class));
+
         Loop::run(function () use ($handler) {
-            $handler->onOpen(0, null);
+            yield from $handler->onOpen(0, null);
 
             Loop::repeat(27000, function () { Loop::stop(); });
         });

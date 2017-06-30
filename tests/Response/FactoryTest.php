@@ -74,18 +74,32 @@ class FactoryTest extends TestCase
             ],
         ]);
 
+        $inputStream = $this->createMock(InputStream::class);
+        $inputStream
+            ->expects($this->at(0))
+            ->method('read')
+            ->willReturn(new Success($events))
+        ;
+        $inputStream
+            ->expects($this->at(1))
+            ->method('read')
+            ->willReturn(new Success(null))
+        ;
+
+        $message = new Message($inputStream);
+
         $response = $this->createMock(Response::class);
 
         $response
             ->expects($this->once())
             ->method('getBody')
-            ->will($this->returnValue($events))
+            ->will($this->returnValue($message))
         ;
 
         $logger = $this->createMock(LoggerInterface::class);
 
         $results = (new Factory(new EventFactory(), $logger))->build($response);
 
-        $this->assertInstanceOf(Results::class, $results);
+        $this->assertInstanceOf(Results::class, wait($results));
     }
 }

@@ -37,55 +37,39 @@ class GitAmp
         $this->logger        = $logger;
     }
 
-    /**
-     * @return Promise
-     * @throws RequestFailedException
-     */
-    private function request(): Promise
+    private function request(): \Generator
     {
         try {
             $request = (new Request(self::API_ENDPOINT, 'GET'))
                 ->withAllHeaders($this->getAuthHeader());
 
-            $promise = $this->client->request($request);
-
-            $promise->onResolve(function($error, $result) {
-                $this->checkForRequestErrors($error, $result);
-            });
-
-            return $promise;
-
+            $response = yield $this->client->request($request);
         } catch (HttpException $e) {
+            $this->logger->error('Failed to send GET request to API endpoint', ['exception' => $e]);
+
             throw new RequestFailedException('Failed to send GET request to API endpoint', $e->getCode(), $e);
-        }
-    }
-
-    private function checkForRequestErrors($error, $result)
-    {
-        if ($error) {
-            $this->logger->error('Call to webservice failed', ['error' => $error]);
-
-            throw new RequestFailedException('Call to webservice failed');
         }
 
         /** @var Response $result */
-        if ($result->getStatus() !== 200) {
+        if ($response->getStatus() !== 200) {
             $message = \sprintf(
                 'A non-200 response status (%s - %s) was encountered',
-                $result->getStatus(),
-                $result->getReason()
+                $response->getStatus(),
+                $response->getReason()
             );
 
-            $this->logger->critical($message, ['result' => $result]);
+            $this->logger->critical($message, ['response' => $response]);
 
             throw new RequestFailedException($message);
         }
+
+        return $response;
     }
 
     public function listen(): Promise
     {
         return \Amp\call(function() {
-            $response = yield $this->request();
+            $response = yield from $this->request();
 
             return yield $this->resultFactory->build($response);
         });
