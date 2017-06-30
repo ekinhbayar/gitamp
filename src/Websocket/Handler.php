@@ -38,6 +38,7 @@ class Handler implements Websocket
         asyncCall(function () {
             while (1) {
                 $this->emit(yield $this->gitamp->listen());
+
                 yield new Delayed(25000);
             }
         });

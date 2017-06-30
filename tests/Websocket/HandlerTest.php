@@ -120,14 +120,10 @@ class HandlerTest extends TestCase
 
         $handler = new Handler($this->counter, $this->origin, $this->gitamp);
 
-        $this->endpoint
-            ->expects($this->once())
-            ->method('broadcast');
-
         Loop::run(function () use ($handler) {
             $handler->onStart($this->endpoint);
 
-            Loop::delay(25000, "Amp\\Loop::stop");
+            Loop::stop();
         });
     }
 
