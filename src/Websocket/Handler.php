@@ -36,7 +36,7 @@ class Handler implements Websocket
         $this->counter->set(0);
 
         asyncCall(function () {
-            while (1) {
+            while (true) {
                 $this->emit(yield $this->gitamp->listen());
 
                 yield new Delayed(25000);

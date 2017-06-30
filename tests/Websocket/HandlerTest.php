@@ -99,7 +99,7 @@ class HandlerTest extends TestCase
         });
     }
 
-    public function testOnStartEmitsEvents()
+    public function testOnStartEmitsWithoutEvents()
     {
         $this->counter
             ->expects($this->once())
@@ -124,6 +124,38 @@ class HandlerTest extends TestCase
             $handler->onStart($this->endpoint);
 
             Loop::stop();
+        });
+    }
+
+    public function testOnStartEmitsWithEvents()
+    {
+        $this->counter
+            ->expects($this->once())
+            ->method('set')
+            ->with(0);
+
+        $results = $this->createMock(Results::class);
+
+        $results
+            ->expects($this->exactly(2))
+            ->method('hasEvents')
+            ->will($this->returnValue(true));
+
+        $this->gitamp
+            ->expects($this->exactly(2))
+            ->method('listen')
+            ->will($this->returnValue(new Success($results)));
+
+        $this->endpoint
+            ->expects($this->exactly(2))
+            ->method('broadcast');
+
+        $handler = new Handler($this->counter, $this->origin, $this->gitamp);
+
+        Loop::run(function () use ($handler) {
+            $handler->onStart($this->endpoint);
+
+            Loop::delay(25000, "Amp\\Loop::stop");
         });
     }
 
