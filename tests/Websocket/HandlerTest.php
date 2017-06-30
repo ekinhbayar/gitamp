@@ -88,12 +88,12 @@ class HandlerTest extends TestCase
         $results = $this->createMock(Results::class);
 
         $results
-            ->expects($this->once())
+            ->expects($this->exactly(2))
             ->method('hasEvents')
             ->will($this->returnValue(false));
 
         $this->gitamp
-            ->expects($this->once())
+            ->expects($this->exactly(2))
             ->method('listen')
             ->will($this->returnValue(new Success($results)));
 
