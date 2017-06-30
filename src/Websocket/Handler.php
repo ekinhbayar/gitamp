@@ -2,7 +2,8 @@
 
 namespace ekinhbayar\GitAmp\Websocket;
 
-use Amp\Loop;
+use function Amp\asyncCall;
+use Amp\Delayed;
 use Aerys\Request;
 use Aerys\Response;
 use Aerys\Websocket;
@@ -33,6 +34,13 @@ class Handler implements Websocket
         $this->endpoint = $endpoint;
 
         $this->counter->set(0);
+
+        asyncCall(function () {
+            while (1) {
+                $this->emit(yield $this->gitamp->listen());
+                yield new Delayed(25000);
+            }
+        });
     }
 
     public function onHandshake(Request $request, Response $response)
@@ -49,12 +57,6 @@ class Handler implements Websocket
 
     public function onOpen(int $clientId, $handshakeData)
     {
-        $this->emit(yield $this->gitamp->listen());
-
-        Loop::repeat(25000, function() {
-            $this->emit(yield $this->gitamp->listen());
-        });
-
         $this->counter->increment();
 
         $this->sendConnectedUsersCount($this->counter->get());

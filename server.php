@@ -2,6 +2,8 @@
 
 use Aerys\Host;
 use Auryn\Injector;
+use Amp\Artax\Client;
+use Amp\Artax\BasicClient;
 use ekinhbayar\GitAmp\Github\Credentials;
 use ekinhbayar\GitAmp\Http\Origin;
 use ekinhbayar\GitAmp\Log\Request as RequestLogger;
@@ -39,6 +41,8 @@ $injector->delegate(Logger::class, function() use ($configuration) {
 $injector->define(Handler::class, [
     ':origin' => (new Origin($configuration))->get(),
 ]);
+
+$injector->alias(Client::class, BasicClient::class);
 
 $websocket = $injector->make(Handler::class);
 

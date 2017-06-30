@@ -22,11 +22,14 @@ class HandlerTest extends TestCase
 
     private $gitamp;
 
+    private $endpoint;
+
     public function setUp()
     {
-        $this->counter = $this->createMock(Counter::class);
-        $this->origin = 'https://gitamp.audio';
-        $this->gitamp = $this->createMock(GitAmp::class);
+        $this->origin   = 'https://gitamp.audio';
+        $this->gitamp   = $this->createMock(GitAmp::class);
+        $this->counter  = $this->createMock(Counter::class);
+        $this->endpoint = $this->createMock(Endpoint::class);
     }
 
     public function testOnHandshakeReturnsForbiddenOnInvalidOrigin()
@@ -78,7 +81,25 @@ class HandlerTest extends TestCase
         $this->assertSame('127.0.0.1', $handler->onHandshake($request, $response));
     }
 
-    public function testOnOpenResetsConnectedUserCounter()
+    public function testOnStartResetsConnectedUserCounter()
+    {
+        $this->counter
+            ->expects($this->once())
+            ->method('set')
+            ->with(0);
+
+        $handler = new Handler($this->counter, $this->origin, $this->gitamp);
+
+        Loop::run(function () use ($handler) {
+            $handler->onStart($this->endpoint);
+
+            $handler->onClose(1, 0, 'foo');
+
+            Loop::stop();
+        });
+    }
+
+    public function testOnStartEmitsEvents()
     {
         $this->counter
             ->expects($this->once())
@@ -88,30 +109,44 @@ class HandlerTest extends TestCase
         $results = $this->createMock(Results::class);
 
         $results
-            ->expects($this->exactly(2))
+            ->expects($this->once())
             ->method('hasEvents')
             ->will($this->returnValue(false));
 
         $this->gitamp
-            ->expects($this->exactly(2))
+            ->expects($this->once())
             ->method('listen')
             ->will($this->returnValue(new Success($results)));
 
         $handler = new Handler($this->counter, $this->origin, $this->gitamp);
 
-        $handler->onStart($this->createMock(Endpoint::class));
+        $this->endpoint
+            ->expects($this->once())
+            ->method('broadcast');
 
         Loop::run(function () use ($handler) {
-            yield from $handler->onOpen(0, null);
+            $handler->onStart($this->endpoint);
 
-            Loop::repeat(27000, function () { Loop::stop(); });
+            Loop::delay(25000, "Amp\\Loop::stop");
         });
     }
 
-    /*public function testOnStartEmitsEvents()
+    public function testOnOpenIncrementsUserCount()
     {
-        $this->markTestIncomplete('This should be implemented once we have replaced the repeat call.');
-    }*/
+        $this->counter
+            ->expects($this->once())
+            ->method('increment');
+
+        $handler = new Handler($this->counter, $this->origin, $this->gitamp);
+
+        Loop::run(function () use ($handler) {
+            $handler->onStart($this->endpoint);
+
+            $handler->onOpen(1, 'foo');
+
+            Loop::stop();
+        });
+    }
 
     public function testOnDataReturnsNothing()
     {
@@ -129,11 +164,11 @@ class HandlerTest extends TestCase
         $handler = new Handler($this->counter, $this->origin, $this->gitamp);
 
         Loop::run(function () use ($handler) {
-            $handler->onStart($this->createMock(Endpoint::class));
+            $handler->onStart($this->endpoint);
 
             $handler->onClose(1, 0, 'foo');
 
-            Loop::repeat(2000, function () { Loop::stop(); });
+            Loop::stop();
         });
     }
 
