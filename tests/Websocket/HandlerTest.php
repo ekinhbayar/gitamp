@@ -176,6 +176,84 @@ class HandlerTest extends TestCase
         });
     }
 
+    public function testOnOpenWithoutExistingEvents()
+    {
+        $this->counter
+            ->expects($this->once())
+            ->method('increment')
+        ;
+
+        $results = $this->createMock(Results::class);
+        $results
+            ->expects($this->once())
+            ->method('hasEvents')
+            ->willReturn(false)
+        ;
+
+        $this->gitamp
+            ->expects($this->once())
+            ->method('listen')
+            ->willReturn(new Success($results))
+        ;
+
+        $this->endpoint
+            ->expects($this->never())
+            ->method('send')
+        ;
+
+        $handler = new Handler($this->counter, $this->origin, $this->gitamp);
+
+        Loop::run(function () use ($handler) {
+            $handler->onStart($this->endpoint);
+
+            $handler->onOpen(1, 'foo');
+
+            Loop::stop();
+        });
+    }
+
+    public function testOnOpenWithExistingEvents()
+    {
+        $this->counter
+            ->expects($this->once())
+            ->method('increment')
+        ;
+
+        $results = $this->createMock(Results::class);
+        $results
+            ->expects($this->once())
+            ->method('hasEvents')
+            ->willReturn(true)
+        ;
+
+        $results
+            ->expects($this->exactly(2))
+            ->method('jsonEncode')
+            ->willReturn('{}')
+        ;
+
+        $this->gitamp
+            ->expects($this->once())
+            ->method('listen')
+            ->willReturn(new Success($results))
+        ;
+
+        $this->endpoint
+            ->expects($this->once())
+            ->method('send')
+        ;
+
+        $handler = new Handler($this->counter, $this->origin, $this->gitamp);
+
+        Loop::run(function () use ($handler) {
+            $handler->onStart($this->endpoint);
+
+            $handler->onOpen(1, 'foo');
+
+            Loop::stop();
+        });
+    }
+
     public function testOnDataReturnsNothing()
     {
         $handler = new Handler($this->counter, $this->origin, $this->gitamp);
@@ -187,7 +265,8 @@ class HandlerTest extends TestCase
     {
         $this->counter
             ->expects($this->once())
-            ->method('decrement');
+            ->method('decrement')
+        ;
 
         $handler = new Handler($this->counter, $this->origin, $this->gitamp);
 

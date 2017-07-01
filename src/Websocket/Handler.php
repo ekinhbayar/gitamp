@@ -14,6 +14,7 @@ use ekinhbayar\GitAmp\Storage\Counter;
 
 class Handler implements Websocket
 {
+    /** @var Endpoint */
     private $endpoint;
 
     private $counter;
@@ -21,6 +22,9 @@ class Handler implements Websocket
     private $origin;
 
     private $provider;
+
+    /** @var Results */
+    private $lastEvents;
 
     public function __construct(Counter $counter, string $origin, Listener $provider)
     {
@@ -61,6 +65,10 @@ class Handler implements Websocket
         $this->counter->increment();
 
         $this->sendConnectedUsersCount($this->counter->get());
+
+        if ($this->lastEvents) {
+            $this->endpoint->send($this->lastEvents->jsonEncode(), $clientId);
+        }
     }
 
     private function emit(Results $events)
@@ -68,6 +76,8 @@ class Handler implements Websocket
         if (!$events->hasEvents()) {
             return;
         }
+
+        $this->lastEvents = $events;
 
         $this->endpoint->broadcast($events->jsonEncode());
     }
