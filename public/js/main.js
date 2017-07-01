@@ -356,24 +356,14 @@ const GitAmp = (function(exports, $) {
         return this.event.type;
     };
 
-    EventMessage.prototype.getAction = function() {
-        //noinspection JSUnresolvedVariable
-        return this.event.action;
-    };
-
     EventMessage.prototype.getRepositoryName = function() {
         //noinspection JSUnresolvedVariable
         return this.event.repoName;
     };
 
-    EventMessage.prototype.getActorName = function() {
-        //noinspection JSUnresolvedVariable
-        return this.event.actorName;
-    };
-
     EventMessage.prototype.getUrl = function() {
         //noinspection JSUnresolvedVariable
-        return this.event.eventUrl;
+        return this.event.url;
     };
 
     EventMessage.prototype.getPayload = function() {

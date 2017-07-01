@@ -14,13 +14,9 @@ class BaseEvent implements Event
 
     protected $type;
 
-    protected $action;
-
     protected $repository;
 
-    protected $actorName;
-
-    protected $eventUrl;
+    protected $url;
 
     protected $payload;
 
@@ -32,10 +28,8 @@ class BaseEvent implements Event
         int $id,
         NumericalType $numericalType,
         string $type,
-        string $action,
         string $repository,
-        string $actorName,
-        string $eventUrl,
+        string $url,
         string $payload,
         string $message,
         Ring $ring
@@ -43,10 +37,8 @@ class BaseEvent implements Event
         $this->id            = $id;
         $this->numericalType = $numericalType;
         $this->type          = $type;
-        $this->action        = $action;
         $this->repository    = $repository;
-        $this->actorName     = $actorName;
-        $this->eventUrl      = $eventUrl;
+        $this->url           = $url;
         $this->payload       = $payload;
         $this->message       = $message;
         $this->ring          = $ring;
@@ -58,10 +50,8 @@ class BaseEvent implements Event
             'id'            => $this->id,
             'numericalType' => $this->numericalType->getValue(),
             'type'          => $this->type,
-            'action'        => $this->action,
             'repoName'      => $this->repository,
-            'actorName'     => \ucfirst($this->actorName),
-            'eventUrl'      => $this->eventUrl,
+            'url'           => $this->url,
             'payload'       => $this->payload,
             'message'       => $this->message,
             'ring'          => $this->ring->getAsArray(),
