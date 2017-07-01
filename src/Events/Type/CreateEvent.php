@@ -17,7 +17,7 @@ class CreateEvent extends BaseEvent
             $event['repo']['name'],
             $event['actor']['login'],
             $this->buildUrl($event),
-            $this->buildMessage($event),
+            $this->buildPayload($event),
             $this->buildMessage($event),
             new Ring(3000, 80)
         );
@@ -28,12 +28,17 @@ class CreateEvent extends BaseEvent
         return 'https://github.com/' . $event['repo']['name'];
     }
 
-    private function buildMessage(array $event): string
+    private function buildPayload(array $event): string
     {
         if (isset($event['payload']['description'])) {
             return $event['payload']['description'];
         }
 
         return 'https://github.com/' . $event['repo']['name'];
+    }
+
+    private function buildMessage(array $event): string
+    {
+        return sprintf('%s created %s', $event['actor']['login'], $event['repo']['name']);
     }
 }

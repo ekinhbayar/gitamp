@@ -180,22 +180,7 @@ const GitAmp = (function(exports, $) {
         };
 
         Event.prototype.getText = function() {
-            switch(this.event.getType()){
-                case 'PushEvent':
-                    return this.event.getActorName() + ' pushed to ' + this.event.getRepositoryName();
-                case 'PullRequestEvent':
-                    return this.event.getActorName() + ' ' + this.event.getAction() + ' ' + ' a PR for ' + this.event.getRepositoryName();
-                case 'IssuesEvent':
-                    return this.event.getActorName() + ' ' + this.event.getAction() + ' an issue in ' + this.event.getRepositoryName();
-                case 'IssueCommentEvent':
-                    return this.event.getActorName() + ' commented in ' + this.event.getRepositoryName();
-                case 'ForkEvent':
-                    return this.event.getActorName() + ' forked ' + this.event.getRepositoryName();
-                case 'CreateEvent':
-                    return this.event.getActorName() + ' created ' + this.event.getRepositoryName();
-                case 'WatchEvent':
-                    return this.event.getActorName() + ' watched ' + this.event.getRepositoryName();
-            }
+            return this.event.getMessage();
         };
 
         Event.prototype.getClassName = function() {

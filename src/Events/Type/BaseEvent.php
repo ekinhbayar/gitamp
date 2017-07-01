@@ -22,9 +22,9 @@ class BaseEvent implements Event
 
     protected $eventUrl;
 
-    protected $message;
-
     protected $payload;
+
+    protected $message;
 
     protected $ring;
 
@@ -36,8 +36,8 @@ class BaseEvent implements Event
         string $repository,
         string $actorName,
         string $eventUrl,
-        string $message,
         string $payload,
+        string $message,
         Ring $ring
     ) {
         $this->id            = $id;
@@ -47,8 +47,8 @@ class BaseEvent implements Event
         $this->repository    = $repository;
         $this->actorName     = $actorName;
         $this->eventUrl      = $eventUrl;
-        $this->message       = $message;
         $this->payload       = $payload;
+        $this->message       = $message;
         $this->ring          = $ring;
     }
 
@@ -62,8 +62,8 @@ class BaseEvent implements Event
             'repoName'      => $this->repository,
             'actorName'     => \ucfirst($this->actorName),
             'eventUrl'      => $this->eventUrl,
-            'message'       => $this->message,
             'payload'       => $this->payload,
+            'message'       => $this->message,
             'ring'          => $this->ring->getAsArray(),
         ];
     }

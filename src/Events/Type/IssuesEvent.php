@@ -18,8 +18,18 @@ class IssuesEvent extends BaseEvent
             $event['actor']['login'],
             $event['payload']['issue']['html_url'],
             $event['payload']['issue']['title'],
-            $event['payload']['issue']['title'],
+            $this->buildMessage($event),
             new Ring(3000, 80)
+        );
+    }
+
+    private function buildMessage(array $event): string
+    {
+        return sprintf(
+            '%s %s an issue in %s',
+            $event['actor']['login'],
+            $event['payload']['action'],
+            $event['repo']['name']
         );
     }
 }

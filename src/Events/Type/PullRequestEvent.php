@@ -18,8 +18,18 @@ class PullRequestEvent extends BaseEvent
             $event['actor']['login'],
             $event['payload']['pull_request']['html_url'],
             $event['payload']['pull_request']['title'],
-            $event['payload']['pull_request']['title'],
+            $this->buildMessage($event),
             new Ring(10000, 600)
+        );
+    }
+
+    private function buildMessage(array $event): string
+    {
+        return sprintf(
+            '%s %s a PR for %s',
+            $event['actor']['login'],
+            $event['payload']['action'],
+            $event['repo']['name']
         );
     }
 }

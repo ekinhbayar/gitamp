@@ -17,8 +17,8 @@ class WatchEvent extends BaseEvent
             $event['repo']['name'],
             $event['actor']['login'],
             $this->buildUrl($event),
-            $this->buildMessage(),
-            $this->buildMessage(),
+            $this->buildPayload(),
+            $this->buildMessage($event),
             new Ring(3000, 80)
         );
     }
@@ -28,8 +28,13 @@ class WatchEvent extends BaseEvent
         return 'https://github.com/' . $event['repo']['name'];
     }
 
-    private function buildMessage(): string
+    private function buildPayload(): string
     {
         return 'not sure if stupid but works anyway';
+    }
+
+    private function buildMessage(array $event): string
+    {
+        return sprintf('%s watched %s', $event['actor']['login'], $event['repo']['name']);
     }
 }

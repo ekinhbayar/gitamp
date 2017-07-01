@@ -17,18 +17,23 @@ class IssueCommentEvent extends BaseEvent
             $event['repo']['name'],
             $event['actor']['login'],
             $event['payload']['issue']['html_url'],
-            $this->buildMessage($event),
+            $this->buildPayload($event),
             $this->buildMessage($event),
             new Ring(3000, 80)
         );
     }
 
-    private function buildMessage(array $event): string
+    private function buildPayload(array $event): string
     {
         if (isset($event['comment']['body'])) {
             return $event['comment']['body'];
         }
 
         return $event['payload']['issue']['title'];
+    }
+
+    private function buildMessage(array $event): string
+    {
+        return sprintf('%s commented in %s', $event['actor']['login'], $event['repo']['name']);
     }
 }

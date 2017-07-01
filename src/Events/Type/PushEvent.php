@@ -17,7 +17,7 @@ class PushEvent extends BaseEvent
             $event['repo']['name'],
             $event['actor']['login'],
             $this->buildUrl($event),
-            $this->buildMessage($event),
+            $this->buildPayload($event),
             $this->buildMessage($event),
             new Ring(3000, 80)
         );
@@ -28,12 +28,17 @@ class PushEvent extends BaseEvent
         return 'https://github.com/' . $event['repo']['name'];
     }
 
-    private function buildMessage(array $event): string
+    private function buildPayload(array $event): string
     {
         if (isset($event['payload']['commits'][0]['message'])) {
             return $event['payload']['commits'][0]['message'];
         }
 
         return 'https://github.com/' . $event['actor']['login'];
+    }
+
+    private function buildMessage(array $event): string
+    {
+        return sprintf('%s pushed to %s', $event['actor']['login'], $event['repo']['name']);
     }
 }
