@@ -4,6 +4,9 @@ namespace ekinhbayar\GitAmp\Events\Type;
 
 use ekinhbayar\GitAmp\Presentation\NumericalType;
 use ekinhbayar\GitAmp\Presentation\Ring;
+use ekinhbayar\GitAmp\Presentation\Sound\BaseSound;
+use ekinhbayar\GitAmp\Presentation\Sound\Swell;
+use ekinhbayar\GitAmp\Presentation\Sound\SwellEgg;
 
 class ForkEvent extends BaseEvent
 {
@@ -17,7 +20,8 @@ class ForkEvent extends BaseEvent
             $this->buildUrl($event),
             $this->buildPayload(),
             $this->buildMessage($event),
-            new Ring(3000, 80)
+            new Ring(3000, 80),
+            $this->buildSound($event)
         );
     }
 
@@ -34,5 +38,14 @@ class ForkEvent extends BaseEvent
     private function buildMessage(array $event): string
     {
         return sprintf('%s forked %s', $event['actor']['login'], $event['repo']['name']);
+    }
+
+    private function buildSound(array $event): BaseSound
+    {
+        if ($event['repo']['name'] === 'ekinhbayar/gitamp') {
+            return new SwellEgg();
+        }
+
+        return new Swell();
     }
 }

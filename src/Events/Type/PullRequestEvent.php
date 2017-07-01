@@ -4,6 +4,9 @@ namespace ekinhbayar\GitAmp\Events\Type;
 
 use ekinhbayar\GitAmp\Presentation\NumericalType;
 use ekinhbayar\GitAmp\Presentation\Ring;
+use ekinhbayar\GitAmp\Presentation\Sound\BaseSound;
+use ekinhbayar\GitAmp\Presentation\Sound\Swell;
+use ekinhbayar\GitAmp\Presentation\Sound\SwellEgg;
 
 class PullRequestEvent extends BaseEvent
 {
@@ -17,7 +20,8 @@ class PullRequestEvent extends BaseEvent
             $event['payload']['pull_request']['html_url'],
             $event['payload']['pull_request']['title'],
             $this->buildMessage($event),
-            new Ring(10000, 600)
+            new Ring(10000, 600),
+            $this->buildSound($event)
         );
     }
 
@@ -29,5 +33,14 @@ class PullRequestEvent extends BaseEvent
             $event['payload']['action'],
             $event['repo']['name']
         );
+    }
+
+    private function buildSound(array $event): BaseSound
+    {
+        if ($event['repo']['name'] === 'ekinhbayar/gitamp') {
+            return new SwellEgg();
+        }
+
+        return new Swell();
     }
 }

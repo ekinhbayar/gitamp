@@ -4,6 +4,9 @@ namespace ekinhbayar\GitAmp\Events\Type;
 
 use ekinhbayar\GitAmp\Presentation\NumericalType;
 use ekinhbayar\GitAmp\Presentation\Ring;
+use ekinhbayar\GitAmp\Presentation\Sound\BaseSound;
+use ekinhbayar\GitAmp\Presentation\Sound\Celesta;
+use ekinhbayar\GitAmp\Presentation\Sound\CelestaEgg;
 
 class PushEvent extends BaseEvent
 {
@@ -17,7 +20,8 @@ class PushEvent extends BaseEvent
             $this->buildUrl($event),
             $this->buildPayload($event),
             $this->buildMessage($event),
-            new Ring(3000, 80)
+            new Ring(3000, 80),
+            $this->buildSound($event)
         );
     }
 
@@ -38,5 +42,14 @@ class PushEvent extends BaseEvent
     private function buildMessage(array $event): string
     {
         return sprintf('%s pushed to %s', $event['actor']['login'], $event['repo']['name']);
+    }
+
+    private function buildSound(array $event): BaseSound
+    {
+        if ($event['repo']['name'] === 'ekinhbayar/gitamp') {
+            return new CelestaEgg();
+        }
+
+        return new Celesta(strlen($this->buildPayload($event)) * 1.1);
     }
 }

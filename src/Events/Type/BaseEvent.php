@@ -5,6 +5,7 @@ namespace ekinhbayar\GitAmp\Events\Type;
 use ekinhbayar\GitAmp\Events\Event;
 use ekinhbayar\GitAmp\Presentation\NumericalType;
 use ekinhbayar\GitAmp\Presentation\Ring;
+use ekinhbayar\GitAmp\Presentation\Sound\BaseSound;
 
 class BaseEvent implements Event
 {
@@ -24,6 +25,8 @@ class BaseEvent implements Event
 
     protected $ring;
 
+    protected $sound;
+
     public function __construct(
         int $id,
         NumericalType $numericalType,
@@ -32,7 +35,8 @@ class BaseEvent implements Event
         string $url,
         string $payload,
         string $message,
-        Ring $ring
+        Ring $ring,
+        BaseSound $sound
     ) {
         $this->id            = $id;
         $this->numericalType = $numericalType;
@@ -42,6 +46,7 @@ class BaseEvent implements Event
         $this->payload       = $payload;
         $this->message       = $message;
         $this->ring          = $ring;
+        $this->sound         = $sound;
     }
 
     public function getAsArray(): array
@@ -55,6 +60,7 @@ class BaseEvent implements Event
             'payload'       => $this->payload,
             'message'       => \ucfirst($this->message),
             'ring'          => $this->ring->getAsArray(),
+            'sound'         => $this->sound->getAsArray(),
         ];
     }
 }

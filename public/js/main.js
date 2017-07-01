@@ -386,6 +386,16 @@ const GitAmp = (function(exports, $) {
         return this.event.ring.radius;
     };
 
+    EventMessage.prototype.getSoundType = function() {
+        //noinspection JSUnresolvedVariable
+        return this.event.sound.type;
+    };
+
+    EventMessage.prototype.getSoundSize = function() {
+        //noinspection JSUnresolvedVariable
+        return this.event.sound.size;
+    };
+
     /**
      * EventMessageCollection
      */
@@ -570,23 +580,7 @@ const GitAmp = (function(exports, $) {
             return;
         }
 
-        if (event.getRepositoryName() === 'ekinhbayar/gitamp') {
-            if (event.getType() === 'IssuesEvent' || event.getType() === 'IssueCommentEvent') {
-                this.audio.playClavEgg();
-            } else if(event.getType() === 'PushEvent') {
-                this.audio.playCelestaEgg();
-            }else{
-                this.audio.playSwellEgg();
-            }
-        }
-
-        if (event.getType() === 'IssuesEvent' || event.getType() === 'IssueCommentEvent') {
-            this.audio.playClav(event.getPayload().length * 1.1);
-        } else if(event.getType() === 'PushEvent') {
-            this.audio.playCelesta(event.getPayload().length * 1.1);
-        }else{
-            this.audio.playSwell();
-        }
+        this.audio['play' + event.getSoundType()](event.getSoundSize());
 
         this.gui.drawEvent(event);
     };
