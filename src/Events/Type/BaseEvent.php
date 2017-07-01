@@ -53,7 +53,7 @@ class BaseEvent implements Event
             'repoName'      => $this->repository,
             'url'           => $this->url,
             'payload'       => $this->payload,
-            'message'       => $this->message,
+            'message'       => \ucfirst($this->message),
             'ring'          => $this->ring->getAsArray(),
         ];
     }
