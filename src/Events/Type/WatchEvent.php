@@ -18,6 +18,7 @@ class WatchEvent extends BaseEvent
             $event['actor']['login'],
             $this->buildUrl($event),
             $this->buildMessage(),
+            $this->buildMessage(),
             new Ring(3000, 80)
         );
     }

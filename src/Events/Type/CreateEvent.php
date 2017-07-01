@@ -18,6 +18,7 @@ class CreateEvent extends BaseEvent
             $event['actor']['login'],
             $this->buildUrl($event),
             $this->buildMessage($event),
+            $this->buildMessage($event),
             new Ring(3000, 80)
         );
     }

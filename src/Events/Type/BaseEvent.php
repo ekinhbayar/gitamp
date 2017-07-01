@@ -10,7 +10,7 @@ class BaseEvent implements Event
 {
     protected $id;
 
-    private $numericalType;
+    protected $numericalType;
 
     protected $type;
 
@@ -24,6 +24,8 @@ class BaseEvent implements Event
 
     protected $message;
 
+    protected $payload;
+
     protected $ring;
 
     public function __construct(
@@ -35,6 +37,7 @@ class BaseEvent implements Event
         string $actorName,
         string $eventUrl,
         string $message,
+        string $payload,
         Ring $ring
     ) {
         $this->id            = $id;
@@ -45,6 +48,7 @@ class BaseEvent implements Event
         $this->actorName     = $actorName;
         $this->eventUrl      = $eventUrl;
         $this->message       = $message;
+        $this->payload       = $payload;
         $this->ring          = $ring;
     }
 
@@ -59,6 +63,7 @@ class BaseEvent implements Event
             'actorName'     => \ucfirst($this->actorName),
             'eventUrl'      => $this->eventUrl,
             'message'       => $this->message,
+            'payload'       => $this->payload,
             'ring'          => $this->ring->getAsArray(),
         ];
     }

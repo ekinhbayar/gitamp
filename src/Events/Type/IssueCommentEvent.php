@@ -18,6 +18,7 @@ class IssueCommentEvent extends BaseEvent
             $event['actor']['login'],
             $event['payload']['issue']['html_url'],
             $this->buildMessage($event),
+            $this->buildMessage($event),
             new Ring(3000, 80)
         );
     }

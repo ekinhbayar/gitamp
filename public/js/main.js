@@ -176,7 +176,7 @@ const GitAmp = (function(exports, $) {
         }
 
         Event.prototype.getSize = function() {
-            return Math.max(Math.sqrt(Math.abs(this.event.getMessage().length)) * scaleFactor, 3);
+            return Math.max(Math.sqrt(Math.abs(this.event.getPayload().length)) * scaleFactor, 3);
         };
 
         Event.prototype.getText = function() {
@@ -217,7 +217,7 @@ const GitAmp = (function(exports, $) {
             const self = this;
 
             //noinspection JSUnresolvedFunction
-            Math.seedrandom(this.event.getMessage());
+            Math.seedrandom(this.event.getPayload());
             let x = Math.random() * (width - size) + size;
             let y = Math.random() * (height - size) + size;
 
@@ -389,6 +389,11 @@ const GitAmp = (function(exports, $) {
     EventMessage.prototype.getUrl = function() {
         //noinspection JSUnresolvedVariable
         return this.event.eventUrl;
+    };
+
+    EventMessage.prototype.getPayload = function() {
+        //noinspection JSUnresolvedVariable
+        return this.event.payload;
     };
 
     EventMessage.prototype.getMessage = function() {
@@ -586,7 +591,7 @@ const GitAmp = (function(exports, $) {
     };
 
     Application.prototype.processEvent = function(event) {
-        if (!event.getMessage()) {
+        if (!event.getPayload()) {
             return;
         }
 
@@ -601,9 +606,9 @@ const GitAmp = (function(exports, $) {
         }
 
         if (event.getType() === 'IssuesEvent' || event.getType() === 'IssueCommentEvent') {
-            this.audio.playClav(event.getMessage().length * 1.1);
+            this.audio.playClav(event.getPayload().length * 1.1);
         } else if(event.getType() === 'PushEvent') {
-            this.audio.playCelesta(event.getMessage().length * 1.1);
+            this.audio.playCelesta(event.getPayload().length * 1.1);
         }else{
             this.audio.playSwell();
         }

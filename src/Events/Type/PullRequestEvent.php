@@ -18,6 +18,7 @@ class PullRequestEvent extends BaseEvent
             $event['actor']['login'],
             $event['payload']['pull_request']['html_url'],
             $event['payload']['pull_request']['title'],
+            $event['payload']['pull_request']['title'],
             new Ring(10000, 600)
         );
     }
