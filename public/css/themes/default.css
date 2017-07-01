@@ -1,0 +1,55 @@
+html,body {
+    background-color: #232323;
+}
+
+a {
+    color: #0091EA;
+}
+
+svg {
+    background-color: #232323;
+}
+
+.label {
+    font: 1.0em 'Source Sans Pro', sans-serif;
+    text-shadow:1px 1px 0 rgb(28, 39, 51),
+    -1px -1px 0 rgb(28, 39, 51),
+    1px -1px 0 rgb(28, 39, 51),
+    -1px 1px 0 rgb(28, 39, 51),
+    0 1px 0 rgb(28, 39, 51),
+    1px 0 0 rgb(28, 39, 51),
+    0 -1px 0 rgb(28, 39, 51),
+    -1px 0 0 rgb(28, 39, 51);
+}
+
+.online-users-text {
+    color: #E0E0E0;
+}
+
+.event-1 {
+    fill: #22B65D;
+}
+
+.event-2 {
+    fill: #8F19BB;
+}
+
+.event-3 {
+    fill: #ADD913;
+}
+
+.event-4 {
+    fill: #FF4901;
+}
+
+.event-5 {
+    fill: #0184FF;
+}
+
+.event-6 {
+    fill: #00C0C0;
+}
+
+.event-7 {
+    fill: #E60062;
+}

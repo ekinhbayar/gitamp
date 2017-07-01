@@ -198,39 +198,16 @@ const GitAmp = (function(exports, $) {
             }
         };
 
-        Event.prototype.getBackgroundColor = function() {
-            switch(this.event.getType()){
-                case 'PushEvent':
-                    return '#22B65D';
-                case 'PullRequestEvent':
-                    return '#8F19BB';
-                case 'IssuesEvent':
-                    return '#ADD913';
-                case 'IssueCommentEvent':
-                    return '#FF4901';
-                case 'ForkEvent':
-                    return '#0184FF';
-                case 'CreateEvent':
-                    return '#00C0C0';
-                case 'WatchEvent':
-                    return '#E60062';
-            }
+        Event.prototype.getClassName = function() {
+            return 'event-' + this.event.getNumericalType();
         };
 
         Event.prototype.getRingAnimationDuration = function() {
-            if (this.event.getType() === 'PullRequestEvent') {
-                return 10000;
-            }
-
-            return 3000;
+            return this.event.getRingAnimationDuration();
         };
 
         Event.prototype.getRingRadius = function() {
-            if (this.event.getType() === 'PullRequestEvent') {
-                return 600;
-            }
-
-            return 80;
+            return this.event.getRingRadius();
         };
 
         Event.prototype.draw = function(width, height) {
@@ -245,8 +222,8 @@ const GitAmp = (function(exports, $) {
             let y = Math.random() * (height - size) + size;
 
             let circle_group = this.svg.append('g')
+                .classed(this.getClassName(), true)
                 .attr('transform', 'translate(' + x + ', ' + y + ')')
-                .attr('fill', this.getBackgroundColor())
                 .style('opacity', 1);
 
             let ring = circle_group.append('circle');
@@ -264,9 +241,8 @@ const GitAmp = (function(exports, $) {
             circle_container.attr('fill', textColor);
 
             let circle = circle_container.append('circle');
-            circle.classed(this.event.getType(), true);
+            circle.classed(this.getClassName(), true);
             circle.attr('r', size)
-                .attr('fill', this.getBackgroundColor())
                 .transition()
                 .duration(maxLife)
                 .style('opacity', 0)
@@ -385,6 +361,11 @@ const GitAmp = (function(exports, $) {
         return this.event.id;
     };
 
+    EventMessage.prototype.getNumericalType = function() {
+        //noinspection JSUnresolvedVariable
+        return this.event.numericalType;
+    };
+
     EventMessage.prototype.getType = function() {
         //noinspection JSUnresolvedVariable
         return this.event.type;
@@ -413,6 +394,16 @@ const GitAmp = (function(exports, $) {
     EventMessage.prototype.getMessage = function() {
         //noinspection JSUnresolvedVariable
         return this.event.message;
+    };
+
+    EventMessage.prototype.getRingAnimationDuration = function() {
+        //noinspection JSUnresolvedVariable
+        return this.event.ring.animationDuration;
+    };
+
+    EventMessage.prototype.getRingRadius = function() {
+        //noinspection JSUnresolvedVariable
+        return this.event.ring.radius;
     };
 
     /**

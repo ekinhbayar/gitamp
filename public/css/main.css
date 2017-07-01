@@ -51,7 +51,6 @@ table {
 
 a {
     text-decoration: none;
-    color: #0091EA;
 }
 
 * {
@@ -61,7 +60,6 @@ a {
 }
 
 html,body {
-    background-color: #232323;
     font-family: 'Source Sans Pro', sans-serif;
     font-weight: 400;
     font-size: 16px;
@@ -134,7 +132,6 @@ header {
 svg {
     height: 100%;
     display: block;
-    background-color: #232323;
 }
 
 svg text {
@@ -143,18 +140,6 @@ svg text {
 
 circle {
     fill-opacity: 0.8;
-}
-
-.label {
-    font: 1.0em 'Source Sans Pro', sans-serif;
-    text-shadow:1px 1px 0 rgb(28, 39, 51),
-    -1px -1px 0 rgb(28, 39, 51),
-    1px -1px 0 rgb(28, 39, 51),
-    -1px 1px 0 rgb(28, 39, 51),
-    0 1px 0 rgb(28, 39, 51),
-    1px 0 0 rgb(28, 39, 51),
-    0 -1px 0 rgb(28, 39, 51),
-    -1px 0 0 rgb(28, 39, 51);
 }
 
 .online-users-div {
@@ -172,7 +157,6 @@ circle {
 .online-users-text {
     font-family: 'Source Sans Pro', sans-serif;
     font-size: 1em;
-    color: #E0E0E0;
 }
 
 .site-description {

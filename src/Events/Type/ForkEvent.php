@@ -2,18 +2,23 @@
 
 namespace ekinhbayar\GitAmp\Events\Type;
 
+use ekinhbayar\GitAmp\Presentation\NumericalType;
+use ekinhbayar\GitAmp\Presentation\Ring;
+
 class ForkEvent extends BaseEvent
 {
     public function __construct(array $event)
     {
         parent::__construct(
             (int) $event['id'],
+            new NumericalType(5),
             'ForkEvent',
             'forked',
             $event['repo']['name'],
             $event['actor']['login'],
             $this->buildUrl($event),
-            $this->buildMessage()
+            $this->buildMessage(),
+            new Ring(3000, 80)
         );
     }
 
