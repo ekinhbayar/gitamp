@@ -353,17 +353,17 @@ const GitAmp = (function(exports, $) {
 
     EventMessage.prototype.getUrl = function() {
         //noinspection JSUnresolvedVariable
-        return this.event.url;
+        return this.event.information.url;
     };
 
     EventMessage.prototype.getPayload = function() {
         //noinspection JSUnresolvedVariable
-        return this.event.payload;
+        return this.event.information.payload;
     };
 
     EventMessage.prototype.getMessage = function() {
         //noinspection JSUnresolvedVariable
-        return this.event.message;
+        return this.event.information.message;
     };
 
     EventMessage.prototype.getRingAnimationDuration = function() {
