@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace ekinhbayar\GitAmpTests\Events;
+namespace ekinhbayar\GitAmpTests\Event;
 
-use ekinhbayar\GitAmp\Events\Factory;
-use ekinhbayar\GitAmp\Events\Type\CreateEvent;
-use ekinhbayar\GitAmp\Events\UnknownEventException;
+use ekinhbayar\GitAmp\Event\Factory;
+use ekinhbayar\GitAmp\Event\GitHub\CreateEvent;
+use ekinhbayar\GitAmp\Event\UnknownEventException;
 use PHPUnit\Framework\TestCase;
 
 class FactoryTest extends TestCase
@@ -13,7 +13,7 @@ class FactoryTest extends TestCase
     {
         $this->expectException(UnknownEventException::class);
 
-        (new Factory())->build(['type' => 'UnknownEvent']);
+        (new Factory())->build('Foo', ['type' => 'UnknownEvent']);
     }
 
     public function testBuildReturnsEvent()
@@ -25,6 +25,6 @@ class FactoryTest extends TestCase
             'actor' => ['login' => 'PeeHaa'],
         ];
 
-        $this->assertInstanceOf(CreateEvent::class, (new Factory())->build($event));
+        $this->assertInstanceOf(CreateEvent::class, (new Factory())->build('ekinhbayar\GitAmp\Event\GitHub', $event));
     }
 }

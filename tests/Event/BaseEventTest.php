@@ -1,8 +1,8 @@
 <?php declare(strict_types = 1);
 
-namespace ekinhbayar\GitAmpTests\Events\Type;
+namespace ekinhbayar\GitAmpTests\Event;
 
-use ekinhbayar\GitAmp\Events\Type\BaseEvent;
+use ekinhbayar\GitAmp\Event\BaseEvent;
 use ekinhbayar\GitAmp\Presentation\Information;
 use ekinhbayar\GitAmp\Presentation\Ring;
 use ekinhbayar\GitAmp\Presentation\Sound\Swell;

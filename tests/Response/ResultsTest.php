@@ -6,12 +6,11 @@ use Amp\Artax\Response;
 use Amp\ByteStream\InputStream;
 use Amp\ByteStream\Message;
 use Amp\Loop;
-use function Amp\Promise\wait;
 use Amp\Success;
-use ekinhbayar\GitAmp\Events\Type\PullRequestEvent;
-use ekinhbayar\GitAmp\Events\UnknownEventException;
+use ekinhbayar\GitAmp\Event\GitHub\PullRequestEvent;
+use ekinhbayar\GitAmp\Event\UnknownEventException;
 use PHPUnit\Framework\TestCase;
-use ekinhbayar\GitAmp\Events\Factory;
+use ekinhbayar\GitAmp\Event\Factory;
 use ekinhbayar\GitAmp\Response\Results;
 use ekinhbayar\GitAmp\Response\DecodingFailedException;
 use Psr\Log\LoggerInterface;
@@ -87,7 +86,7 @@ class ResultsTest extends TestCase
         $this->expectExceptionMessage('Failed to decode response body as JSON');
 
         Loop::run(function() use ($response) {
-            yield from (new Results(new Factory(), $this->logger))->appendResponse($response);
+            yield from (new Results(new Factory(), $this->logger))->appendResponse('Foo', $response);
         });
     }
 
@@ -126,7 +125,8 @@ class ResultsTest extends TestCase
         ;
 
         Loop::run(function() use ($eventFactory, $response) {
-            yield from (new Results($eventFactory, $this->logger))->appendResponse($response);
+            yield from (new Results($eventFactory, $this->logger))
+                ->appendResponse('ekinhbayar\GitAmp\Event\GitHub', $response);
         });
     }
 
@@ -174,7 +174,7 @@ class ResultsTest extends TestCase
         $results = new Results($eventFactory, $this->logger);
 
         Loop::run(function() use ($results, $response) {
-            yield from $results->appendResponse($response);
+            yield from $results->appendResponse('ekinhbayar\GitAmp\Event\GitHub', $response);
         });
 
         $this->assertTrue($results->hasEvents());
@@ -234,7 +234,7 @@ class ResultsTest extends TestCase
         $results = new Results($eventFactory, $this->logger);
 
         Loop::run(function() use ($results, $response) {
-            yield from $results->appendResponse($response);
+            yield from $results->appendResponse('ekinhbayar\GitAmp\Event\GitHub', $response);
         });
 
         $this->assertSame('[{"foo":"bar"}]', $results->jsonEncode());

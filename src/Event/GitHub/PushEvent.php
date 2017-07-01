@@ -1,7 +1,8 @@
 <?php declare(strict_types = 1);
 
-namespace ekinhbayar\GitAmp\Events\Type;
+namespace ekinhbayar\GitAmp\Event\GitHub;
 
+use ekinhbayar\GitAmp\Event\BaseEvent;
 use ekinhbayar\GitAmp\Presentation\Information;
 use ekinhbayar\GitAmp\Presentation\Type;
 use ekinhbayar\GitAmp\Presentation\Ring;

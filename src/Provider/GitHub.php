@@ -1,19 +1,20 @@
 <?php declare(strict_types = 1);
 
-namespace ekinhbayar\GitAmp\Client;
+namespace ekinhbayar\GitAmp\Provider;
 
 use Amp\Artax\Response;
 use Amp\Promise;
 use Amp\Artax\Client;
 use Amp\Artax\HttpException;
 use Amp\Artax\Request;
-use Amp\Success;
 use ekinhbayar\GitAmp\Response\Factory;
 use ekinhbayar\GitAmp\Github\Credentials;
 use Psr\Log\LoggerInterface;
 
-class GitAmp
+class GitHub implements Listener
 {
+    const EVENT_NAMESPACE = 'ekinhbayar\GitAmp\Event\GitHub';
+
     const API_ENDPOINT = 'https://api.github.com/events';
 
     private $client;
@@ -71,7 +72,7 @@ class GitAmp
         return \Amp\call(function() {
             $response = yield from $this->request();
 
-            return yield $this->resultFactory->build($response);
+            return yield $this->resultFactory->build(self::EVENT_NAMESPACE, $response);
         });
     }
 

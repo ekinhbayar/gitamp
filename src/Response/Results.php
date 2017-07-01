@@ -3,8 +3,8 @@
 namespace ekinhbayar\GitAmp\Response;
 
 use Amp\Artax\Response;
-use ekinhbayar\GitAmp\Events\Factory as EventFactory;
-use ekinhbayar\GitAmp\Events\UnknownEventException;
+use ekinhbayar\GitAmp\Event\Factory as EventFactory;
+use ekinhbayar\GitAmp\Event\UnknownEventException;
 use ExceptionalJSON\DecodeErrorException;
 use Psr\Log\LoggerInterface;
 
@@ -22,7 +22,7 @@ class Results
         $this->logger       = $logger;
     }
 
-    public function appendResponse(Response $response): \Generator
+    public function appendResponse(string $eventNamespace, Response $response): \Generator
     {
         try {
             $events = \json_try_decode(yield $response->getBody(), true);
@@ -33,14 +33,14 @@ class Results
         }
 
         foreach ($events as $event) {
-            $this->appendEvent($event);
+            $this->appendEvent($eventNamespace, $event);
         }
     }
 
-    private function appendEvent(array $event)
+    private function appendEvent(string $eventNamespace, array $event)
     {
         try {
-            $this->events[] = $this->eventFactory->build($event);
+            $this->events[] = $this->eventFactory->build($eventNamespace, $event);
         } catch (UnknownEventException $e) {
             //$this->logger->debug('Unknown event encountered', ['exception' => $e]);
         }

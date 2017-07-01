@@ -3,7 +3,7 @@
 namespace ekinhbayar\GitAmp\Response;
 
 use Amp\Promise;
-use ekinhbayar\GitAmp\Events\Factory as EventFactory;
+use ekinhbayar\GitAmp\Event\Factory as EventFactory;
 use Amp\Artax\Response;
 use Psr\Log\LoggerInterface;
 
@@ -19,12 +19,12 @@ class Factory
         $this->logger       = $logger;
     }
 
-    public function build(Response $response): Promise
+    public function build(string $eventNamespace, Response $response): Promise
     {
-        return \Amp\call(function() use ($response) {
+        return \Amp\call(function() use ($eventNamespace, $response) {
             $results = new Results($this->eventFactory, $this->logger);
 
-            yield from $results->appendResponse($response);
+            yield from $results->appendResponse($eventNamespace, $response);
 
             return $results;
         });

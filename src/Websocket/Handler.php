@@ -8,7 +8,7 @@ use Aerys\Request;
 use Aerys\Response;
 use Aerys\Websocket;
 use Aerys\Websocket\Endpoint;
-use ekinhbayar\GitAmp\Client\GitAmp;
+use ekinhbayar\GitAmp\Provider\Listener;
 use ekinhbayar\GitAmp\Response\Results;
 use ekinhbayar\GitAmp\Storage\Counter;
 
@@ -20,13 +20,13 @@ class Handler implements Websocket
 
     private $origin;
 
-    private $gitamp;
+    private $provider;
 
-    public function __construct(Counter $counter, string $origin, GitAmp $gitamp)
+    public function __construct(Counter $counter, string $origin, Listener $provider)
     {
-        $this->origin  = $origin;
-        $this->counter = $counter;
-        $this->gitamp  = $gitamp;
+        $this->origin   = $origin;
+        $this->counter  = $counter;
+        $this->provider = $provider;
     }
 
     public function onStart(Endpoint $endpoint)
@@ -37,7 +37,7 @@ class Handler implements Websocket
 
         asyncCall(function () {
             while (true) {
-                $this->emit(yield $this->gitamp->listen());
+                $this->emit(yield $this->provider->listen());
 
                 yield new Delayed(25000);
             }

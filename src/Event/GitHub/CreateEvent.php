@@ -1,7 +1,8 @@
 <?php declare(strict_types = 1);
 
-namespace ekinhbayar\GitAmp\Events\Type;
+namespace ekinhbayar\GitAmp\Event\GitHub;
 
+use ekinhbayar\GitAmp\Event\BaseEvent;
 use ekinhbayar\GitAmp\Presentation\Information;
 use ekinhbayar\GitAmp\Presentation\Type;
 use ekinhbayar\GitAmp\Presentation\Ring;
@@ -9,14 +10,14 @@ use ekinhbayar\GitAmp\Presentation\Sound\BaseSound;
 use ekinhbayar\GitAmp\Presentation\Sound\Swell;
 use ekinhbayar\GitAmp\Presentation\Sound\SwellEgg;
 
-class ForkEvent extends BaseEvent
+class CreateEvent extends BaseEvent
 {
     public function __construct(array $event)
     {
         parent::__construct(
             (int) $event['id'],
-            new Type(5),
-            new Information($this->buildUrl($event), $this->buildPayload(), $this->buildMessage($event)),
+            new Type(6),
+            new Information($this->buildUrl($event), $this->buildPayload($event), $this->buildMessage($event)),
             new Ring(3000, 80),
             $this->buildSound($event)
         );
@@ -27,14 +28,18 @@ class ForkEvent extends BaseEvent
         return 'https://github.com/' . $event['repo']['name'];
     }
 
-    private function buildPayload(): string
+    private function buildPayload(array $event): string
     {
-        return 'not sure if stupid but works anyway';
+        if (isset($event['payload']['description'])) {
+            return $event['payload']['description'];
+        }
+
+        return 'https://github.com/' . $event['repo']['name'];
     }
 
     private function buildMessage(array $event): string
     {
-        return \sprintf('%s forked %s', $event['actor']['login'], $event['repo']['name']);
+        return \sprintf('%s created %s', $event['actor']['login'], $event['repo']['name']);
     }
 
     private function buildSound(array $event): BaseSound

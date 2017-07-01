@@ -1,27 +1,28 @@
 <?php declare(strict_types = 1);
 
-namespace ekinhbayar\GitAmp\Events\Type;
+namespace ekinhbayar\GitAmp\Event\GitHub;
 
+use ekinhbayar\GitAmp\Event\BaseEvent;
 use ekinhbayar\GitAmp\Presentation\Information;
 use ekinhbayar\GitAmp\Presentation\Type;
 use ekinhbayar\GitAmp\Presentation\Ring;
 use ekinhbayar\GitAmp\Presentation\Sound\BaseSound;
-use ekinhbayar\GitAmp\Presentation\Sound\Clav;
-use ekinhbayar\GitAmp\Presentation\Sound\ClavEgg;
+use ekinhbayar\GitAmp\Presentation\Sound\Swell;
+use ekinhbayar\GitAmp\Presentation\Sound\SwellEgg;
 
-class IssuesEvent extends BaseEvent
+class PullRequestEvent extends BaseEvent
 {
     public function __construct(array $event)
     {
         parent::__construct(
             (int) $event['id'],
-            new Type(3),
+            new Type(2),
             new Information(
-                $event['payload']['issue']['html_url'],
-                $event['payload']['issue']['title'],
+                $event['payload']['pull_request']['html_url'],
+                $event['payload']['pull_request']['title'],
                 $this->buildMessage($event)
             ),
-            new Ring(3000, 80),
+            new Ring(10000, 600),
             $this->buildSound($event)
         );
     }
@@ -29,7 +30,7 @@ class IssuesEvent extends BaseEvent
     private function buildMessage(array $event): string
     {
         return \sprintf(
-            '%s %s an issue in %s',
+            '%s %s a PR for %s',
             $event['actor']['login'],
             $event['payload']['action'],
             $event['repo']['name']
@@ -39,9 +40,9 @@ class IssuesEvent extends BaseEvent
     private function buildSound(array $event): BaseSound
     {
         if ($event['repo']['name'] === 'ekinhbayar/gitamp') {
-            return new ClavEgg();
+            return new SwellEgg();
         }
 
-        return new Clav(\strlen($event['payload']['issue']['title']) * 1.1);
+        return new Swell();
     }
 }

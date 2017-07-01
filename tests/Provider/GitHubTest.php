@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace ekinhbayar\GitAmpTests\Client;
+namespace ekinhbayar\GitAmpTests\Provider;
 
 use Amp\Artax\Client;
 use Amp\Artax\HttpException;
@@ -9,16 +9,16 @@ use Amp\ByteStream\InMemoryStream;
 use Amp\ByteStream\Message;
 use Amp\Promise;
 use Amp\Success;
-use ekinhbayar\GitAmp\Client\RequestFailedException;
+use ekinhbayar\GitAmp\Provider\RequestFailedException;
 use ekinhbayar\GitAmp\Github\Token;
-use ekinhbayar\GitAmp\Client\GitAmp;
+use ekinhbayar\GitAmp\Provider\GitHub;
 use ekinhbayar\GitAmp\Response\Factory;
 use ekinhbayar\GitAmp\Response\Results;
 use PHPUnit\Framework\TestCase;
 use function Amp\Promise\wait;
 use Psr\Log\LoggerInterface;
 
-class GitAmpTest extends TestCase
+class GitHubTest extends TestCase
 {
     private $credentials;
 
@@ -43,7 +43,7 @@ class GitAmpTest extends TestCase
             ->will($this->throwException(new HttpException()))
         ;
 
-        $gitamp = new GitAmp($httpClient, $this->credentials, $this->factory, $this->logger);
+        $gitamp = new GitHub($httpClient, $this->credentials, $this->factory, $this->logger);
 
         $this->expectException(RequestFailedException::class);
         $this->expectExceptionMessage('Failed to send GET request to API endpoint');
@@ -75,7 +75,7 @@ class GitAmpTest extends TestCase
             ->will($this->returnValue(new Success($response)))
         ;
 
-        $gitamp = new GitAmp($httpClient, $this->credentials, $this->factory, $this->logger);
+        $gitamp = new GitHub($httpClient, $this->credentials, $this->factory, $this->logger);
 
         $this->expectException(RequestFailedException::class);
         $this->expectExceptionMessage('A non-200 response status (403 - invalid) was encountered');
@@ -103,7 +103,7 @@ class GitAmpTest extends TestCase
 
         $this->assertInstanceOf(
             Promise::class,
-            (new GitAmp($httpClient, $this->credentials, $this->factory, $this->logger))->listen()
+            (new GitHub($httpClient, $this->credentials, $this->factory, $this->logger))->listen()
         );
     }
 
@@ -137,7 +137,7 @@ class GitAmpTest extends TestCase
 
         $this->assertInstanceOf(
             Results::class,
-            wait((new GitAmp($httpClient, $this->credentials, $this->factory, $this->logger))->listen())
+            wait((new GitHub($httpClient, $this->credentials, $this->factory, $this->logger))->listen())
         );
     }
 }

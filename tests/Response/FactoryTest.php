@@ -9,7 +9,7 @@ use function Amp\Promise\wait;
 use Amp\Success;
 use ekinhbayar\GitAmp\Response\Factory;
 use ekinhbayar\GitAmp\Response\Results;
-use ekinhbayar\GitAmp\Events\Factory as EventFactory;
+use ekinhbayar\GitAmp\Event\Factory as EventFactory;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 
@@ -55,7 +55,7 @@ class FactoryTest extends TestCase
 
         $factory = new Factory(new EventFactory(), $logger);
 
-        $results = wait($factory->build($response));
+        $results = wait($factory->build('ekinhbayar\GitAmp\Event\GitHub', $response));
 
         $this->assertInstanceOf(Results::class, $results);
     }
@@ -98,7 +98,7 @@ class FactoryTest extends TestCase
 
         $logger = $this->createMock(LoggerInterface::class);
 
-        $results = (new Factory(new EventFactory(), $logger))->build($response);
+        $results = (new Factory(new EventFactory(), $logger))->build('ekinhbayar\GitAmp\Event\GitHub', $response);
 
         $this->assertInstanceOf(Results::class, wait($results));
     }

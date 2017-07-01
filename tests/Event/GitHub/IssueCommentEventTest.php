@@ -1,8 +1,8 @@
 <?php declare(strict_types = 1);
 
-namespace ekinhbayar\GitAmpTests\Events\Type;
+namespace ekinhbayar\GitAmpTests\Event\GitHub;
 
-use ekinhbayar\GitAmp\Events\Type\IssueCommentEvent;
+use ekinhbayar\GitAmp\Event\GitHub\IssueCommentEvent;
 use PHPUnit\Framework\TestCase;
 
 class IssueCommentEventTest extends TestCase

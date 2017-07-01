@@ -1,12 +1,12 @@
 <?php declare(strict_types = 1);
 
-namespace ekinhbayar\GitAmp\Events;
+namespace ekinhbayar\GitAmp\Event;
 
 class Factory
 {
-    public function build(array $event): Event
+    public function build(string $namespace, array $event): Event
     {
-        $eventType = 'ekinhbayar\GitAmp\Events\Type\\' . $event['type'];
+        $eventType = $namespace . '\\' . $event['type'];
 
         if (!$this->isValidType($eventType)) {
             throw new UnknownEventException($event['type']);

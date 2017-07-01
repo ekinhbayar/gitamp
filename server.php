@@ -7,6 +7,8 @@ use Amp\Artax\BasicClient;
 use ekinhbayar\GitAmp\Github\Credentials;
 use ekinhbayar\GitAmp\Http\Origin;
 use ekinhbayar\GitAmp\Log\Request as RequestLogger;
+use ekinhbayar\GitAmp\Provider\GitHub;
+use ekinhbayar\GitAmp\Provider\Listener;
 use ekinhbayar\GitAmp\Storage\Counter;
 use ekinhbayar\GitAmp\Storage\NativeCounter;
 use ekinhbayar\GitAmp\Websocket\Handler;
@@ -20,6 +22,8 @@ use function Aerys\websocket;
 $configuration = require_once __DIR__ . '/config.php';
 
 $injector = new Injector;
+
+$injector->alias(Listener::class, GitHub::class);
 
 $injector->alias(Counter::class, NativeCounter::class);
 

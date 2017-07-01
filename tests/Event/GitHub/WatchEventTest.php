@@ -1,8 +1,8 @@
 <?php declare(strict_types = 1);
 
-namespace ekinhbayar\GitAmpTests\Events\Type;
+namespace ekinhbayar\GitAmpTests\Event\GitHub;
 
-use ekinhbayar\GitAmp\Events\Type\WatchEvent;
+use ekinhbayar\GitAmp\Event\GitHub\WatchEvent;
 use PHPUnit\Framework\TestCase;
 
 class WatchEventTest extends TestCase

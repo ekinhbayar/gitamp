@@ -8,7 +8,7 @@ use Aerys\Websocket\Endpoint;
 use Aerys\Websocket\Message;
 use Amp\Loop;
 use Amp\Success;
-use ekinhbayar\GitAmp\Client\GitAmp;
+use ekinhbayar\GitAmp\Provider\GitHub;
 use ekinhbayar\GitAmp\Response\Results;
 use ekinhbayar\GitAmp\Storage\Counter;
 use ekinhbayar\GitAmp\Websocket\Handler;
@@ -27,7 +27,7 @@ class HandlerTest extends TestCase
     public function setUp()
     {
         $this->origin   = 'https://gitamp.audio';
-        $this->gitamp   = $this->createMock(GitAmp::class);
+        $this->gitamp   = $this->createMock(GitHub::class);
         $this->counter  = $this->createMock(Counter::class);
         $this->endpoint = $this->createMock(Endpoint::class);
     }

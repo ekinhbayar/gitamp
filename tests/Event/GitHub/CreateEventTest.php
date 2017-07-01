@@ -1,8 +1,8 @@
 <?php declare(strict_types = 1);
 
-namespace ekinhbayar\GitAmpTests\Events\Type;
+namespace ekinhbayar\GitAmpTests\Event\GitHub;
 
-use ekinhbayar\GitAmp\Events\Type\CreateEvent;
+use ekinhbayar\GitAmp\Event\GitHub\CreateEvent;
 use PHPUnit\Framework\TestCase;
 
 class CreateEventTest extends TestCase
