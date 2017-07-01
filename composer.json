@@ -37,7 +37,6 @@
   },
   "require-dev": {
     "phpunit/phpunit": "^6",
-    "friendsofphp/php-cs-fixer": "^2",
     "kelunik/fqn-check": "^0.1.0",
     "matthiasmullie/minify": "^1.3"
   },
