@@ -3,6 +3,10 @@
 namespace ekinhbayar\GitAmpTests\Events\Type;
 
 use ekinhbayar\GitAmp\Events\Type\BaseEvent;
+use ekinhbayar\GitAmp\Presentation\Information;
+use ekinhbayar\GitAmp\Presentation\Ring;
+use ekinhbayar\GitAmp\Presentation\Sound\Swell;
+use ekinhbayar\GitAmp\Presentation\Type;
 use PHPUnit\Framework\TestCase;
 
 class BaseEventTest extends TestCase
@@ -11,22 +15,32 @@ class BaseEventTest extends TestCase
     {
         $data = [
             'id'        => 1,
-            'type'      => 'TestEvent',
-            'action'    => 'Test action',
-            'repoName'  => 'test/repo',
-            'actorName' => 'TestActor',
-            'eventUrl'  => 'http://example.com',
-            'message'   => 'Test message.'
+            'type'      => 1,
+            'information' => [
+                'url' => 'url',
+                'payload' => 'payload',
+                'message' => 'Message',
+            ],
+            'ring'  => [
+                'animationDuration' => 3000,
+                'radius'            => 80,
+            ],
+            'sound' => [
+                'size' => 1.0,
+                'type' => 'Swell',
+            ],
         ];
 
         $event = new class(
             $data['id'],
-            $data['type'],
-            $data['action'],
-            $data['repoName'],
-            $data['actorName'],
-            $data['eventUrl'],
-            $data['message']
+            new Type($data['type']),
+            new Information(
+                $data['information']['url'],
+                $data['information']['payload'],
+                $data['information']['message']
+            ),
+            new Ring(3000, 80),
+            new Swell()
         ) extends BaseEvent {};
 
         $this->assertSame($data, $event->getAsArray());

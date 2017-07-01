@@ -25,17 +25,38 @@ class PullRequestEventTest extends TestCase
 
         $this->assertEvent = [
             'id'        => 1,
-            'type'      => 'PullRequestEvent',
-            'action'    => 'The action',
-            'repoName'  => 'test/repo',
-            'actorName' => 'PeeHaa',
-            'eventUrl'  => 'http://example.com',
-            'message'   => 'PR title'
+            'type'      => 2,
+            'information' => [
+                'url' => 'http://example.com',
+                'payload' => 'PR title',
+                'message' => 'PeeHaa The action a PR for test/repo',
+            ],
+            'ring'  => [
+                'animationDuration' => 10000,
+                'radius'            => 600,
+            ],
+            'sound' => [
+                'size' => 1.0,
+                'type' => 'Swell',
+            ],
         ];
     }
 
     public function testGetAsArray()
     {
+        $event = new PullRequestEvent($this->event);
+
+        $this->assertSame($this->assertEvent, $event->getAsArray());
+    }
+
+    public function testGetAsArrayEgg()
+    {
+        $this->event['repo']['name'] = 'ekinhbayar/gitamp';
+
+        $this->assertEvent['information']['url']     = 'http://example.com';
+        $this->assertEvent['information']['message'] = 'PeeHaa The action a PR for ekinhbayar/gitamp';
+        $this->assertEvent['sound']['type']          = 'SwellEgg';
+
         $event = new PullRequestEvent($this->event);
 
         $this->assertSame($this->assertEvent, $event->getAsArray());

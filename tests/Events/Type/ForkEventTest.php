@@ -21,17 +21,38 @@ class ForkEventTest extends TestCase
 
         $this->assertEvent = [
             'id'        => 1,
-            'type'      => 'ForkEvent',
-            'action'    => 'forked',
-            'repoName'  => 'test/repo',
-            'actorName' => 'PeeHaa',
-            'eventUrl'  => 'https://github.com/test/repo',
-            'message'   => 'not sure if stupid but works anyway'
+            'type'      => 5,
+            'information' => [
+                'url' => 'https://github.com/test/repo',
+                'payload' => 'not sure if stupid but works anyway',
+                'message' => 'PeeHaa forked test/repo',
+            ],
+            'ring'  => [
+                'animationDuration' => 3000,
+                'radius'            => 80,
+            ],
+            'sound' => [
+                'size' => 1.0,
+                'type' => 'Swell',
+            ],
         ];
     }
 
     public function testGetAsArray()
     {
+        $event = new ForkEvent($this->event);
+
+        $this->assertSame($this->assertEvent, $event->getAsArray());
+    }
+
+    public function testGetAsArrayEgg()
+    {
+        $this->event['repo']['name'] = 'ekinhbayar/gitamp';
+
+        $this->assertEvent['information']['url']     = 'https://github.com/ekinhbayar/gitamp';
+        $this->assertEvent['information']['message'] = 'PeeHaa forked ekinhbayar/gitamp';
+        $this->assertEvent['sound']['type']          = 'SwellEgg';
+
         $event = new ForkEvent($this->event);
 
         $this->assertSame($this->assertEvent, $event->getAsArray());

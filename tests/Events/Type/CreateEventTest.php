@@ -22,12 +22,20 @@ class CreateEventTest extends TestCase
 
         $this->assertEvent = [
             'id'        => 1,
-            'type'      => 'CreateEvent',
-            'action'    => 'created',
-            'repoName'  => 'test/repo',
-            'actorName' => 'PeeHaa',
-            'eventUrl'  => 'https://github.com/test/repo',
-            'message'   => 'The description'
+            'type'      => 6,
+            'information' => [
+                'url' => 'https://github.com/test/repo',
+                'payload' => 'The description',
+                'message' => 'PeeHaa created test/repo',
+            ],
+            'ring'  => [
+                'animationDuration' => 3000,
+                'radius'            => 80,
+            ],
+            'sound' => [
+                'size' => 1.0,
+                'type' => 'Swell',
+            ],
         ];
     }
 
@@ -42,7 +50,37 @@ class CreateEventTest extends TestCase
     {
         unset($this->event['payload']['description']);
 
-        $this->assertEvent['message'] = $this->assertEvent['eventUrl'];
+        $this->assertEvent['information']['payload'] = $this->assertEvent['information']['url'];
+
+        $event = new CreateEvent($this->event);
+
+        $this->assertSame($this->assertEvent, $event->getAsArray());
+    }
+
+    public function testGetAsArrayWithPayloadDescriptionEgg()
+    {
+        $this->event['repo']['name'] = 'ekinhbayar/gitamp';
+
+        $this->assertEvent['information']['url']     = 'https://github.com/ekinhbayar/gitamp';
+        $this->assertEvent['information']['message'] = 'PeeHaa created ekinhbayar/gitamp';
+        $this->assertEvent['sound']['type']          = 'SwellEgg';
+
+        $event = new CreateEvent($this->event);
+
+        $this->assertSame($this->assertEvent, $event->getAsArray());
+    }
+
+    public function testGetAsArrayWithoutPayloadDescriptionEgg()
+    {
+        $this->event['repo']['name'] = 'ekinhbayar/gitamp';
+
+        $this->assertEvent['information']['url']     = 'https://github.com/ekinhbayar/gitamp';
+        $this->assertEvent['information']['message'] = 'PeeHaa created ekinhbayar/gitamp';
+        $this->assertEvent['sound']['type']          = 'SwellEgg';
+
+        unset($this->event['payload']['description']);
+
+        $this->assertEvent['information']['payload'] = $this->assertEvent['information']['url'];
 
         $event = new CreateEvent($this->event);
 

@@ -24,12 +24,20 @@ class PushEventTest extends TestCase
 
         $this->assertEvent = [
             'id'        => 1,
-            'type'      => 'PushEvent',
-            'action'    => 'pushed to',
-            'repoName'  => 'test/repo',
-            'actorName' => 'PeeHaa',
-            'eventUrl'  => 'https://github.com/test/repo',
-            'message'   => 'Commit message'
+            'type'      => 1,
+            'information' => [
+                'url' => 'https://github.com/test/repo',
+                'payload' => 'Commit message',
+                'message' => 'PeeHaa pushed to test/repo',
+            ],
+            'ring'  => [
+                'animationDuration' => 3000,
+                'radius'            => 80,
+            ],
+            'sound' => [
+                'size' => strlen('Commit message') * 1.1,
+                'type' => 'Celesta',
+            ],
         ];
     }
 
@@ -44,7 +52,40 @@ class PushEventTest extends TestCase
     {
         unset($this->event['payload']['commits'][0]['message']);
 
-        $this->assertEvent['message'] = 'https://github.com/PeeHaa';
+        $this->assertEvent['information']['payload'] = 'https://github.com/PeeHaa';
+        $this->assertEvent['sound']['size']          = strlen('https://github.com/PeeHaa') * 1.1;
+
+        $event = new PushEvent($this->event);
+
+        $this->assertSame($this->assertEvent, $event->getAsArray());
+    }
+
+    public function testGetAsArrayWithCommitMessageEgg()
+    {
+        $this->event['repo']['name'] = 'ekinhbayar/gitamp';
+
+        $this->assertEvent['information']['url']     = 'https://github.com/ekinhbayar/gitamp';
+        $this->assertEvent['information']['message'] = 'PeeHaa pushed to ekinhbayar/gitamp';
+        $this->assertEvent['sound']['type']          = 'CelestaEgg';
+        $this->assertEvent['sound']['size']          = 1.0;
+
+        $event = new PushEvent($this->event);
+
+        $this->assertSame($this->assertEvent, $event->getAsArray());
+    }
+
+    public function testGetAsArrayWithoutCommitMessageEgg()
+    {
+        $this->event['repo']['name'] = 'ekinhbayar/gitamp';
+
+        $this->assertEvent['information']['url']     = 'https://github.com/ekinhbayar/gitamp';
+        $this->assertEvent['information']['message'] = 'PeeHaa pushed to ekinhbayar/gitamp';
+        $this->assertEvent['sound']['type']          = 'CelestaEgg';
+
+        unset($this->event['payload']['commits'][0]['message']);
+
+        $this->assertEvent['information']['payload'] = 'https://github.com/PeeHaa';
+        $this->assertEvent['sound']['size']          = 1.0;
 
         $event = new PushEvent($this->event);
 

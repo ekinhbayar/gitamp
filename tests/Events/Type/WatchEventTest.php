@@ -21,18 +21,39 @@ class WatchEventTest extends TestCase
         ];
 
         $this->assertEvent = [
-            'id'        => 1,
-            'type'      => 'WatchEvent',
-            'action'    => 'The action',
-            'repoName'  => 'test/repo',
-            'actorName' => 'PeeHaa',
-            'eventUrl'  => 'https://github.com/test/repo',
-            'message'   => 'not sure if stupid but works anyway'
+            'id'          => 1,
+            'type'        => 7,
+            'information' => [
+                'url' => 'https://github.com/test/repo',
+                'payload' => 'not sure if stupid but works anyway',
+                'message' => 'PeeHaa watched test/repo',
+            ],
+            'ring'  => [
+                'animationDuration' => 3000,
+                'radius'            => 80,
+            ],
+            'sound' => [
+                'size' => 1.0,
+                'type' => 'Swell',
+            ],
         ];
     }
 
     public function testGetAsArray()
     {
+        $event = new WatchEvent($this->event);
+
+        $this->assertSame($this->assertEvent, $event->getAsArray());
+    }
+
+    public function testGetAsArrayEgg()
+    {
+        $this->event['repo']['name'] = 'ekinhbayar/gitamp';
+
+        $this->assertEvent['information']['url']     = 'https://github.com/ekinhbayar/gitamp';
+        $this->assertEvent['information']['message'] = 'PeeHaa watched ekinhbayar/gitamp';
+        $this->assertEvent['sound']['type']          = 'SwellEgg';
+
         $event = new WatchEvent($this->event);
 
         $this->assertSame($this->assertEvent, $event->getAsArray());
