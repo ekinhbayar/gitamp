@@ -2,10 +2,10 @@
 
 namespace ekinhbayar\GitAmpTests\Log;
 
-use Aerys\Body;
+use Aerys\Server;
 use Aerys\Request;
 use Aerys\Response;
-use Aerys\Server;
+use Amp\ByteStream\Message;
 use ekinhbayar\GitAmp\Log\Request as RequestLogger;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
@@ -14,7 +14,7 @@ class RequestTest extends TestCase
 {
     public function testInvoke()
     {
-        $body = $this->createMock(Body::class);
+        $body = $this->createMock(Message::class);
 
         $logger = $this->createMock(LoggerInterface::class);
 
