@@ -2,7 +2,7 @@
 
 namespace ekinhbayar\GitAmp\Events\Type;
 
-use ekinhbayar\GitAmp\Presentation\NumericalType;
+use ekinhbayar\GitAmp\Presentation\Type;
 use ekinhbayar\GitAmp\Presentation\Ring;
 use ekinhbayar\GitAmp\Presentation\Sound\BaseSound;
 use ekinhbayar\GitAmp\Presentation\Sound\Celesta;
@@ -14,9 +14,7 @@ class PushEvent extends BaseEvent
     {
         parent::__construct(
             (int) $event['id'],
-            new NumericalType(1),
-            'PushEvent',
-            $event['repo']['name'],
+            new Type(1),
             $this->buildUrl($event),
             $this->buildPayload($event),
             $this->buildMessage($event),

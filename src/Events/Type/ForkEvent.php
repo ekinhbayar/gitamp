@@ -2,7 +2,7 @@
 
 namespace ekinhbayar\GitAmp\Events\Type;
 
-use ekinhbayar\GitAmp\Presentation\NumericalType;
+use ekinhbayar\GitAmp\Presentation\Type;
 use ekinhbayar\GitAmp\Presentation\Ring;
 use ekinhbayar\GitAmp\Presentation\Sound\BaseSound;
 use ekinhbayar\GitAmp\Presentation\Sound\Swell;
@@ -14,9 +14,7 @@ class ForkEvent extends BaseEvent
     {
         parent::__construct(
             (int) $event['id'],
-            new NumericalType(5),
-            'ForkEvent',
-            $event['repo']['name'],
+            new Type(5),
             $this->buildUrl($event),
             $this->buildPayload(),
             $this->buildMessage($event),

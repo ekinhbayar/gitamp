@@ -2,7 +2,7 @@
 
 namespace ekinhbayar\GitAmp\Presentation;
 
-class NumericalType
+class Type
 {
     private $type;
 

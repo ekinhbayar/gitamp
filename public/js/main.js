@@ -184,7 +184,7 @@ const GitAmp = (function(exports, $) {
         };
 
         Event.prototype.getClassName = function() {
-            return 'event-' + this.event.getNumericalType();
+            return 'event-' + this.event.getType();
         };
 
         Event.prototype.getRingAnimationDuration = function() {
@@ -346,19 +346,9 @@ const GitAmp = (function(exports, $) {
         return this.event.id;
     };
 
-    EventMessage.prototype.getNumericalType = function() {
-        //noinspection JSUnresolvedVariable
-        return this.event.numericalType;
-    };
-
     EventMessage.prototype.getType = function() {
         //noinspection JSUnresolvedVariable
         return this.event.type;
-    };
-
-    EventMessage.prototype.getRepositoryName = function() {
-        //noinspection JSUnresolvedVariable
-        return this.event.repoName;
     };
 
     EventMessage.prototype.getUrl = function() {

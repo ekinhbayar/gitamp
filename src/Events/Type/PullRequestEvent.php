@@ -2,7 +2,7 @@
 
 namespace ekinhbayar\GitAmp\Events\Type;
 
-use ekinhbayar\GitAmp\Presentation\NumericalType;
+use ekinhbayar\GitAmp\Presentation\Type;
 use ekinhbayar\GitAmp\Presentation\Ring;
 use ekinhbayar\GitAmp\Presentation\Sound\BaseSound;
 use ekinhbayar\GitAmp\Presentation\Sound\Swell;
@@ -14,9 +14,7 @@ class PullRequestEvent extends BaseEvent
     {
         parent::__construct(
             (int) $event['id'],
-            new NumericalType(2),
-            'PullRequestEvent',
-            $event['repo']['name'],
+            new Type(2),
             $event['payload']['pull_request']['html_url'],
             $event['payload']['pull_request']['title'],
             $this->buildMessage($event),

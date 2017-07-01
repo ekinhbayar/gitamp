@@ -2,7 +2,7 @@
 
 namespace ekinhbayar\GitAmp\Events\Type;
 
-use ekinhbayar\GitAmp\Presentation\NumericalType;
+use ekinhbayar\GitAmp\Presentation\Type;
 use ekinhbayar\GitAmp\Presentation\Ring;
 use ekinhbayar\GitAmp\Presentation\Sound\BaseSound;
 use ekinhbayar\GitAmp\Presentation\Sound\Clav;
@@ -14,9 +14,7 @@ class IssueCommentEvent extends BaseEvent
     {
         parent::__construct(
             (int) $event['id'],
-            new NumericalType(4),
-            'IssueCommentEvent',
-            $event['repo']['name'],
+            new Type(4),
             $event['payload']['issue']['html_url'],
             $this->buildPayload($event),
             $this->buildMessage($event),
