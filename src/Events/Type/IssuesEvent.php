@@ -28,7 +28,7 @@ class IssuesEvent extends BaseEvent
 
     private function buildMessage(array $event): string
     {
-        return sprintf(
+        return \sprintf(
             '%s %s an issue in %s',
             $event['actor']['login'],
             $event['payload']['action'],
@@ -42,6 +42,6 @@ class IssuesEvent extends BaseEvent
             return new ClavEgg();
         }
 
-        return new Clav(strlen($event['payload']['issue']['title']) * 1.1);
+        return new Clav(\strlen($event['payload']['issue']['title']) * 1.1);
     }
 }

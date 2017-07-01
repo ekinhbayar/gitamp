@@ -38,7 +38,7 @@ class CreateEvent extends BaseEvent
 
     private function buildMessage(array $event): string
     {
-        return sprintf('%s created %s', $event['actor']['login'], $event['repo']['name']);
+        return \sprintf('%s created %s', $event['actor']['login'], $event['repo']['name']);
     }
 
     private function buildSound(array $event): BaseSound

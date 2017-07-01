@@ -34,7 +34,7 @@ class WatchEvent extends BaseEvent
 
     private function buildMessage(array $event): string
     {
-        return sprintf('%s watched %s', $event['actor']['login'], $event['repo']['name']);
+        return \sprintf('%s watched %s', $event['actor']['login'], $event['repo']['name']);
     }
 
     private function buildSound(array $event): BaseSound

@@ -37,7 +37,7 @@ class IssueCommentEvent extends BaseEvent
 
     private function buildMessage(array $event): string
     {
-        return sprintf('%s commented in %s', $event['actor']['login'], $event['repo']['name']);
+        return \sprintf('%s commented in %s', $event['actor']['login'], $event['repo']['name']);
     }
 
     private function buildSound(array $event): BaseSound
@@ -46,6 +46,6 @@ class IssueCommentEvent extends BaseEvent
             return new ClavEgg();
         }
 
-        return new Clav(strlen($this->buildPayload($event)) * 1.1);
+        return new Clav(\strlen($this->buildPayload($event)) * 1.1);
     }
 }

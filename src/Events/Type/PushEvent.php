@@ -38,7 +38,7 @@ class PushEvent extends BaseEvent
 
     private function buildMessage(array $event): string
     {
-        return sprintf('%s pushed to %s', $event['actor']['login'], $event['repo']['name']);
+        return \sprintf('%s pushed to %s', $event['actor']['login'], $event['repo']['name']);
     }
 
     private function buildSound(array $event): BaseSound
@@ -47,6 +47,6 @@ class PushEvent extends BaseEvent
             return new CelestaEgg();
         }
 
-        return new Celesta(strlen($this->buildPayload($event)) * 1.1);
+        return new Celesta(\strlen($this->buildPayload($event)) * 1.1);
     }
 }

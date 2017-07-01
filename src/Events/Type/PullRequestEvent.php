@@ -28,7 +28,7 @@ class PullRequestEvent extends BaseEvent
 
     private function buildMessage(array $event): string
     {
-        return sprintf(
+        return \sprintf(
             '%s %s a PR for %s',
             $event['actor']['login'],
             $event['payload']['action'],
