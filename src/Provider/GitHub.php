@@ -42,7 +42,7 @@ class GitHub implements Listener
     {
         try {
             $request = (new Request(self::API_ENDPOINT, 'GET'))
-                ->withAllHeaders($this->getAuthHeader());
+                ->withHeaders($this->getAuthHeader());
 
             $response = yield $this->client->request($request);
         } catch (HttpException $e) {
