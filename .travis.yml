@@ -11,7 +11,7 @@ services:
 
 before_script:
   - travis_retry composer self-update
-  - travis_retry composer install --no-interaction
+  - travis_retry composer update --no-interaction
 
 script:
   - phpdbg -qrr vendor/bin/phpunit --coverage-text --coverage-clover=coverage.clover
