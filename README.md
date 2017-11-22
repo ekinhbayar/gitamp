@@ -51,4 +51,4 @@ For true non-blocking execution, install one of the following:
 
 All features requests, bug reports or questions can be posted in [GitHub issues](https://github.com/ekinhbayar/gitamp/issues).
 
-For security related reports please send a mail to security@gitamp.audio instead of using GitHub's issues.
+For security related reports please send a mail to gitamp-security@pieterhordijk.com instead of using GitHub's issues.
