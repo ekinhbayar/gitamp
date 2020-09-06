@@ -38,13 +38,11 @@ coding_style:
 tools:
     external_code_coverage: true
 build:
+    environment:
+        php:
+            version: "7.4"
     nodes:
         analysis:
             tests:
                 override:
                     - php-scrutinizer-run
-
-        tests-and-coverage:
-            environment:
-                php:
-                    version: "7.4"
