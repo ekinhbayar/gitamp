@@ -1,12 +1,13 @@
-<?php declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 namespace ekinhbayar\GitAmp\Presentation\Sound;
 
 abstract class BaseSound
 {
-    protected $size;
+    protected float $size;
 
-    public function __construct(float $size = 1) {
+    public function __construct(float $size = 1)
+    {
         $this->size = $size;
     }
 

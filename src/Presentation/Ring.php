@@ -1,14 +1,15 @@
-<?php declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 namespace ekinhbayar\GitAmp\Presentation;
 
 class Ring
 {
-    private $animationDuration;
+    private int $animationDuration;
 
-    private $radius;
+    private int $radius;
 
-    public function __construct(int $animationDuration, int $radius) {
+    public function __construct(int $animationDuration, int $radius)
+    {
         $this->animationDuration = $animationDuration;
         $this->radius            = $radius;
     }

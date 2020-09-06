@@ -1,37 +1,37 @@
-<?php declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 namespace ekinhbayar\GitAmp\Provider;
 
-use Amp\Artax\Response;
+use Amp\Http\Client\HttpClient;
+use Amp\Http\Client\Request;
+use Amp\Http\Client\Response;
 use Amp\Promise;
-use Amp\Artax\Client;
-use Amp\Artax\HttpException;
-use Amp\Artax\Request;
-use ekinhbayar\GitAmp\Response\Factory;
 use ekinhbayar\GitAmp\Github\Credentials;
+use ekinhbayar\GitAmp\Response\Factory;
 use Psr\Log\LoggerInterface;
+use function Amp\call;
 
 class GitHub implements Listener
 {
-    const EVENT_NAMESPACE = 'ekinhbayar\GitAmp\Event\GitHub';
+    private const EVENT_NAMESPACE = 'ekinhbayar\GitAmp\Event\GitHub';
 
-    const API_ENDPOINT = 'https://api.github.com/events';
+    private const API_ENDPOINT = 'https://api.github.com/events';
+    private const API_VERSION  = 'v3';
 
-    private $client;
+    private HttpClient      $client;
 
-    private $credentials;
+    private Credentials     $credentials;
 
-    private $resultFactory;
+    private Factory         $resultFactory;
 
-    private $logger;
+    private LoggerInterface $logger;
 
     public function __construct(
-        Client $client,
+        HttpClient $client,
         Credentials $credentials,
         Factory $resultFactory,
         LoggerInterface $logger
-    )
-    {
+    ) {
         $this->client        = $client;
         $this->credentials   = $credentials;
         $this->resultFactory = $resultFactory;
@@ -41,11 +41,12 @@ class GitHub implements Listener
     private function request(): \Generator
     {
         try {
-            $request = (new Request(self::API_ENDPOINT, 'GET'))
-                ->withHeaders($this->getAuthHeader());
+            $request = new Request(self::API_ENDPOINT, 'GET');
+
+            $request->setHeaders($this->getAuthHeader());
 
             $response = yield $this->client->request($request);
-        } catch (HttpException $e) {
+        } catch (\Throwable $e) {
             $this->logger->error('Failed to send GET request to API endpoint', ['exception' => $e]);
 
             throw new RequestFailedException('Failed to send GET request to API endpoint', $e->getCode(), $e);
@@ -56,7 +57,7 @@ class GitHub implements Listener
             $message = \sprintf(
                 'A non-200 response status (%s - %s) was encountered',
                 $response->getStatus(),
-                $response->getReason()
+                $response->getReason(),
             );
 
             $this->logger->critical($message, ['response' => $response]);
@@ -69,7 +70,7 @@ class GitHub implements Listener
 
     public function listen(): Promise
     {
-        return \Amp\call(function() {
+        return call(function () {
             $response = yield from $this->request();
 
             return yield $this->resultFactory->build(self::EVENT_NAMESPACE, $response);
@@ -78,6 +79,9 @@ class GitHub implements Listener
 
     private function getAuthHeader(): array
     {
-        return ['Authorization' => \sprintf('Basic %s', $this->credentials->getAuthenticationString())];
+        return [
+            'Accept'        => \sprintf('application/vnd.github.%s+json', self::API_VERSION),
+            'Authorization' => \sprintf('Bearer %s', $this->credentials->getAuthenticationString()),
+        ];
     }
 }

@@ -1,4 +1,4 @@
-<?php declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 namespace ekinhbayar\GitAmp\Event;
 
@@ -9,17 +9,18 @@ use ekinhbayar\GitAmp\Presentation\Sound\BaseSound;
 
 class BaseEvent implements Event
 {
-    protected $id;
+    protected int $id;
 
-    protected $type;
+    protected Type $type;
 
-    protected $information;
+    protected Information $information;
 
-    protected $ring;
+    protected Ring $ring;
 
-    protected $sound;
+    protected BaseSound $sound;
 
-    public function __construct(int $id, Type $type, Information $information, Ring $ring, BaseSound $sound) {
+    public function __construct(int $id, Type $type, Information $information, Ring $ring, BaseSound $sound)
+    {
         $this->id          = $id;
         $this->type        = $type;
         $this->information = $information;

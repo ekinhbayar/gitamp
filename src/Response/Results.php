@@ -1,8 +1,8 @@
-<?php declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 namespace ekinhbayar\GitAmp\Response;
 
-use Amp\Artax\Response;
+use Amp\Http\Client\Response;
 use ekinhbayar\GitAmp\Event\Factory as EventFactory;
 use ekinhbayar\GitAmp\Event\UnknownEventException;
 use ExceptionalJSON\DecodeErrorException;
@@ -10,11 +10,11 @@ use Psr\Log\LoggerInterface;
 
 class Results
 {
-    private $eventFactory;
+    private EventFactory $eventFactory;
 
-    private $logger;
+    private LoggerInterface $logger;
 
-    private $events = [];
+    private array $events = [];
 
     public function __construct(EventFactory $eventFactory, LoggerInterface $logger)
     {
@@ -25,7 +25,9 @@ class Results
     public function appendResponse(string $eventNamespace, Response $response): \Generator
     {
         try {
-            $events = \json_try_decode(yield $response->getBody(), true);
+            $bufferedResponse = yield $response->getBody()->buffer();
+
+            $events = \json_try_decode($bufferedResponse, true);
         } catch (DecodeErrorException $e) {
             $this->logger->emergency('Failed to decode response body as JSON', ['exception' => $e]);
 
@@ -37,7 +39,7 @@ class Results
         }
     }
 
-    private function appendEvent(string $eventNamespace, array $event)
+    private function appendEvent(string $eventNamespace, array $event): void
     {
         try {
             $this->events[] = $this->eventFactory->build($eventNamespace, $event);

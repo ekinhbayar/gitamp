@@ -1,4 +1,4 @@
-<?php declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 namespace ekinhbayar\GitAmpTests\Event;
 
@@ -11,21 +11,21 @@ use PHPUnit\Framework\TestCase;
 
 class BaseEventTest extends TestCase
 {
-    public function testGetAsArray()
+    public function testGetAsArray(): void
     {
         $data = [
-            'id'        => 1,
-            'type'      => 1,
+            'id'          => 1,
+            'type'        => 1,
             'information' => [
-                'url' => 'url',
+                'url'     => 'url',
                 'payload' => 'payload',
                 'message' => 'Message',
             ],
-            'ring'  => [
+            'ring'        => [
                 'animationDuration' => 3000,
                 'radius'            => 80,
             ],
-            'sound' => [
+            'sound'       => [
                 'size' => 1.0,
                 'type' => 'Swell',
             ],

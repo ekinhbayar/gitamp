@@ -1,16 +1,17 @@
-<?php declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 namespace ekinhbayar\GitAmp\Presentation;
 
 class Information
 {
-    private $url;
+    private string $url;
 
-    private $payload;
+    private string $payload;
 
-    private $message;
+    private string $message;
 
-    public function __construct(string $url, string $payload, string $message) {
+    public function __construct(string $url, string $payload, string $message)
+    {
         $this->url     = $url;
         $this->payload = $payload;
         $this->message = \ucfirst($message);

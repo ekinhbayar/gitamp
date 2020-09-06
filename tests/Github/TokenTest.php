@@ -7,7 +7,7 @@ use PHPUnit\Framework\TestCase;
 
 class TokenTest extends TestCase
 {
-    public function testGetAuthenticationString()
+    public function testGetAuthenticationString(): void
     {
         $this->assertSame('gitamptoken', (new Token('gitamptoken'))->getAuthenticationString());
     }

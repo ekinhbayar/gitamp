@@ -1,10 +1,11 @@
-<?php declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 namespace ekinhbayar\GitAmpTests\Response;
 
-use Amp\Artax\Response;
+use Amp\Http\Client\Request;
+use Amp\Http\Client\Response;
 use Amp\ByteStream\InputStream;
-use Amp\ByteStream\Message;
+use Amp\ByteStream\Payload;
 use Amp\Loop;
 use Amp\Success;
 use ekinhbayar\GitAmp\Event\GitHub\PullRequestEvent;
@@ -17,11 +18,11 @@ use Psr\Log\LoggerInterface;
 
 class ResultsTest extends TestCase
 {
-    private $eventData;
+    private string $eventData;
 
     private $logger;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->eventData = '[
           {
@@ -56,7 +57,7 @@ class ResultsTest extends TestCase
         $this->logger = $this->createMock(LoggerInterface::class);
     }
 
-    public function testAppendResponseThrowsOnInvalidJSON()
+    public function testAppendResponseThrowsOnInvalidJSON(): void
     {
         $inputStream = $this->createMock(InputStream::class);
 
@@ -72,25 +73,19 @@ class ResultsTest extends TestCase
             ->willReturn(new Success(null))
         ;
 
-        $message = new Message($inputStream);
+        $message = new Payload($inputStream);
 
-        $response = $this->createMock(Response::class);
-
-        $response
-            ->expects($this->once())
-            ->method('getBody')
-            ->will($this->returnValue($message))
-        ;
+        $response = new Response('2', 200, 'OK', [], $message, new Request('foo'));
 
         $this->expectException(DecodingFailedException::class);
         $this->expectExceptionMessage('Failed to decode response body as JSON');
 
-        Loop::run(function() use ($response) {
+        Loop::run(function () use ($response) {
             yield from (new Results(new Factory(), $this->logger))->appendResponse('Foo', $response);
         });
     }
 
-    public function testAppendResponseUnknownEventExceptionDoesNotBubbleUp()
+    public function testAppendResponseUnknownEventExceptionDoesNotBubbleUp(): void
     {
         $inputStream = $this->createMock(InputStream::class);
 
@@ -106,15 +101,9 @@ class ResultsTest extends TestCase
             ->willReturn(new Success(null))
         ;
 
-        $message = new Message($inputStream);
+        $message = new Payload($inputStream);
 
-        $response = $this->createMock(Response::class);
-
-        $response
-            ->expects($this->once())
-            ->method('getBody')
-            ->will($this->returnValue($message))
-        ;
+        $response = new Response('2', 200, 'OK', [], $message, new Request('foo'));
 
         $eventFactory = $this->createMock(Factory::class);
 
@@ -124,20 +113,20 @@ class ResultsTest extends TestCase
             ->willThrowException(new UnknownEventException())
         ;
 
-        Loop::run(function() use ($eventFactory, $response) {
+        Loop::run(function () use ($eventFactory, $response) {
             yield from (new Results($eventFactory, $this->logger))
                 ->appendResponse('ekinhbayar\GitAmp\Event\GitHub', $response);
         });
     }
 
-    public function testHasEventsFalse()
+    public function testHasEventsFalse(): void
     {
         $results = new Results(new Factory(), $this->logger);
 
         $this->assertFalse($results->hasEvents());
     }
 
-    public function testHasEventsTrue()
+    public function testHasEventsTrue(): void
     {
         $inputStream = $this->createMock(InputStream::class);
 
@@ -153,15 +142,9 @@ class ResultsTest extends TestCase
             ->willReturn(new Success(null))
         ;
 
-        $message = new Message($inputStream);
+        $message = new Payload($inputStream);
 
-        $response = $this->createMock(Response::class);
-
-        $response
-            ->expects($this->once())
-            ->method('getBody')
-            ->will($this->returnValue($message))
-        ;
+        $response = new Response('2', 200, 'OK', [], $message, new Request('foo'));
 
         $eventFactory = $this->createMock(Factory::class);
 
@@ -173,21 +156,21 @@ class ResultsTest extends TestCase
 
         $results = new Results($eventFactory, $this->logger);
 
-        Loop::run(function() use ($results, $response) {
+        Loop::run(function () use ($results, $response) {
             yield from $results->appendResponse('ekinhbayar\GitAmp\Event\GitHub', $response);
         });
 
         $this->assertTrue($results->hasEvents());
     }
 
-    public function testJsonEncodeWithoutEvents()
+    public function testJsonEncodeWithoutEvents(): void
     {
         $results = new Results(new Factory(), $this->logger);
 
         $this->assertSame('[]', $results->jsonEncode());
     }
 
-    public function testJsonEncodeWithEvents()
+    public function testJsonEncodeWithEvents(): void
     {
         $inputStream = $this->createMock(InputStream::class);
 
@@ -203,15 +186,9 @@ class ResultsTest extends TestCase
             ->willReturn(new Success(null))
         ;
 
-        $message = new Message($inputStream);
+        $message = new Payload($inputStream);
 
-        $response = $this->createMock(Response::class);
-
-        $response
-            ->expects($this->once())
-            ->method('getBody')
-            ->will($this->returnValue($message))
-        ;
+        $response = new Response('2', 200, 'OK', [], $message, new Request('foo'));
 
         $event = $this->createMock(PullRequestEvent::class);
 
@@ -233,7 +210,7 @@ class ResultsTest extends TestCase
 
         $results = new Results($eventFactory, $this->logger);
 
-        Loop::run(function() use ($results, $response) {
+        Loop::run(function () use ($results, $response) {
             yield from $results->appendResponse('ekinhbayar\GitAmp\Event\GitHub', $response);
         });
 

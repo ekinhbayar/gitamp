@@ -1,12 +1,12 @@
-<?php declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 namespace ekinhbayar\GitAmpTests\Provider;
 
-use Amp\Artax\Client;
-use Amp\Artax\HttpException;
-use Amp\Artax\Response;
+use Amp\ByteStream\Payload;
+use Amp\Http\Client\HttpClient;
+use Amp\Http\Client\HttpClientBuilder;
+use Amp\Http\Client\Response;
 use Amp\ByteStream\InMemoryStream;
-use Amp\ByteStream\Message;
 use Amp\Promise;
 use Amp\Success;
 use ekinhbayar\GitAmp\Provider\RequestFailedException;
@@ -14,33 +14,34 @@ use ekinhbayar\GitAmp\Github\Token;
 use ekinhbayar\GitAmp\Provider\GitHub;
 use ekinhbayar\GitAmp\Response\Factory;
 use ekinhbayar\GitAmp\Response\Results;
+use ekinhbayar\GitAmpTests\Fakes\HttpClient\MockSuccessfulResponseInterceptor;
+use ekinhbayar\GitAmpTests\Fakes\HttpClient\MockFailedResponseInterceptor;
+use ekinhbayar\GitAmpTests\Fakes\HttpClient\MockThrowingResponseInterceptor;
 use PHPUnit\Framework\TestCase;
 use function Amp\Promise\wait;
 use Psr\Log\LoggerInterface;
 
 class GitHubTest extends TestCase
 {
-    private $credentials;
+    private Token $credentials;
 
     private $factory;
 
     private $logger;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->credentials = new Token('token');
         $this->factory     = $this->createMock(Factory::class);
         $this->logger      = $this->createMock(LoggerInterface::class);
     }
 
-    public function testListenThrowsOnFailedRequest()
+    public function testListenThrowsOnFailedRequest(): void
     {
-        $httpClient = $this->createMock(Client::class);
-
-        $httpClient
-            ->expects($this->once())
-            ->method('request')
-            ->will($this->throwException(new HttpException()))
+        $httpClient = (new HttpClientBuilder())
+            ->intercept(
+                new MockThrowingResponseInterceptor(file_get_contents(TEST_DATA_DIR . '/invalid.json')),
+            )->build()
         ;
 
         $gitamp = new GitHub($httpClient, $this->credentials, $this->factory, $this->logger);
@@ -51,54 +52,28 @@ class GitHubTest extends TestCase
         wait($gitamp->listen());
     }
 
-    public function testListenThrowsOnNonOkResponse()
+    public function testListenThrowsOnNonOkResponse(): void
     {
-        $response = $this->createMock(Response::class);
-
-        $response
-            ->expects($this->exactly(2))
-            ->method('getStatus')
-            ->will($this->returnValue(403))
-        ;
-
-        $response
-            ->expects($this->once())
-            ->method('getReason')
-            ->will($this->returnValue('invalid'))
-        ;
-
-        $httpClient = $this->createMock(Client::class);
-
-        $httpClient
-            ->expects($this->once())
-            ->method('request')
-            ->will($this->returnValue(new Success($response)))
+        $httpClient = (new HttpClientBuilder())
+            ->intercept(
+                new MockFailedResponseInterceptor(file_get_contents(TEST_DATA_DIR . '/invalid.json')),
+            )->build()
         ;
 
         $gitamp = new GitHub($httpClient, $this->credentials, $this->factory, $this->logger);
 
         $this->expectException(RequestFailedException::class);
-        $this->expectExceptionMessage('A non-200 response status (403 - invalid) was encountered');
+        $this->expectExceptionMessage('A non-200 response status (403 - Forbidden Origin) was encountered');
 
         wait($gitamp->listen());
     }
 
-    public function testListenReturnsPromise()
+    public function testListenReturnsPromise(): void
     {
-        $response = $this->createMock(Response::class);
-
-        $response
-            ->expects($this->once())
-            ->method('getStatus')
-            ->will($this->returnValue(200))
-        ;
-
-        $httpClient = $this->createMock(Client::class);
-
-        $httpClient
-            ->expects($this->once())
-            ->method('request')
-            ->will($this->returnValue(new Success($response)))
+        $httpClient = (new HttpClientBuilder())
+            ->intercept(
+                new MockFailedResponseInterceptor(file_get_contents(TEST_DATA_DIR . '/valid.json')),
+            )->build()
         ;
 
         $this->assertInstanceOf(
@@ -107,26 +82,12 @@ class GitHubTest extends TestCase
         );
     }
 
-    public function testListenReturnsResults()
+    public function testListenReturnsResults(): void
     {
-        $response = $this->createMock(Response::class);
-
-        $response
-            ->expects($this->once())
-            ->method('getStatus')
-            ->will($this->returnValue(200))
-        ;
-
-        $response
-            ->method('getBody')
-            ->willReturn(new Message(new InMemoryStream("mock data")));
-
-        $httpClient = $this->createMock(Client::class);
-
-        $httpClient
-            ->expects($this->once())
-            ->method('request')
-            ->will($this->returnValue(new Success($response)))
+        $httpClient = (new HttpClientBuilder())
+            ->intercept(
+                new MockSuccessfulResponseInterceptor(file_get_contents(TEST_DATA_DIR . '/valid.json')),
+            )->build()
         ;
 
         $this->factory
