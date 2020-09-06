@@ -32,14 +32,9 @@ class FactoryTest extends TestCase
 
         $inputStream = $this->createMock(InputStream::class);
         $inputStream
-            ->expects($this->at(0))
+            ->expects($this->exactly(2))
             ->method('read')
-            ->willReturn(new Success($events))
-        ;
-        $inputStream
-            ->expects($this->at(1))
-            ->method('read')
-            ->willReturn(new Success(null))
+            ->willReturnOnConsecutiveCalls(new Success($events), new Success(null))
         ;
 
         $message = new Payload($inputStream);
@@ -71,14 +66,9 @@ class FactoryTest extends TestCase
 
         $inputStream = $this->createMock(InputStream::class);
         $inputStream
-            ->expects($this->at(0))
+            ->expects($this->exactly(2))
             ->method('read')
-            ->willReturn(new Success($events))
-        ;
-        $inputStream
-            ->expects($this->at(1))
-            ->method('read')
-            ->willReturn(new Success(null))
+            ->willReturnOnConsecutiveCalls(new Success($events), new Success(null))
         ;
 
         $message = new Payload($inputStream);
