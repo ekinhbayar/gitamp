@@ -25,6 +25,8 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "require": {
+        "php": "^7.4",
+        "ext-json": "*",
         "amphp/amp": "^2",
         "amphp/http": "^1.6",
         "amphp/http-client": "^4.5",
@@ -35,10 +37,8 @@
         "amphp/websocket": "^1.0",
         "amphp/websocket-server": "^2.0",
         "daverandom/exceptional-json": "^1",
-        "ext-json": "*",
         "monolog/monolog": "^2",
         "nikic/fast-route": "^1",
-        "php": "^7",
         "psr/log": "^1",
         "rdlowrey/auryn": "^1"
     },
