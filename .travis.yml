@@ -1,22 +1,23 @@
 language: php
 
 php:
-  - '7.0'
-  - '7.1'
-  - '7.2'
-  - nightly
+  - '7.4'
 
-services:
-  - redis-server
-
-before_script:
-  - travis_retry composer self-update
-  - travis_retry composer update --no-interaction
-
-script:
-  - phpdbg -qrr vendor/bin/phpunit --coverage-text --coverage-clover=coverage.clover
-  - vendor/bin/fqn-check src
-
-after_script:
-  - wget https://scrutinizer-ci.com/ocular.phar
-  - php ocular.phar code-coverage:upload --format=php-clover coverage.clover
+jobs:
+  include:
+    - stage: Dependencies
+      name: "Dependency Checks"
+      before_script:
+        - travis_retry composer self-update
+        - travis_retry composer update --no-interaction
+      script: ./vendor/bin/composer-require-checker
+    - stage: Tests
+      name: "Unit Tests and Coverage"
+      before_script:
+        - travis_retry composer self-update
+        - travis_retry composer update --no-interaction
+      script:
+        - phpdbg -qrr vendor/bin/phpunit --coverage-text --coverage-clover=coverage.clover
+      after_script:
+        - wget https://scrutinizer-ci.com/ocular.phar
+        - php ocular.phar code-coverage:upload --format=php-clover coverage.clover

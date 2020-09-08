@@ -1,10 +1,10 @@
-<?php declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 namespace ekinhbayar\GitAmp\Github;
 
 class Token implements Credentials
 {
-    private $token;
+    private string $token;
 
     public function __construct(string $token)
     {

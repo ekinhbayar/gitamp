@@ -1,10 +1,11 @@
-<?php declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 namespace ekinhbayar\GitAmpTests\Response;
 
-use Amp\Artax\Response;
+use Amp\Http\Client\Request;
+use Amp\Http\Client\Response;
 use Amp\ByteStream\InputStream;
-use Amp\ByteStream\Message;
+use Amp\ByteStream\Payload;
 use function Amp\Promise\wait;
 use Amp\Success;
 use ekinhbayar\GitAmp\Response\Factory;
@@ -15,7 +16,7 @@ use Psr\Log\LoggerInterface;
 
 class FactoryTest extends TestCase
 {
-    public function testBuildResultsUnknownEventDoesNotBubbleUp()
+    public function testBuildResultsUnknownEventDoesNotBubbleUp(): void
     {
         $events = json_encode([
             [
@@ -31,25 +32,14 @@ class FactoryTest extends TestCase
 
         $inputStream = $this->createMock(InputStream::class);
         $inputStream
-            ->expects($this->at(0))
+            ->expects($this->exactly(2))
             ->method('read')
-            ->willReturn(new Success($events))
-        ;
-        $inputStream
-            ->expects($this->at(1))
-            ->method('read')
-            ->willReturn(new Success(null))
+            ->willReturnOnConsecutiveCalls(new Success($events), new Success(null))
         ;
 
-        $message = new Message($inputStream);
+        $message = new Payload($inputStream);
 
-        $response = $this->createMock(Response::class);
-
-        $response
-            ->expects($this->once())
-            ->method('getBody')
-            ->will($this->returnValue($message))
-        ;
+        $response = new Response('2', 200, 'OK', [], $message, new Request('foo'));
 
         $logger = $this->createMock(LoggerInterface::class);
 
@@ -60,41 +50,30 @@ class FactoryTest extends TestCase
         $this->assertInstanceOf(Results::class, $results);
     }
 
-    public function testBuildReturnsResult()
+    public function testBuildReturnsResult(): void
     {
         $events = json_encode([
             [
-                'id'        => 1,
-                'type'      => 'CreateEvent',
-                'action'    => 'created',
-                'repo'      => ['name' => 'test/repo'],
-                'actor'     => ['login' => 'PeeHaa'],
-                'eventUrl'  => 'https://github.com/test/repo',
-                'message'   => 'The description',
+                'id'       => 1,
+                'type'     => 'CreateEvent',
+                'action'   => 'created',
+                'repo'     => ['name' => 'test/repo'],
+                'actor'    => ['login' => 'PeeHaa'],
+                'eventUrl' => 'https://github.com/test/repo',
+                'message'  => 'The description',
             ],
         ]);
 
         $inputStream = $this->createMock(InputStream::class);
         $inputStream
-            ->expects($this->at(0))
+            ->expects($this->exactly(2))
             ->method('read')
-            ->willReturn(new Success($events))
-        ;
-        $inputStream
-            ->expects($this->at(1))
-            ->method('read')
-            ->willReturn(new Success(null))
+            ->willReturnOnConsecutiveCalls(new Success($events), new Success(null))
         ;
 
-        $message = new Message($inputStream);
+        $message = new Payload($inputStream);
 
-        $response = $this->createMock(Response::class);
-
-        $response
-            ->expects($this->once())
-            ->method('getBody')
-            ->will($this->returnValue($message))
-        ;
+        $response = new Response('2', 200, 'OK', [], $message, new Request('foo'));
 
         $logger = $this->createMock(LoggerInterface::class);
 

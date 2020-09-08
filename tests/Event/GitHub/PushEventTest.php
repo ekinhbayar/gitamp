@@ -1,4 +1,4 @@
-<?php declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 namespace ekinhbayar\GitAmpTests\Event\GitHub;
 
@@ -7,11 +7,11 @@ use PHPUnit\Framework\TestCase;
 
 class PushEventTest extends TestCase
 {
-    private $event;
+    private array $event;
 
-    private $assertEvent;
+    private array $assertEvent;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->event = [
             'id'      => 1,
@@ -23,32 +23,32 @@ class PushEventTest extends TestCase
         ];
 
         $this->assertEvent = [
-            'id'        => 1,
-            'type'      => 1,
+            'id'          => 1,
+            'type'        => 1,
             'information' => [
-                'url' => 'https://github.com/test/repo',
+                'url'     => 'https://github.com/test/repo',
                 'payload' => 'Commit message',
                 'message' => 'PeeHaa pushed to test/repo',
             ],
-            'ring'  => [
+            'ring'        => [
                 'animationDuration' => 3000,
                 'radius'            => 80,
             ],
-            'sound' => [
+            'sound'       => [
                 'size' => strlen('Commit message') * 1.1,
                 'type' => 'Celesta',
             ],
         ];
     }
 
-    public function testGetAsArrayWithCommitMessage()
+    public function testGetAsArrayWithCommitMessage(): void
     {
         $event = new PushEvent($this->event);
 
         $this->assertSame($this->assertEvent, $event->getAsArray());
     }
 
-    public function testGetAsArrayWithoutCommitMessage()
+    public function testGetAsArrayWithoutCommitMessage(): void
     {
         unset($this->event['payload']['commits'][0]['message']);
 
@@ -60,7 +60,7 @@ class PushEventTest extends TestCase
         $this->assertSame($this->assertEvent, $event->getAsArray());
     }
 
-    public function testGetAsArrayWithCommitMessageEgg()
+    public function testGetAsArrayWithCommitMessageEgg(): void
     {
         $this->event['repo']['name'] = 'ekinhbayar/gitamp';
 
@@ -74,7 +74,7 @@ class PushEventTest extends TestCase
         $this->assertSame($this->assertEvent, $event->getAsArray());
     }
 
-    public function testGetAsArrayWithoutCommitMessageEgg()
+    public function testGetAsArrayWithoutCommitMessageEgg(): void
     {
         $this->event['repo']['name'] = 'ekinhbayar/gitamp';
 

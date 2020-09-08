@@ -1,4 +1,4 @@
-<?php declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 namespace ekinhbayar\GitAmpTests\Event\GitHub;
 
@@ -7,11 +7,11 @@ use PHPUnit\Framework\TestCase;
 
 class CreateEventTest extends TestCase
 {
-    private $event;
+    private array $event;
 
-    private $assertEvent;
+    private array $assertEvent;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->event = [
             'id'      => 1,
@@ -21,32 +21,32 @@ class CreateEventTest extends TestCase
         ];
 
         $this->assertEvent = [
-            'id'        => 1,
-            'type'      => 6,
+            'id'          => 1,
+            'type'        => 6,
             'information' => [
-                'url' => 'https://github.com/test/repo',
+                'url'     => 'https://github.com/test/repo',
                 'payload' => 'The description',
                 'message' => 'PeeHaa created test/repo',
             ],
-            'ring'  => [
+            'ring'        => [
                 'animationDuration' => 3000,
                 'radius'            => 80,
             ],
-            'sound' => [
+            'sound'       => [
                 'size' => 1.0,
                 'type' => 'Swell',
             ],
         ];
     }
 
-    public function testGetAsArrayWithPayloadDescription()
+    public function testGetAsArrayWithPayloadDescription(): void
     {
         $event = new CreateEvent($this->event);
 
         $this->assertSame($this->assertEvent, $event->getAsArray());
     }
 
-    public function testGetAsArrayWithoutPayloadDescription()
+    public function testGetAsArrayWithoutPayloadDescription(): void
     {
         unset($this->event['payload']['description']);
 
@@ -57,7 +57,7 @@ class CreateEventTest extends TestCase
         $this->assertSame($this->assertEvent, $event->getAsArray());
     }
 
-    public function testGetAsArrayWithPayloadDescriptionEgg()
+    public function testGetAsArrayWithPayloadDescriptionEgg(): void
     {
         $this->event['repo']['name'] = 'ekinhbayar/gitamp';
 
@@ -70,7 +70,7 @@ class CreateEventTest extends TestCase
         $this->assertSame($this->assertEvent, $event->getAsArray());
     }
 
-    public function testGetAsArrayWithoutPayloadDescriptionEgg()
+    public function testGetAsArrayWithoutPayloadDescriptionEgg(): void
     {
         $this->event['repo']['name'] = 'ekinhbayar/gitamp';
 

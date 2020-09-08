@@ -2,110 +2,97 @@
 
 namespace ekinhbayar\GitAmpTests\Websocket;
 
-use Aerys\Request;
-use Aerys\Response;
-use Aerys\Websocket\Endpoint;
-use Aerys\Websocket\Message;
+use Amp\Delayed;
+use Amp\Http\Server\DefaultErrorHandler;
+use Amp\Http\Server\Driver\Client;
+use Amp\Http\Server\HttpServer;
+use Amp\Http\Server\Request;
+use Amp\Http\Server\RequestHandler\CallableRequestHandler;
+use Amp\Http\Server\Response;
+use Amp\Http\Server\Router;
+use Amp\Http\Status;
+use Amp\Socket\Server;
+use Amp\Websocket\Client as WebsocketClient;
+use Amp\Websocket\Server\Gateway;
 use Amp\Loop;
 use Amp\Success;
+use Amp\Websocket\Server\Websocket;
 use ekinhbayar\GitAmp\Provider\GitHub;
 use ekinhbayar\GitAmp\Response\Results;
-use ekinhbayar\GitAmp\Storage\Counter;
 use ekinhbayar\GitAmp\Websocket\Handler;
+use Monolog\Logger;
 use PHPUnit\Framework\TestCase;
+use Psr\Http\Message\UriInterface as PsrUri;
+use function Amp\Promise\wait;
 
 class HandlerTest extends TestCase
 {
-    private $counter;
-
-    private $origin;
+    private string $origin;
 
     private $gitamp;
 
-    private $endpoint;
+    private $gateway;
 
-    public function setUp()
+    private $logger;
+
+    private HttpServer $httpServer;
+
+    public function setUp(): void
     {
-        $this->origin   = 'https://gitamp.audio';
-        $this->gitamp   = $this->createMock(GitHub::class);
-        $this->counter  = $this->createMock(Counter::class);
-        $this->endpoint = $this->createMock(Endpoint::class);
+        $this->origin     = 'https://gitamp.audio';
+        $this->gitamp     = $this->createMock(GitHub::class);
+        $this->gateway    = $this->createMock(Gateway::class);
+        $this->logger     = $this->createMock(Logger::class);
+        $this->httpServer = new HttpServer(
+            [Server::listen("tcp://127.0.0.1:0")],
+            new CallableRequestHandler(function () {
+                yield new Delayed(1500);
+
+                return new Response(Status::NO_CONTENT);
+            }
+        ), $this->logger);
     }
 
-    public function testOnHandshakeReturnsForbiddenOnInvalidOrigin()
+    public function testHandleHandshakeReturnsForbiddenOnInvalidOrigin(): void
     {
-        $handler = new Handler($this->counter, $this->origin, $this->gitamp);
+        $handler = new Handler($this->origin, $this->gitamp, $this->logger);
 
-        $request = $this->createMock(Request::class);
-        $response = $this->createMock(Response::class);
+        $client = $this->createMock(Client::class);
 
-        $request
+        $uri = $this->createMock(PsrUri::class);
+
+        $request = new Request($client, 'GET', $uri, ['origin' => 'https://notgitamp.audio']);
+
+        $response = new Response(403);
+
+        $this->gateway
             ->expects($this->once())
-            ->method('getHeader')
-            // this is testing the actual implementation which is actually not needed
-            ->with('origin')
-            ->will($this->returnValue('https://notgitamp.audio'));
+            ->method('getErrorHandler')
+            ->willReturn(new DefaultErrorHandler())
+        ;
 
-        $response
-            ->expects($this->once())
-            ->method('setStatus')
-            ->with(403);
-
-        $response
-            ->expects($this->once())
-            ->method('end')
-            ->with('<h1>origin not allowed</h1>');
-
-        $this->assertNull($handler->onHandshake($request, $response));
+        $handler->handleHandshake($this->gateway, $request, $response);
     }
 
-    public function testOnHandshakeReturnsClientAddress()
+    public function testHandleHandshakeReturnsSuccessfulResponseWhenOriginsMatch(): void
     {
-        $handler = new Handler($this->counter, $this->origin, $this->gitamp);
+        $handler = new Handler($this->origin, $this->gitamp, $this->logger);
 
-        $request = $this->createMock(Request::class);
-        $response = $this->createMock(Response::class);
+        $client = $this->createMock(Client::class);
 
-        $request
-            ->expects($this->once())
-            ->method('getHeader')
-            // this is testing the actual implementation which is actually not needed
-            ->with('origin')
-            ->will($this->returnValue($this->origin));
+        $uri = $this->createMock(PsrUri::class);
 
-        $request
-            ->expects($this->once())
-            ->method('getConnectionInfo')
-            ->will($this->returnValue(['client_addr' => '127.0.0.1']));
+        $request = new Request($client, 'GET', $uri, ['origin' => $this->origin]);
 
-        $this->assertSame('127.0.0.1', $handler->onHandshake($request, $response));
+        $response = new Response(200);
+
+        $result = wait($handler->handleHandshake($this->gateway, $request, $response));
+
+        $this->assertSame($response->getStatus(), $result->getStatus());
     }
 
-    public function testOnStartResetsConnectedUserCounter()
+    public function testOnStartEmitsWithoutEvents(): void
     {
-        $this->counter
-            ->expects($this->once())
-            ->method('set')
-            ->with(0);
-
-        $handler = new Handler($this->counter, $this->origin, $this->gitamp);
-
-        Loop::run(function () use ($handler) {
-            $handler->onStart($this->endpoint);
-
-            $handler->onClose(1, 0, 'foo');
-
-            Loop::stop();
-        });
-    }
-
-    public function testOnStartEmitsWithoutEvents()
-    {
-        $this->counter
-            ->expects($this->once())
-            ->method('set')
-            ->with(0);
-
         $results = $this->createMock(Results::class);
 
         $results
@@ -118,22 +105,17 @@ class HandlerTest extends TestCase
             ->method('listen')
             ->will($this->returnValue(new Success($results)));
 
-        $handler = new Handler($this->counter, $this->origin, $this->gitamp);
+        $handler = new Handler($this->origin, $this->gitamp, $this->logger);
 
         Loop::run(function () use ($handler) {
-            $handler->onStart($this->endpoint);
+            $handler->onStart($this->httpServer, $this->gateway);
 
             Loop::stop();
         });
     }
 
-    public function testOnStartEmitsWithEvents()
+    public function testOnStartEmitsWithEvents(): void
     {
-        $this->counter
-            ->expects($this->once())
-            ->method('set')
-            ->with(0);
-
         $results = $this->createMock(Results::class);
 
         $results
@@ -146,43 +128,21 @@ class HandlerTest extends TestCase
             ->method('listen')
             ->will($this->returnValue(new Success($results)));
 
-        $this->endpoint
+        $this->gateway
             ->expects($this->exactly(2))
             ->method('broadcast');
 
-        $handler = new Handler($this->counter, $this->origin, $this->gitamp);
+        $handler = new Handler($this->origin, $this->gitamp, $this->logger);
 
         Loop::run(function () use ($handler) {
-            $handler->onStart($this->endpoint);
+            $handler->onStart($this->httpServer, $this->gateway);
 
             Loop::delay(25000, "Amp\\Loop::stop");
         });
     }
 
-    public function testOnOpenIncrementsUserCount()
+    public function testHandleClientWithoutExistingEvents(): void
     {
-        $this->counter
-            ->expects($this->once())
-            ->method('increment');
-
-        $handler = new Handler($this->counter, $this->origin, $this->gitamp);
-
-        Loop::run(function () use ($handler) {
-            $handler->onStart($this->endpoint);
-
-            $handler->onOpen(1, 'foo');
-
-            Loop::stop();
-        });
-    }
-
-    public function testOnOpenWithoutExistingEvents()
-    {
-        $this->counter
-            ->expects($this->once())
-            ->method('increment')
-        ;
-
         $results = $this->createMock(Results::class);
         $results
             ->expects($this->once())
@@ -196,29 +156,39 @@ class HandlerTest extends TestCase
             ->willReturn(new Success($results))
         ;
 
-        $this->endpoint
+        $this->gateway
+            ->expects($this->once())
+            ->method('broadcast')
+        ;
+
+        $handler = new Handler($this->origin, $this->gitamp, $this->logger);
+
+        $websocketClient = $this->createMock(WebsocketClient::class);
+
+        $websocketClient
             ->expects($this->never())
             ->method('send')
         ;
 
-        $handler = new Handler($this->counter, $this->origin, $this->gitamp);
+        $client = $this->createMock(Client::class);
 
-        Loop::run(function () use ($handler) {
-            $handler->onStart($this->endpoint);
+        $uri = $this->createMock(PsrUri::class);
 
-            $handler->onOpen(1, 'foo');
+        $request = new Request($client, 'GET', $uri, ['origin' => $this->origin]);
+
+        $response = new Response(200);
+
+        Loop::run(function () use ($handler, $websocketClient, $request, $response) {
+            $handler->onStart($this->httpServer, $this->gateway);
+
+            $handler->handleClient($this->gateway, $websocketClient, $request, $response);
 
             Loop::stop();
         });
     }
 
-    public function testOnOpenWithExistingEvents()
+    public function testHandleClientWithExistingEvents(): void
     {
-        $this->counter
-            ->expects($this->once())
-            ->method('increment')
-        ;
-
         $results = $this->createMock(Results::class);
         $results
             ->expects($this->once())
@@ -238,51 +208,41 @@ class HandlerTest extends TestCase
             ->willReturn(new Success($results))
         ;
 
-        $this->endpoint
+        $this->gateway
+            ->expects($this->exactly(2))
+            ->method('broadcast')
+        ;
+
+        $handler = new Handler($this->origin, $this->gitamp, $this->logger);
+
+        $websocketClient = $this->createMock(WebsocketClient::class);
+
+        $websocketClient
             ->expects($this->once())
             ->method('send')
         ;
 
-        $handler = new Handler($this->counter, $this->origin, $this->gitamp);
+        $client = $this->createMock(Client::class);
 
-        Loop::run(function () use ($handler) {
-            $handler->onStart($this->endpoint);
+        $uri = $this->createMock(PsrUri::class);
 
-            $handler->onOpen(1, 'foo');
+        $request = new Request($client, 'GET', $uri, ['origin' => $this->origin]);
 
-            Loop::stop();
-        });
-    }
+        $response = new Response(200);
 
-    public function testOnDataReturnsNothing()
-    {
-        $handler = new Handler($this->counter, $this->origin, $this->gitamp);
+        Loop::run(function () use ($handler, $websocketClient, $request, $response) {
+            $handler->onStart($this->httpServer, $this->gateway);
 
-        $this->assertNull($handler->onData(1, $this->createMock(Message::class)));
-    }
-
-    public function testOnCloseDecrementsUserCount()
-    {
-        $this->counter
-            ->expects($this->once())
-            ->method('decrement')
-        ;
-
-        $handler = new Handler($this->counter, $this->origin, $this->gitamp);
-
-        Loop::run(function () use ($handler) {
-            $handler->onStart($this->endpoint);
-
-            $handler->onClose(1, 0, 'foo');
+            $handler->handleClient($this->gateway, $websocketClient, $request, $response);
 
             Loop::stop();
         });
     }
 
-    public function testOnStopReturnsNothing()
+    public function testOnStopReturnsNothing(): void
     {
-        $handler = new Handler($this->counter, $this->origin, $this->gitamp);
+        $handler = new Handler($this->origin, $this->gitamp, $this->logger);
 
-        $this->assertNull($handler->onStop());
+        $this->assertNull(wait($handler->onStop($this->httpServer, $this->gateway)));
     }
 }

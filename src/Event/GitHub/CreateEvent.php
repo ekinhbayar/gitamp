@@ -1,17 +1,22 @@
-<?php declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 namespace ekinhbayar\GitAmp\Event\GitHub;
 
 use ekinhbayar\GitAmp\Event\BaseEvent;
 use ekinhbayar\GitAmp\Presentation\Information;
-use ekinhbayar\GitAmp\Presentation\Type;
 use ekinhbayar\GitAmp\Presentation\Ring;
 use ekinhbayar\GitAmp\Presentation\Sound\BaseSound;
 use ekinhbayar\GitAmp\Presentation\Sound\Swell;
 use ekinhbayar\GitAmp\Presentation\Sound\SwellEgg;
+use ekinhbayar\GitAmp\Presentation\Type;
 
 class CreateEvent extends BaseEvent
 {
+    private const SPECIAL_REPOSITORIES = [
+        'ekinhbayar/gitamp',
+        'amphp/amp',
+    ];
+
     public function __construct(array $event)
     {
         parent::__construct(
@@ -19,7 +24,7 @@ class CreateEvent extends BaseEvent
             new Type(6),
             new Information($this->buildUrl($event), $this->buildPayload($event), $this->buildMessage($event)),
             new Ring(3000, 80),
-            $this->buildSound($event)
+            $this->buildSound($event),
         );
     }
 
@@ -44,7 +49,7 @@ class CreateEvent extends BaseEvent
 
     private function buildSound(array $event): BaseSound
     {
-        if ($event['repo']['name'] === 'ekinhbayar/gitamp') {
+        if (\in_array($event['repo']['name'], self::SPECIAL_REPOSITORIES, true)) {
             return new SwellEgg();
         }
 

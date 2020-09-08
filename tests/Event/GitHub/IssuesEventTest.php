@@ -1,4 +1,4 @@
-<?php declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 namespace ekinhbayar\GitAmpTests\Event\GitHub;
 
@@ -7,11 +7,11 @@ use PHPUnit\Framework\TestCase;
 
 class IssuesEventTest extends TestCase
 {
-    private $event;
+    private array $event;
 
-    private $assertEvent;
+    private array $assertEvent;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->event = [
             'id'      => 1,
@@ -24,32 +24,32 @@ class IssuesEventTest extends TestCase
         ];
 
         $this->assertEvent = [
-            'id'        => 1,
-            'type'      => 3,
+            'id'          => 1,
+            'type'        => 3,
             'information' => [
-                'url' => 'http://example.com',
+                'url'     => 'http://example.com',
                 'payload' => 'Issue title',
                 'message' => 'PeeHaa The action an issue in test/repo',
             ],
-            'ring'  => [
+            'ring'        => [
                 'animationDuration' => 3000,
                 'radius'            => 80,
             ],
-            'sound' => [
+            'sound'       => [
                 'size' => strlen('Issue title') * 1.1,
                 'type' => 'Clav',
             ],
         ];
     }
 
-    public function testGetAsArray()
+    public function testGetAsArray(): void
     {
         $event = new IssuesEvent($this->event);
 
         $this->assertSame($this->assertEvent, $event->getAsArray());
     }
 
-    public function testGetAsArrayEgg()
+    public function testGetAsArrayEgg(): void
     {
         $this->event['repo']['name'] = 'ekinhbayar/gitamp';
 

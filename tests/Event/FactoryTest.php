@@ -9,19 +9,19 @@ use PHPUnit\Framework\TestCase;
 
 class FactoryTest extends TestCase
 {
-    public function testBuildThrowsOnUnknownEvent()
+    public function testBuildThrowsOnUnknownEvent(): void
     {
         $this->expectException(UnknownEventException::class);
 
         (new Factory())->build('Foo', ['type' => 'UnknownEvent']);
     }
 
-    public function testBuildReturnsEvent()
+    public function testBuildReturnsEvent(): void
     {
         $event = [
-            'id' => '5103197839',
-            'type' => 'CreateEvent',
-            'repo' => ['name' => 'ekinhbayar/gitamp'],
+            'id'    => '5103197839',
+            'type'  => 'CreateEvent',
+            'repo'  => ['name' => 'ekinhbayar/gitamp'],
             'actor' => ['login' => 'PeeHaa'],
         ];
 

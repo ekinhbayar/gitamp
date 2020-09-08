@@ -1,0 +1,1328 @@
+[
+  {
+    "id": "13423632996",
+    "type": "IssueCommentEvent",
+    "actor": {
+      "id": 5884119,
+      "login": "tettoffensive",
+      "display_login": "tettoffensive",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/tettoffensive",
+      "avatar_url": "https://avatars.githubusercontent.com/u/5884119?"
+    },
+    "repo": {
+      "id": 70107786,
+      "name": "vercel/next.js",
+      "url": "https://api.github.com/repos/vercel/next.js"
+    },
+    "payload": {
+      "action": "created",
+      "issue": {
+        "url": "https://api.github.com/repos/vercel/next.js/issues/10902",
+        "repository_url": "https://api.github.com/repos/vercel/next.js",
+        "labels_url": "https://api.github.com/repos/vercel/next.js/issues/10902/labels{/name}",
+        "comments_url": "https://api.github.com/repos/vercel/next.js/issues/10902/comments",
+        "events_url": "https://api.github.com/repos/vercel/next.js/issues/10902/events",
+        "html_url": "https://github.com/vercel/next.js/issues/10902",
+        "id": 578107844,
+        "node_id": "MDU6SXNzdWU1NzgxMDc4NDQ=",
+        "number": 10902,
+        "title": "example: with-apollo-subscription",
+        "user": {
+          "login": "tobkle",
+          "id": 2720700,
+          "node_id": "MDQ6VXNlcjI3MjA3MDA=",
+          "avatar_url": "https://avatars3.githubusercontent.com/u/2720700?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/tobkle",
+          "html_url": "https://github.com/tobkle",
+          "followers_url": "https://api.github.com/users/tobkle/followers",
+          "following_url": "https://api.github.com/users/tobkle/following{/other_user}",
+          "gists_url": "https://api.github.com/users/tobkle/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/tobkle/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/tobkle/subscriptions",
+          "organizations_url": "https://api.github.com/users/tobkle/orgs",
+          "repos_url": "https://api.github.com/users/tobkle/repos",
+          "events_url": "https://api.github.com/users/tobkle/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/tobkle/received_events",
+          "type": "User",
+          "site_admin": false
+        },
+        "labels": [
+
+        ],
+        "state": "closed",
+        "locked": false,
+        "assignee": null,
+        "assignees": [
+
+        ],
+        "milestone": null,
+        "comments": 11,
+        "created_at": "2020-03-09T18:29:35Z",
+        "updated_at": "2020-09-05T23:32:13Z",
+        "closed_at": "2020-03-16T19:31:35Z",
+        "author_association": "NONE",
+        "active_lock_reason": null,
+        "body": "# Feature request\r\nA working example with a simple Apollo Client Subscription. \r\n\r\n## Is your feature request related to a problem? Please describe.\r\nTrying to get an Apollo Client setup to work with Next.JS version 9 using the ```with-apollo example``` and switching between apollo-link-ws and apollo-link-http by using the http-link split option: There is a hint for such a solution in this example: [subscriptions-transport-ws](https://github.com/apollographql/subscriptions-transport-ws/issues/333#issuecomment-359261024). However, I'm trying now for days to figure out, how this works. Having overcome all errors meanwhile, and get the useQuery to work, but the useSubscription never leaves the loading state.  There was another hint here: [addressing such an infinite loading state](https://github.com/apollographql/react-apollo/issues/3424#issuecomment-530006648). But I don't get it working.\r\n\r\nA clear and concise description of what you want and what your use case is.\r\nWant to use Apollo Subscriptions with Next.JS Version 9.\r\n\r\n## Describe the solution you'd like\r\n\r\nA clear and concise description of what you want to happen.\r\n\r\n## Describe alternatives you've considered\r\nBased on the example with-apollo, tried to do that:\r\n\r\n./ApolloClient.js:\r\n```js\r\nimport { ApolloClient } from 'apollo-client';\r\nimport { InMemoryCache } from 'apollo-cache-inmemory';\r\nimport { split } from 'apollo-link';\r\nimport { HttpLink } from 'apollo-link-http';\r\nimport { WebSocketLink } from 'apollo-link-ws';\r\nimport { setContext } from 'apollo-link-context';\r\nimport { getMainDefinition } from 'apollo-utilities';\r\nimport { SubscriptionClient } from 'subscriptions-transport-ws';\r\nimport { parseCookies } from 'nookies';\r\nimport * as ws from 'ws';\r\nimport fetch from 'isomorphic-unfetch';\r\n\r\nexport default function createApolloClient(initialState, ctx) {\r\n  const HASURA_HTTP_URI = `https://${SERVER}/v1/graphql`\r\n  const HASURA_WS_URI = `wss://${SERVER}/v1/graphql`\r\n  const COOKIE_JWT_TOKEN = process.env.COOKIE_JWT_TOKEN;\r\n  const token = process.browser ? parseCookies()[COOKIE_JWT_TOKEN] : '';\r\n\r\n  const authLink = setContext((_, { headers }) => {\r\n\treturn {\r\n\t\theaders: {\r\n\t\t\t...headers,\r\n\t\t\tauthorization: token ? `Bearer ${token}` : ''\r\n\t\t}\r\n\t};\r\n  });\r\n\r\n let wsLink = new WebSocketLink({\r\n\turi: HASURA_WS_URI,\r\n\toptions: {\r\n\t\tlazy: true,\r\n\t\treconnect: true,\r\n\t\tconnectionParams: {\r\n\t\t\theaders: {\r\n\t\t\t\tAuthorization: token ? `Bearer ${token}` : ''\r\n\t\t\t}\r\n\t\t}\r\n\t},\r\n\twebSocketImpl: ws\r\n  });\r\n\r\n  let httpLink = authLink.concat(\r\n\tnew HttpLink({\r\n\t\turi: HASURA_HTTP_URI,\r\n\t\tcredentials: 'include',\r\n\t\tfetch: fetch\r\n\t})\r\n  );\r\n\r\n  let myLink = process.browser\r\n\t? split(\r\n\t\t({ query }) => {\r\n\t\t\tconst { kind, operation } = getMainDefinition(query);\r\n\t\t\treturn kind === 'OperationDefinition' && operation === 'subscription';\r\n\t\t},\r\n\t\twsLink,\r\n\t\thttpLink\r\n\t  )\r\n\t: httpLink;\r\n\r\n  return new ApolloClient({\r\n\tssrMode: typeof window === 'undefined',\r\n\tlink: myLink,\r\n\tcache: new InMemoryCache().restore(initialState)\r\n  });\r\n}\r\n\r\n```\r\n\r\n./pages/apollo_subscription.js: \r\n```js\r\nimport Layout from '../components/layouts/Default';\r\nimport { withApollo } from '../lib/apollo';\r\nimport { useSubscription /* as __useSubscription */ } from '@apollo/react-hooks';\r\nimport gql from 'graphql-tag';\r\n\r\n// const useSubscription = (query, options) => (variables) => {\r\n//   const [values, setValues] = useState({ loading: true });\r\n//   __useSubscription(\r\n//     query,\r\n//     {\r\n//       ...options,\r\n//       variables,\r\n//       onSubscriptionData: (options) => {\r\n//         console.log(options)\r\n//         setValues(() => options.subscriptionData);\r\n//       }\r\n//     }\r\n//   );\r\n//   return values;\r\n// };\r\n\r\nconst MEMBERSHIPS = gql`\r\n\tsubscription MySubscription {\r\n\t\tmy_clients {\r\n\t\t\tclient_id\r\n\t\t}\r\n\t}\r\n`;\r\n\r\nconst ApolloSubscription = () => {\r\n\tconst { loading, error, data } = useSubscription(MEMBERSHIPS, { variables: {} });\r\n\r\n\tReact.useEffect(\r\n    () => { console.log('loading:', loading, 'data:', data, 'error:', error); \r\n  },[ loading, data, error ]);\r\n\r\n\tif (loading) return <Layout pageTitle=\"Apollo\">Loading ...</Layout>;\r\n\tif (error)\r\n\t       return (\r\n\t\t<Layout pageTitle=\"Apollo\">\r\n\t\t\t\t<pre>Error ... {JSON.stringify(error, null, 2)}</pre>\r\n\t\t\t</Layout>\r\n\t      );\r\n\r\n\treturn (\r\n\t\t<React.Fragment>\r\n\t\t\t<Layout pageTitle=\"Apollo\">\r\n\t\t\t\t<h3>Subscriptions</h3>\r\n\t\t\t\t<pre>\r\n\t\t\t\t\tDATA:\r\n\t\t\t\t\t{data && JSON.stringify(data, null, 2)}\r\n\t\t\t\t</pre>\r\n\t\t\t</Layout>\r\n\t\t</React.Fragment>\r\n\t);\r\n};\r\n\r\nexport default withApollo({ ssr: false })(ApolloSubscription);\r\n\r\n```\r\n\r\nA clear and concise description of any alternative solutions or features you've considered.\r\n\r\n## Additional context\r\n\r\nAdd any other context or screenshots about the feature request here.\r\n",
+        "performed_via_github_app": null
+      },
+      "comment": {
+        "url": "https://api.github.com/repos/vercel/next.js/issues/comments/687676017",
+        "html_url": "https://github.com/vercel/next.js/issues/10902#issuecomment-687676017",
+        "issue_url": "https://api.github.com/repos/vercel/next.js/issues/10902",
+        "id": 687676017,
+        "node_id": "MDEyOklzc3VlQ29tbWVudDY4NzY3NjAxNw==",
+        "user": {
+          "login": "tettoffensive",
+          "id": 5884119,
+          "node_id": "MDQ6VXNlcjU4ODQxMTk=",
+          "avatar_url": "https://avatars3.githubusercontent.com/u/5884119?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/tettoffensive",
+          "html_url": "https://github.com/tettoffensive",
+          "followers_url": "https://api.github.com/users/tettoffensive/followers",
+          "following_url": "https://api.github.com/users/tettoffensive/following{/other_user}",
+          "gists_url": "https://api.github.com/users/tettoffensive/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/tettoffensive/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/tettoffensive/subscriptions",
+          "organizations_url": "https://api.github.com/users/tettoffensive/orgs",
+          "repos_url": "https://api.github.com/users/tettoffensive/repos",
+          "events_url": "https://api.github.com/users/tettoffensive/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/tettoffensive/received_events",
+          "type": "User",
+          "site_admin": false
+        },
+        "created_at": "2020-09-05T23:32:13Z",
+        "updated_at": "2020-09-05T23:32:13Z",
+        "author_association": "NONE",
+        "body": "@david718 I'm trying to figure out the same thing.\r\n\r\nSo far I've got in my `apollo-micro-server`\r\n\r\n**/pages/api/graphql.ts:**\r\n```ts\r\nconst apolloServer = new ApolloServer({\r\n  typeDefs,\r\n  resolvers,\r\n  subscriptions: {\r\n    path: '/api/graphql',\r\n    keepAlive: 9000,\r\n    onConnect: () => console.log('connected'),\r\n    onDisconnect: () => console.log('disconnected'),\r\n  },\r\n```\r\n\r\nBut it seems somehow, you've got to do something with `apolloServer.installSubscriptionHandlers()` to handle websocket requests.\r\n\r\nI can't really figure that out.\r\n\r\n@tobkle How did you do this? You said you used `swr` (which I am using for my other graphql requests), but that example doesn't set anything up with the server.",
+        "performed_via_github_app": null
+      }
+    },
+    "public": true,
+    "created_at": "2020-09-05T23:32:13Z",
+    "org": {
+      "id": 14985020,
+      "login": "vercel",
+      "gravatar_id": "",
+      "url": "https://api.github.com/orgs/vercel",
+      "avatar_url": "https://avatars.githubusercontent.com/u/14985020?"
+    }
+  },
+  {
+    "id": "13423632995",
+    "type": "PushEvent",
+    "actor": {
+      "id": 48353346,
+      "login": "carlogonzalo",
+      "display_login": "carlogonzalo",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/carlogonzalo",
+      "avatar_url": "https://avatars.githubusercontent.com/u/48353346?"
+    },
+    "repo": {
+      "id": 293170570,
+      "name": "carlogonzalo/beta-20",
+      "url": "https://api.github.com/repos/carlogonzalo/beta-20"
+    },
+    "payload": {
+      "push_id": 5641921565,
+      "size": 1,
+      "distinct_size": 1,
+      "ref": "refs/heads/master",
+      "head": "d9eb7309259b392b3123bb6d92d8e8aae7dd2a0f",
+      "before": "a7af6edf0556c5fe652ec13f4ee619327ea8ac39",
+      "commits": [
+        {
+          "sha": "d9eb7309259b392b3123bb6d92d8e8aae7dd2a0f",
+          "author": {
+            "email": "carlogonzalo",
+            "name": "carlogonzalo"
+          },
+          "message": "adding file img/logo.png",
+          "distinct": true,
+          "url": "https://api.github.com/repos/carlogonzalo/beta-20/commits/d9eb7309259b392b3123bb6d92d8e8aae7dd2a0f"
+        }
+      ]
+    },
+    "public": true,
+    "created_at": "2020-09-05T23:32:13Z"
+  },
+  {
+    "id": "13423632993",
+    "type": "PushEvent",
+    "actor": {
+      "id": 38375959,
+      "login": "Babatunde13",
+      "display_login": "Babatunde13",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/Babatunde13",
+      "avatar_url": "https://avatars.githubusercontent.com/u/38375959?"
+    },
+    "repo": {
+      "id": 276230649,
+      "name": "Babatunde13/Mini-Gigs",
+      "url": "https://api.github.com/repos/Babatunde13/Mini-Gigs"
+    },
+    "payload": {
+      "push_id": 5641921560,
+      "size": 1,
+      "distinct_size": 1,
+      "ref": "refs/heads/master",
+      "head": "3e5cde5e706b3eb46bd0a93920aec0e6c1b6c061",
+      "before": "d4e78a529f7fca1698fd8b332aa71b7b1a1453bf",
+      "commits": [
+        {
+          "sha": "3e5cde5e706b3eb46bd0a93920aec0e6c1b6c061",
+          "author": {
+            "email": "koikibabatunde14@gmail.com",
+            "name": "Babatunde13"
+          },
+          "message": "Gitignore now owrking",
+          "distinct": true,
+          "url": "https://api.github.com/repos/Babatunde13/Mini-Gigs/commits/3e5cde5e706b3eb46bd0a93920aec0e6c1b6c061"
+        }
+      ]
+    },
+    "public": true,
+    "created_at": "2020-09-05T23:32:13Z"
+  },
+  {
+    "id": "13423632992",
+    "type": "PushEvent",
+    "actor": {
+      "id": 2539292,
+      "login": "wmfgerrit",
+      "display_login": "wmfgerrit",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/wmfgerrit",
+      "avatar_url": "https://avatars.githubusercontent.com/u/2539292?"
+    },
+    "repo": {
+      "id": 8013220,
+      "name": "wikimedia/operations-debs-wikistats",
+      "url": "https://api.github.com/repos/wikimedia/operations-debs-wikistats"
+    },
+    "payload": {
+      "push_id": 5641921563,
+      "size": 1,
+      "distinct_size": 1,
+      "ref": "refs/heads/master",
+      "head": "badf788ba6c1e3bd7f7dc870b5d7bce79ec9a845",
+      "before": "8c4fc21faea777771698ecc77964bd74402fd6e2",
+      "commits": [
+        {
+          "sha": "badf788ba6c1e3bd7f7dc870b5d7bce79ec9a845",
+          "author": {
+            "email": "dzahn@wikimedia.org",
+            "name": "Daniel Zahn"
+          },
+          "message": "add more files to ignore to sync.sh, fix rsync --exclude\n\nChange-Id: I3e60ea3268197193c2eaa191955f760b8bc97d9e",
+          "distinct": true,
+          "url": "https://api.github.com/repos/wikimedia/operations-debs-wikistats/commits/badf788ba6c1e3bd7f7dc870b5d7bce79ec9a845"
+        }
+      ]
+    },
+    "public": true,
+    "created_at": "2020-09-05T23:32:13Z",
+    "org": {
+      "id": 56668,
+      "login": "wikimedia",
+      "gravatar_id": "",
+      "url": "https://api.github.com/orgs/wikimedia",
+      "avatar_url": "https://avatars.githubusercontent.com/u/56668?"
+    }
+  },
+  {
+    "id": "13423632990",
+    "type": "CreateEvent",
+    "actor": {
+      "id": 42873674,
+      "login": "CircleJanewayTest",
+      "display_login": "CircleJanewayTest",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/CircleJanewayTest",
+      "avatar_url": "https://avatars.githubusercontent.com/u/42873674?"
+    },
+    "repo": {
+      "id": 164702370,
+      "name": "CircleCITestOrg/smoke-test-test-repo",
+      "url": "https://api.github.com/repos/CircleCITestOrg/smoke-test-test-repo"
+    },
+    "payload": {
+      "ref": "build-contexts-2020-09-05T23-32-11",
+      "ref_type": "branch",
+      "master_branch": "master",
+      "description": "A Repo for the smoke tests to test on",
+      "pusher_type": "user"
+    },
+    "public": true,
+    "created_at": "2020-09-05T23:32:13Z",
+    "org": {
+      "id": 32499712,
+      "login": "CircleCITestOrg",
+      "gravatar_id": "",
+      "url": "https://api.github.com/orgs/CircleCITestOrg",
+      "avatar_url": "https://avatars.githubusercontent.com/u/32499712?"
+    }
+  },
+  {
+    "id": "13423632988",
+    "type": "PushEvent",
+    "actor": {
+      "id": 22307006,
+      "login": "TeodorHMX1",
+      "display_login": "TeodorHMX1",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/TeodorHMX1",
+      "avatar_url": "https://avatars.githubusercontent.com/u/22307006?"
+    },
+    "repo": {
+      "id": 290498088,
+      "name": "TeodorHMX1/empty-repo",
+      "url": "https://api.github.com/repos/TeodorHMX1/empty-repo"
+    },
+    "payload": {
+      "push_id": 5641921562,
+      "size": 1,
+      "distinct_size": 1,
+      "ref": "refs/heads/TeodorHMX1-patch-1",
+      "head": "0d75e5a2e107a500efa5361f6f14d20c762e6c66",
+      "before": "76a3e1041c512a75b17d7bbc259652bf45dc5a93",
+      "commits": [
+        {
+          "sha": "0d75e5a2e107a500efa5361f6f14d20c762e6c66",
+          "author": {
+            "email": "teo@zeoflow.com",
+            "name": "Teodor G"
+          },
+          "message": "Update todo.js",
+          "distinct": true,
+          "url": "https://api.github.com/repos/TeodorHMX1/empty-repo/commits/0d75e5a2e107a500efa5361f6f14d20c762e6c66"
+        }
+      ]
+    },
+    "public": true,
+    "created_at": "2020-09-05T23:32:13Z"
+  },
+  {
+    "id": "13423632984",
+    "type": "PushEvent",
+    "actor": {
+      "id": 7014355,
+      "login": "PatMyron",
+      "display_login": "PatMyron",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/PatMyron",
+      "avatar_url": "https://avatars.githubusercontent.com/u/7014355?"
+    },
+    "repo": {
+      "id": 129005655,
+      "name": "aws-cloudformation/cfn-python-lint",
+      "url": "https://api.github.com/repos/aws-cloudformation/cfn-python-lint"
+    },
+    "payload": {
+      "push_id": 5641921555,
+      "size": 1,
+      "distinct_size": 1,
+      "ref": "refs/heads/3002",
+      "head": "7083fe5cbde4ff6aa62f016d81db1663bf0ef203",
+      "before": "36971a07f7490d414bf0206fe25ec84e1c332e5a",
+      "commits": [
+        {
+          "sha": "7083fe5cbde4ff6aa62f016d81db1663bf0ef203",
+          "author": {
+            "email": "pamyron@amazon.com",
+            "name": "Pat Myron"
+          },
+          "message": "expanding templated_exceptions property types that require package command (E3002/W3002)\n\nfixes https://github.com/aws-cloudformation/cfn-python-lint/issues/1683\n\nAccording to https://github.com/aws-cloudformation/cfn-python-lint/issues/608,\nthis documentation seems incomplete:\nhttps://docs.aws.amazon.com/cli/latest/reference/cloudformation/package.html\n\nso I used this as the source instead:\nhttps://github.com/aws/aws-cli/blob/master/awscli/customizations/cloudformation/artifact_exporter.py",
+          "distinct": true,
+          "url": "https://api.github.com/repos/aws-cloudformation/cfn-python-lint/commits/7083fe5cbde4ff6aa62f016d81db1663bf0ef203"
+        }
+      ]
+    },
+    "public": true,
+    "created_at": "2020-09-05T23:32:13Z",
+    "org": {
+      "id": 19900777,
+      "login": "aws-cloudformation",
+      "gravatar_id": "",
+      "url": "https://api.github.com/orgs/aws-cloudformation",
+      "avatar_url": "https://avatars.githubusercontent.com/u/19900777?"
+    }
+  },
+  {
+    "id": "13423632981",
+    "type": "PushEvent",
+    "actor": {
+      "id": 25850808,
+      "login": "StefanMarchand",
+      "display_login": "StefanMarchand",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/StefanMarchand",
+      "avatar_url": "https://avatars.githubusercontent.com/u/25850808?"
+    },
+    "repo": {
+      "id": 293146104,
+      "name": "StefanMarchand/amplifyapp",
+      "url": "https://api.github.com/repos/StefanMarchand/amplifyapp"
+    },
+    "payload": {
+      "push_id": 5641921556,
+      "size": 1,
+      "distinct_size": 1,
+      "ref": "refs/heads/master",
+      "head": "02cb6b5167bf110995689efd4450329def923af8",
+      "before": "01899ada3d57eab6b6a954632b67ff175df5e994",
+      "commits": [
+        {
+          "sha": "02cb6b5167bf110995689efd4450329def923af8",
+          "author": {
+            "email": "smarchand@protonmail.com",
+            "name": "StefanMarchand"
+          },
+          "message": "remove aws-exports from git ignore",
+          "distinct": true,
+          "url": "https://api.github.com/repos/StefanMarchand/amplifyapp/commits/02cb6b5167bf110995689efd4450329def923af8"
+        }
+      ]
+    },
+    "public": true,
+    "created_at": "2020-09-05T23:32:13Z"
+  },
+  {
+    "id": "13423632982",
+    "type": "PushEvent",
+    "actor": {
+      "id": 481418,
+      "login": "tchx84",
+      "display_login": "tchx84",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/tchx84",
+      "avatar_url": "https://avatars.githubusercontent.com/u/481418?"
+    },
+    "repo": {
+      "id": 291367738,
+      "name": "tchx84/flathub-mobile",
+      "url": "https://api.github.com/repos/tchx84/flathub-mobile"
+    },
+    "payload": {
+      "push_id": 5641921552,
+      "size": 1,
+      "distinct_size": 1,
+      "ref": "refs/heads/master",
+      "head": "1f16a2d44988e9d266e77edc68ccf357281c85ac",
+      "before": "8eb4dc455e2914cbd9b1b0d5a81e510ddf95d250",
+      "commits": [
+        {
+          "sha": "1f16a2d44988e9d266e77edc68ccf357281c85ac",
+          "author": {
+            "email": "martin.abente.lahaye@gmail.com",
+            "name": "Martin Abente Lahaye"
+          },
+          "message": "README: Fix more typos",
+          "distinct": true,
+          "url": "https://api.github.com/repos/tchx84/flathub-mobile/commits/1f16a2d44988e9d266e77edc68ccf357281c85ac"
+        }
+      ]
+    },
+    "public": true,
+    "created_at": "2020-09-05T23:32:13Z"
+  },
+  {
+    "id": "13423632979",
+    "type": "PushEvent",
+    "actor": {
+      "id": 68417258,
+      "login": "breakingheatmap",
+      "display_login": "breakingheatmap",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/breakingheatmap",
+      "avatar_url": "https://avatars.githubusercontent.com/u/68417258?"
+    },
+    "repo": {
+      "id": 280356388,
+      "name": "breakingheatmap/breakingheatmap",
+      "url": "https://api.github.com/repos/breakingheatmap/breakingheatmap"
+    },
+    "payload": {
+      "push_id": 5641921554,
+      "size": 1,
+      "distinct_size": 1,
+      "ref": "refs/heads/master",
+      "head": "177352da464162712e4c7385b72a14c28d9630f7",
+      "before": "77173c3304c0ac3d9849670cdc66b7788b4b0a80",
+      "commits": [
+        {
+          "sha": "177352da464162712e4c7385b72a14c28d9630f7",
+          "author": {
+            "email": "sudomaze@gmail.com",
+            "name": "sudomaze"
+          },
+          "message": "1599348728",
+          "distinct": true,
+          "url": "https://api.github.com/repos/breakingheatmap/breakingheatmap/commits/177352da464162712e4c7385b72a14c28d9630f7"
+        }
+      ]
+    },
+    "public": true,
+    "created_at": "2020-09-05T23:32:13Z"
+  },
+  {
+    "id": "13423632980",
+    "type": "WatchEvent",
+    "actor": {
+      "id": 1581407,
+      "login": "magios",
+      "display_login": "magios",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/magios",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1581407?"
+    },
+    "repo": {
+      "id": 10651420,
+      "name": "tmate-io/tmate",
+      "url": "https://api.github.com/repos/tmate-io/tmate"
+    },
+    "payload": {
+      "action": "started"
+    },
+    "public": true,
+    "created_at": "2020-09-05T23:32:13Z",
+    "org": {
+      "id": 14853555,
+      "login": "tmate-io",
+      "gravatar_id": "",
+      "url": "https://api.github.com/orgs/tmate-io",
+      "avatar_url": "https://avatars.githubusercontent.com/u/14853555?"
+    }
+  },
+  {
+    "id": "13423632960",
+    "type": "PushEvent",
+    "actor": {
+      "id": 16837285,
+      "login": "robodoo",
+      "display_login": "robodoo",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/robodoo",
+      "avatar_url": "https://avatars.githubusercontent.com/u/16837285?"
+    },
+    "repo": {
+      "id": 19745004,
+      "name": "odoo/odoo",
+      "url": "https://api.github.com/repos/odoo/odoo"
+    },
+    "payload": {
+      "push_id": 5641921532,
+      "size": 2,
+      "distinct_size": 1,
+      "ref": "refs/heads/staging.13.0",
+      "head": "44a3b1ef5a146f05c81e82dc00c3ee1863ec3dfb",
+      "before": "daaf4c89da1808a40d115b2cd35975f398969396",
+      "commits": [
+        {
+          "sha": "43e85f84648aa84ce331cdabf4189355cbd9b2da",
+          "author": {
+            "email": "c3p@odoo.com",
+            "name": "Odoo Translation Bot"
+          },
+          "message": "[I18N] Update translation terms from Transifex",
+          "distinct": false,
+          "url": "https://api.github.com/repos/odoo/odoo/commits/43e85f84648aa84ce331cdabf4189355cbd9b2da"
+        },
+        {
+          "sha": "44a3b1ef5a146f05c81e82dc00c3ee1863ec3dfb",
+          "author": {
+            "email": "robodoo@odoo.com",
+            "name": "Odoo's Mergebot"
+          },
+          "message": "force rebuild\n\nuniquifier: DwSVPQXwJwC+jHyP\nFor-Commit-Id: 43e85f84648aa84ce331cdabf4189355cbd9b2da",
+          "distinct": true,
+          "url": "https://api.github.com/repos/odoo/odoo/commits/44a3b1ef5a146f05c81e82dc00c3ee1863ec3dfb"
+        }
+      ]
+    },
+    "public": true,
+    "created_at": "2020-09-05T23:32:13Z",
+    "org": {
+      "id": 6368483,
+      "login": "odoo",
+      "gravatar_id": "",
+      "url": "https://api.github.com/orgs/odoo",
+      "avatar_url": "https://avatars.githubusercontent.com/u/6368483?"
+    }
+  },
+  {
+    "id": "13423632968",
+    "type": "PushEvent",
+    "actor": {
+      "id": 5102591,
+      "login": "tabuna",
+      "display_login": "tabuna",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/tabuna",
+      "avatar_url": "https://avatars.githubusercontent.com/u/5102591?"
+    },
+    "repo": {
+      "id": 273078175,
+      "name": "xtsmi/aggregator",
+      "url": "https://api.github.com/repos/xtsmi/aggregator"
+    },
+    "payload": {
+      "push_id": 5641921543,
+      "size": 1,
+      "distinct_size": 1,
+      "ref": "refs/heads/master",
+      "head": "bff44ee63d6bbf35a15bab8545bc327323a09e5c",
+      "before": "ec7664de76c9f6cebe2216a1a9ecede8ea986acf",
+      "commits": [
+        {
+          "sha": "bff44ee63d6bbf35a15bab8545bc327323a09e5c",
+          "author": {
+            "email": "tabuna@users.noreply.github.com",
+            "name": "tabuna"
+          },
+          "message": "Deploying to master from  @ c745880046d69e112cbf4900439eff2fa284960f 🚀",
+          "distinct": true,
+          "url": "https://api.github.com/repos/xtsmi/aggregator/commits/bff44ee63d6bbf35a15bab8545bc327323a09e5c"
+        }
+      ]
+    },
+    "public": true,
+    "created_at": "2020-09-05T23:32:13Z",
+    "org": {
+      "id": 67076553,
+      "login": "xtsmi",
+      "gravatar_id": "",
+      "url": "https://api.github.com/orgs/xtsmi",
+      "avatar_url": "https://avatars.githubusercontent.com/u/67076553?"
+    }
+  },
+  {
+    "id": "13423632969",
+    "type": "IssueCommentEvent",
+    "actor": {
+      "id": 1159782,
+      "login": "tk3369",
+      "display_login": "tk3369",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/tk3369",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1159782?"
+    },
+    "repo": {
+      "id": 1644196,
+      "name": "JuliaLang/julia",
+      "url": "https://api.github.com/repos/JuliaLang/julia"
+    },
+    "payload": {
+      "action": "created",
+      "issue": {
+        "url": "https://api.github.com/repos/JuliaLang/julia/issues/35162",
+        "repository_url": "https://api.github.com/repos/JuliaLang/julia",
+        "labels_url": "https://api.github.com/repos/JuliaLang/julia/issues/35162/labels{/name}",
+        "comments_url": "https://api.github.com/repos/JuliaLang/julia/issues/35162/comments",
+        "events_url": "https://api.github.com/repos/JuliaLang/julia/issues/35162/events",
+        "html_url": "https://github.com/JuliaLang/julia/issues/35162",
+        "id": 584221025,
+        "node_id": "MDU6SXNzdWU1ODQyMjEwMjU=",
+        "number": 35162,
+        "title": "skipnan",
+        "user": {
+          "login": "mileslucas",
+          "id": 14099459,
+          "node_id": "MDQ6VXNlcjE0MDk5NDU5",
+          "avatar_url": "https://avatars0.githubusercontent.com/u/14099459?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/mileslucas",
+          "html_url": "https://github.com/mileslucas",
+          "followers_url": "https://api.github.com/users/mileslucas/followers",
+          "following_url": "https://api.github.com/users/mileslucas/following{/other_user}",
+          "gists_url": "https://api.github.com/users/mileslucas/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/mileslucas/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/mileslucas/subscriptions",
+          "organizations_url": "https://api.github.com/users/mileslucas/orgs",
+          "repos_url": "https://api.github.com/users/mileslucas/repos",
+          "events_url": "https://api.github.com/users/mileslucas/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/mileslucas/received_events",
+          "type": "User",
+          "site_admin": false
+        },
+        "labels": [
+
+        ],
+        "state": "open",
+        "locked": false,
+        "assignee": null,
+        "assignees": [
+
+        ],
+        "milestone": null,
+        "comments": 3,
+        "created_at": "2020-03-19T07:40:51Z",
+        "updated_at": "2020-09-05T23:32:13Z",
+        "closed_at": null,
+        "author_association": "CONTRIBUTOR",
+        "active_lock_reason": null,
+        "body": "# Feature Request: `skipnan`\r\n\r\nThis would be a wrapper for an iterator similar to [`skipmissing`](https://github.com/JuliaLang/julia/blob/7f28d91b70b43ed948ac0e02c3ebbe78e010e030/base/missing.jl#L183-L382)\r\n\r\nMy idea for implementation would be almost exactly the same as above, but substituting `missing` for `NaN`. \r\n\r\nThis is something I'd love to see in Base, and would allow NaN-math to be much simpler. This is something we use in my field all the time (e.g. masking bad-pixels on a CCD image). For now, the best I can do is\r\n```julia\r\nX = randn(100, 100)\r\n@. X[X < 0] = NaN\r\nd = @view X[X .!== NaN]\r\n```\r\nThis works fine for doing math that doesn't care about dimensions (e.g. the median value of a chunk of an image), but having a way to skip the NaNs while maintaining the correct dimensionality would be awesome!\r\n\r\n## Example Usage\r\nSimple example (that can be done using boolean mask as above)\r\n```julia\r\nusing Statistics\r\nX = randn(100, 100)\r\n@. X[X < 0] = NaN\r\n\r\nmean(X)\r\n# output\r\nNaN\r\n\r\nmean(skipnan(X))\r\n# output\r\n0.8218980637076255\r\n```\r\nExample that cannot be replicated\r\n```julia\r\nusing Statistics\r\nX = [0 1 NaN NaN;\r\n        3 4 2 NaN]\r\n\r\nmean(X, dims=1)[1, :]\r\n# output\r\n4-element Array{Float64,1}:\r\n   1.5\r\n   2.5\r\n NaN  \r\n NaN\r\n\r\nmean(skipnan(X), dims=1)[1, :]\r\n# output\r\n4-element Array{Float64,1}:\r\n   1.5\r\n   2.5\r\n   2.0  \r\n NaN\r\n```\r\n\r\n## Development\r\nIf it is as simple as implementing the `skipmissing` code but for `NaN` I can make the PR. If there are more nuanced optimizations/functions I may require assistance. If it is not close at all to what `skipmissing` looks like I may not be able to help, depending on the difficulty of implementation.",
+        "performed_via_github_app": null
+      },
+      "comment": {
+        "url": "https://api.github.com/repos/JuliaLang/julia/issues/comments/687676016",
+        "html_url": "https://github.com/JuliaLang/julia/issues/35162#issuecomment-687676016",
+        "issue_url": "https://api.github.com/repos/JuliaLang/julia/issues/35162",
+        "id": 687676016,
+        "node_id": "MDEyOklzc3VlQ29tbWVudDY4NzY3NjAxNg==",
+        "user": {
+          "login": "tk3369",
+          "id": 1159782,
+          "node_id": "MDQ6VXNlcjExNTk3ODI=",
+          "avatar_url": "https://avatars2.githubusercontent.com/u/1159782?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/tk3369",
+          "html_url": "https://github.com/tk3369",
+          "followers_url": "https://api.github.com/users/tk3369/followers",
+          "following_url": "https://api.github.com/users/tk3369/following{/other_user}",
+          "gists_url": "https://api.github.com/users/tk3369/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/tk3369/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/tk3369/subscriptions",
+          "organizations_url": "https://api.github.com/users/tk3369/orgs",
+          "repos_url": "https://api.github.com/users/tk3369/repos",
+          "events_url": "https://api.github.com/users/tk3369/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/tk3369/received_events",
+          "type": "User",
+          "site_admin": false
+        },
+        "created_at": "2020-09-05T23:32:13Z",
+        "updated_at": "2020-09-05T23:32:13Z",
+        "author_association": "CONTRIBUTOR",
+        "body": "Nothing wrong with `Iterators.filter` except that it's twice as verbose. Given that `NaN` is something that everyone deals with all the time, it seems much nicer if we have `skipnan`:\r\n\r\n```\r\nIterators.filter(!isnan, x)\r\nskipnan(x)\r\n```\r\n\r\nAs with the `mean` function issue above, it probably needs to be fixed with another kwarg?",
+        "performed_via_github_app": null
+      }
+    },
+    "public": true,
+    "created_at": "2020-09-05T23:32:13Z",
+    "org": {
+      "id": 743164,
+      "login": "JuliaLang",
+      "gravatar_id": "",
+      "url": "https://api.github.com/orgs/JuliaLang",
+      "avatar_url": "https://avatars.githubusercontent.com/u/743164?"
+    }
+  },
+  {
+    "id": "13423632970",
+    "type": "PushEvent",
+    "actor": {
+      "id": 46393315,
+      "login": "dansluss",
+      "display_login": "dansluss",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/dansluss",
+      "avatar_url": "https://avatars.githubusercontent.com/u/46393315?"
+    },
+    "repo": {
+      "id": 293120401,
+      "name": "dansluss/applying-gradient-descent-lab-data-science-intro-000",
+      "url": "https://api.github.com/repos/dansluss/applying-gradient-descent-lab-data-science-intro-000"
+    },
+    "payload": {
+      "push_id": 5641921548,
+      "size": 1,
+      "distinct_size": 1,
+      "ref": "refs/heads/wip",
+      "head": "43d0b8f4df56e49a966d79beab0f6844c372e6e4",
+      "before": "1dcb3029099c2af535644af7820dfcb637a3361f",
+      "commits": [
+        {
+          "sha": "43d0b8f4df56e49a966d79beab0f6844c372e6e4",
+          "author": {
+            "email": "dansluss@yahoo.com",
+            "name": "Dan Sluss"
+          },
+          "message": "Automatically backed up by Learn",
+          "distinct": true,
+          "url": "https://api.github.com/repos/dansluss/applying-gradient-descent-lab-data-science-intro-000/commits/43d0b8f4df56e49a966d79beab0f6844c372e6e4"
+        }
+      ]
+    },
+    "public": true,
+    "created_at": "2020-09-05T23:32:13Z"
+  },
+  {
+    "id": "13423632972",
+    "type": "ReleaseEvent",
+    "actor": {
+      "id": 64793534,
+      "login": "conda-forge-daemon",
+      "display_login": "conda-forge-daemon",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/conda-forge-daemon",
+      "avatar_url": "https://avatars.githubusercontent.com/u/64793534?"
+    },
+    "repo": {
+      "id": 288431736,
+      "name": "regro/releases",
+      "url": "https://api.github.com/repos/regro/releases"
+    },
+    "payload": {
+      "action": "published",
+      "release": {
+        "url": "https://api.github.com/repos/regro/releases/releases/30790534",
+        "assets_url": "https://api.github.com/repos/regro/releases/releases/30790534/assets",
+        "upload_url": "https://uploads.github.com/repos/regro/releases/releases/30790534/assets{?name,label}",
+        "html_url": "https://github.com/regro/releases/releases/tag/linux-ppc64le/protobuf-3.11.2-py37hb209c28_0.tar.bz2",
+        "id": 30790534,
+        "node_id": "MDc6UmVsZWFzZTMwNzkwNTM0",
+        "tag_name": "linux-ppc64le/protobuf-3.11.2-py37hb209c28_0.tar.bz2",
+        "target_commitish": "07c51209d5d2d936542cc1812e7416685aa9eb9d",
+        "name": "linux-ppc64le/protobuf-3.11.2-py37hb209c28_0.tar.bz2",
+        "draft": false,
+        "author": {
+          "login": "conda-forge-daemon",
+          "id": 64793534,
+          "node_id": "MDQ6VXNlcjY0NzkzNTM0",
+          "avatar_url": "https://avatars2.githubusercontent.com/u/64793534?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/conda-forge-daemon",
+          "html_url": "https://github.com/conda-forge-daemon",
+          "followers_url": "https://api.github.com/users/conda-forge-daemon/followers",
+          "following_url": "https://api.github.com/users/conda-forge-daemon/following{/other_user}",
+          "gists_url": "https://api.github.com/users/conda-forge-daemon/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/conda-forge-daemon/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/conda-forge-daemon/subscriptions",
+          "organizations_url": "https://api.github.com/users/conda-forge-daemon/orgs",
+          "repos_url": "https://api.github.com/users/conda-forge-daemon/repos",
+          "events_url": "https://api.github.com/users/conda-forge-daemon/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/conda-forge-daemon/received_events",
+          "type": "User",
+          "site_admin": false
+        },
+        "prerelease": false,
+        "created_at": "2020-09-05T22:24:47Z",
+        "published_at": "2020-09-05T23:32:13Z",
+        "assets": [
+
+        ],
+        "tarball_url": "https://api.github.com/repos/regro/releases/tarball/linux-ppc64le/protobuf-3.11.2-py37hb209c28_0.tar.bz2",
+        "zipball_url": "https://api.github.com/repos/regro/releases/zipball/linux-ppc64le/protobuf-3.11.2-py37hb209c28_0.tar.bz2",
+        "body": ""
+      }
+    },
+    "public": true,
+    "created_at": "2020-09-05T23:32:13Z",
+    "org": {
+      "id": 33434656,
+      "login": "regro",
+      "gravatar_id": "",
+      "url": "https://api.github.com/orgs/regro",
+      "avatar_url": "https://avatars.githubusercontent.com/u/33434656?"
+    }
+  },
+  {
+    "id": "13423632967",
+    "type": "CreateEvent",
+    "actor": {
+      "id": 28915092,
+      "login": "gsalinase",
+      "display_login": "gsalinase",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/gsalinase",
+      "avatar_url": "https://avatars.githubusercontent.com/u/28915092?"
+    },
+    "repo": {
+      "id": 288038526,
+      "name": "gsalinase/wait_for_it",
+      "url": "https://api.github.com/repos/gsalinase/wait_for_it"
+    },
+    "payload": {
+      "ref": "features/W4I-007-empresa-crear-graficos-index",
+      "ref_type": "branch",
+      "master_branch": "master",
+      "description": "A simple ticket number app",
+      "pusher_type": "user"
+    },
+    "public": true,
+    "created_at": "2020-09-05T23:32:13Z"
+  },
+  {
+    "id": "13423632965",
+    "type": "PushEvent",
+    "actor": {
+      "id": 3459527,
+      "login": "Valkea",
+      "display_login": "Valkea",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/Valkea",
+      "avatar_url": "https://avatars.githubusercontent.com/u/3459527?"
+    },
+    "repo": {
+      "id": 289595477,
+      "name": "Valkea/Neoroll",
+      "url": "https://api.github.com/repos/Valkea/Neoroll"
+    },
+    "payload": {
+      "push_id": 5641921545,
+      "size": 1,
+      "distinct_size": 1,
+      "ref": "refs/heads/master",
+      "head": "0def59a593bad11d82c71678eb9bff5b4f59bbaf",
+      "before": "0c9228c5083b274498ca7bc6bee80e84e8f0da24",
+      "commits": [
+        {
+          "sha": "0def59a593bad11d82c71678eb9bff5b4f59bbaf",
+          "author": {
+            "email": "github-sub@shedge.com",
+            "name": "Valkea"
+          },
+          "message": "Now convert double 5 to one 6 | Added a loop command in order to test the stats",
+          "distinct": true,
+          "url": "https://api.github.com/repos/Valkea/Neoroll/commits/0def59a593bad11d82c71678eb9bff5b4f59bbaf"
+        }
+      ]
+    },
+    "public": true,
+    "created_at": "2020-09-05T23:32:13Z"
+  },
+  {
+    "id": "13423632966",
+    "type": "WatchEvent",
+    "actor": {
+      "id": 1232603,
+      "login": "swettk",
+      "display_login": "swettk",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/swettk",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1232603?"
+    },
+    "repo": {
+      "id": 11986447,
+      "name": "xournalpp/xournalpp",
+      "url": "https://api.github.com/repos/xournalpp/xournalpp"
+    },
+    "payload": {
+      "action": "started"
+    },
+    "public": true,
+    "created_at": "2020-09-05T23:32:13Z",
+    "org": {
+      "id": 5192682,
+      "login": "xournalpp",
+      "gravatar_id": "",
+      "url": "https://api.github.com/orgs/xournalpp",
+      "avatar_url": "https://avatars.githubusercontent.com/u/5192682?"
+    }
+  },
+  {
+    "id": "13423632953",
+    "type": "PushEvent",
+    "actor": {
+      "id": 7190633,
+      "login": "hackerkid",
+      "display_login": "hackerkid",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/hackerkid",
+      "avatar_url": "https://avatars.githubusercontent.com/u/7190633?"
+    },
+    "repo": {
+      "id": 230387395,
+      "name": "hackerkid/zulip-archive-action-test-2",
+      "url": "https://api.github.com/repos/hackerkid/zulip-archive-action-test-2"
+    },
+    "payload": {
+      "push_id": 5641921538,
+      "size": 1,
+      "distinct_size": 1,
+      "ref": "refs/heads/master",
+      "head": "59366c1cbd859eb13fee00103e58cd1242e5bd82",
+      "before": "6e967f90d7f3f100e1c3117efdb1000702405f1a",
+      "commits": [
+        {
+          "sha": "59366c1cbd859eb13fee00103e58cd1242e5bd82",
+          "author": {
+            "email": "zulip-archive-bot@users.noreply.github.com",
+            "name": "Archive Bot"
+          },
+          "message": "Update archive.",
+          "distinct": true,
+          "url": "https://api.github.com/repos/hackerkid/zulip-archive-action-test-2/commits/59366c1cbd859eb13fee00103e58cd1242e5bd82"
+        }
+      ]
+    },
+    "public": true,
+    "created_at": "2020-09-05T23:32:12Z"
+  },
+  {
+    "id": "13423632954",
+    "type": "DeleteEvent",
+    "actor": {
+      "id": 49699333,
+      "login": "dependabot[bot]",
+      "display_login": "dependabot",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/dependabot[bot]",
+      "avatar_url": "https://avatars.githubusercontent.com/u/49699333?"
+    },
+    "repo": {
+      "id": 194556712,
+      "name": "susmita-sarkar/ReactTemperatureConverter",
+      "url": "https://api.github.com/repos/susmita-sarkar/ReactTemperatureConverter"
+    },
+    "payload": {
+      "ref": "dependabot/npm_and_yarn/handlebars-4.5.3",
+      "ref_type": "branch",
+      "pusher_type": "user"
+    },
+    "public": true,
+    "created_at": "2020-09-05T23:32:13Z"
+  },
+  {
+    "id": "13423632949",
+    "type": "PushEvent",
+    "actor": {
+      "id": 67013554,
+      "login": "Pankaj-gh",
+      "display_login": "Pankaj-gh",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/Pankaj-gh",
+      "avatar_url": "https://avatars.githubusercontent.com/u/67013554?"
+    },
+    "repo": {
+      "id": 291828070,
+      "name": "Pankaj-gh/Matplotlib-hw",
+      "url": "https://api.github.com/repos/Pankaj-gh/Matplotlib-hw"
+    },
+    "payload": {
+      "push_id": 5641921536,
+      "size": 1,
+      "distinct_size": 1,
+      "ref": "refs/heads/master",
+      "head": "12af6a437948411652a4000769c5acc7e6f266b6",
+      "before": "0ab87c4bd27468aff5e5a484a3ee832b66bf830e",
+      "commits": [
+        {
+          "sha": "12af6a437948411652a4000769c5acc7e6f266b6",
+          "author": {
+            "email": "tahiliani.pankaj19@gmail.com",
+            "name": "Pankaj"
+          },
+          "message": "outliers",
+          "distinct": true,
+          "url": "https://api.github.com/repos/Pankaj-gh/Matplotlib-hw/commits/12af6a437948411652a4000769c5acc7e6f266b6"
+        }
+      ]
+    },
+    "public": true,
+    "created_at": "2020-09-05T23:32:12Z"
+  },
+  {
+    "id": "13423632951",
+    "type": "CreateEvent",
+    "actor": {
+      "id": 59568876,
+      "login": "ullasc27",
+      "display_login": "ullasc27",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/ullasc27",
+      "avatar_url": "https://avatars.githubusercontent.com/u/59568876?"
+    },
+    "repo": {
+      "id": 293170578,
+      "name": "ullasc27/repopeople",
+      "url": "https://api.github.com/repos/ullasc27/repopeople"
+    },
+    "payload": {
+      "ref": "master",
+      "ref_type": "branch",
+      "master_branch": "master",
+      "description": null,
+      "pusher_type": "user"
+    },
+    "public": true,
+    "created_at": "2020-09-05T23:32:12Z"
+  },
+  {
+    "id": "13423632948",
+    "type": "PushEvent",
+    "actor": {
+      "id": 5092699,
+      "login": "clong",
+      "display_login": "clong",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/clong",
+      "avatar_url": "https://avatars.githubusercontent.com/u/5092699?"
+    },
+    "repo": {
+      "id": 269820583,
+      "name": "clong/Post-Reformat",
+      "url": "https://api.github.com/repos/clong/Post-Reformat"
+    },
+    "payload": {
+      "push_id": 5641921535,
+      "size": 2,
+      "distinct_size": 2,
+      "ref": "refs/heads/master",
+      "head": "51a3911fd05fe7900ce651d3eb6b0bbe15482200",
+      "before": "89c9f098e32b92fda52f05f9180cab4c88757118",
+      "commits": [
+        {
+          "sha": "a80eafda29c8843fd2df03af00fb55f1c9c1efcb",
+          "author": {
+            "email": "clong@cl0ng.com",
+            "name": "Chris Long"
+          },
+          "message": "Adding workflow",
+          "distinct": true,
+          "url": "https://api.github.com/repos/clong/Post-Reformat/commits/a80eafda29c8843fd2df03af00fb55f1c9c1efcb"
+        },
+        {
+          "sha": "51a3911fd05fe7900ce651d3eb6b0bbe15482200",
+          "author": {
+            "email": "clong@cl0ng.com",
+            "name": "Chris Long"
+          },
+          "message": "Merge branch 'master' of https://github.com/clong/Post-Reformat",
+          "distinct": true,
+          "url": "https://api.github.com/repos/clong/Post-Reformat/commits/51a3911fd05fe7900ce651d3eb6b0bbe15482200"
+        }
+      ]
+    },
+    "public": true,
+    "created_at": "2020-09-05T23:32:12Z"
+  },
+  {
+    "id": "13423632946",
+    "type": "PushEvent",
+    "actor": {
+      "id": 52816052,
+      "login": "AishwaryaSawant",
+      "display_login": "AishwaryaSawant",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/AishwaryaSawant",
+      "avatar_url": "https://avatars.githubusercontent.com/u/52816052?"
+    },
+    "repo": {
+      "id": 293166668,
+      "name": "AishwaryaSawant/Portfolio",
+      "url": "https://api.github.com/repos/AishwaryaSawant/Portfolio"
+    },
+    "payload": {
+      "push_id": 5641921530,
+      "size": 1,
+      "distinct_size": 1,
+      "ref": "refs/heads/master",
+      "head": "d6d45c54889c436bcc91ca4ec58f8b96075ea375",
+      "before": "cc7dfe258b31f37132a8f9271c797f1110f0ecfa",
+      "commits": [
+        {
+          "sha": "d6d45c54889c436bcc91ca4ec58f8b96075ea375",
+          "author": {
+            "email": "aishwaryasawant697@gmail.com",
+            "name": "Aishwarya Sawant"
+          },
+          "message": "Title added",
+          "distinct": true,
+          "url": "https://api.github.com/repos/AishwaryaSawant/Portfolio/commits/d6d45c54889c436bcc91ca4ec58f8b96075ea375"
+        }
+      ]
+    },
+    "public": true,
+    "created_at": "2020-09-05T23:32:12Z"
+  },
+  {
+    "id": "13423632945",
+    "type": "PushEvent",
+    "actor": {
+      "id": 48353346,
+      "login": "carlogonzalo",
+      "display_login": "carlogonzalo",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/carlogonzalo",
+      "avatar_url": "https://avatars.githubusercontent.com/u/48353346?"
+    },
+    "repo": {
+      "id": 293170570,
+      "name": "carlogonzalo/beta-20",
+      "url": "https://api.github.com/repos/carlogonzalo/beta-20"
+    },
+    "payload": {
+      "push_id": 5641921531,
+      "size": 1,
+      "distinct_size": 1,
+      "ref": "refs/heads/master",
+      "head": "a7af6edf0556c5fe652ec13f4ee619327ea8ac39",
+      "before": "1ddcf4f552b5140561d080c27328cb390a95f2a2",
+      "commits": [
+        {
+          "sha": "a7af6edf0556c5fe652ec13f4ee619327ea8ac39",
+          "author": {
+            "email": "carlogonzalo",
+            "name": "carlogonzalo"
+          },
+          "message": "adding file img/carousel.png",
+          "distinct": true,
+          "url": "https://api.github.com/repos/carlogonzalo/beta-20/commits/a7af6edf0556c5fe652ec13f4ee619327ea8ac39"
+        }
+      ]
+    },
+    "public": true,
+    "created_at": "2020-09-05T23:32:12Z"
+  },
+  {
+    "id": "13423632939",
+    "type": "PushEvent",
+    "actor": {
+      "id": 1690910,
+      "login": "kevinnayar",
+      "display_login": "kevinnayar",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/kevinnayar",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1690910?"
+    },
+    "repo": {
+      "id": 291402745,
+      "name": "kevinnayar/aggregarian",
+      "url": "https://api.github.com/repos/kevinnayar/aggregarian"
+    },
+    "payload": {
+      "push_id": 5641921526,
+      "size": 1,
+      "distinct_size": 1,
+      "ref": "refs/heads/master",
+      "head": "89cd46ff30dbb74948c643c53d2bfe0d9e674f30",
+      "before": "3a96510389ef9890189d1454ca1178ce2098b900",
+      "commits": [
+        {
+          "sha": "89cd46ff30dbb74948c643c53d2bfe0d9e674f30",
+          "author": {
+            "email": "kevin.nayar@gmail.com",
+            "name": "kevinnayar"
+          },
+          "message": "convert to a complete go project, kill typescript",
+          "distinct": true,
+          "url": "https://api.github.com/repos/kevinnayar/aggregarian/commits/89cd46ff30dbb74948c643c53d2bfe0d9e674f30"
+        }
+      ]
+    },
+    "public": true,
+    "created_at": "2020-09-05T23:32:12Z"
+  },
+  {
+    "id": "13423632937",
+    "type": "PushEvent",
+    "actor": {
+      "id": 68929043,
+      "login": "HectorArana",
+      "display_login": "HectorArana",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/HectorArana",
+      "avatar_url": "https://avatars.githubusercontent.com/u/68929043?"
+    },
+    "repo": {
+      "id": 293165630,
+      "name": "HectorArana/examen.github.io",
+      "url": "https://api.github.com/repos/HectorArana/examen.github.io"
+    },
+    "payload": {
+      "push_id": 5641921525,
+      "size": 1,
+      "distinct_size": 1,
+      "ref": "refs/heads/master",
+      "head": "3cd0555970843b4673ae412ee231e731a81cfd8b",
+      "before": "297a79bcdaeb9c1eb28420417e115cd89c2b0784",
+      "commits": [
+        {
+          "sha": "3cd0555970843b4673ae412ee231e731a81cfd8b",
+          "author": {
+            "email": "68929043+HectorArana@users.noreply.github.com",
+            "name": "HectorArana"
+          },
+          "message": "Add files via upload",
+          "distinct": true,
+          "url": "https://api.github.com/repos/HectorArana/examen.github.io/commits/3cd0555970843b4673ae412ee231e731a81cfd8b"
+        }
+      ]
+    },
+    "public": true,
+    "created_at": "2020-09-05T23:32:12Z"
+  },
+  {
+    "id": "13423632933",
+    "type": "PushEvent",
+    "actor": {
+      "id": 69305905,
+      "login": "sprattjack",
+      "display_login": "sprattjack",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/sprattjack",
+      "avatar_url": "https://avatars.githubusercontent.com/u/69305905?"
+    },
+    "repo": {
+      "id": 288680999,
+      "name": "sprattjack/friendly-succotash",
+      "url": "https://api.github.com/repos/sprattjack/friendly-succotash"
+    },
+    "payload": {
+      "push_id": 5641921517,
+      "size": 1,
+      "distinct_size": 1,
+      "ref": "refs/heads/master",
+      "head": "4fd82115e1fc614e2186e26e0508589327d72718",
+      "before": "8aa02b98d408df4752edebbde6b1eba16677ad29",
+      "commits": [
+        {
+          "sha": "4fd82115e1fc614e2186e26e0508589327d72718",
+          "author": {
+            "email": "sprattjack@protonmail.com",
+            "name": "sprattjack"
+          },
+          "message": "auto",
+          "distinct": true,
+          "url": "https://api.github.com/repos/sprattjack/friendly-succotash/commits/4fd82115e1fc614e2186e26e0508589327d72718"
+        }
+      ]
+    },
+    "public": true,
+    "created_at": "2020-09-05T23:32:12Z"
+  },
+  {
+    "id": "13423632931",
+    "type": "PushEvent",
+    "actor": {
+      "id": 65007308,
+      "login": "gorinesia",
+      "display_login": "gorinesia",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/gorinesia",
+      "avatar_url": "https://avatars.githubusercontent.com/u/65007308?"
+    },
+    "repo": {
+      "id": 291733733,
+      "name": "gorinesia/Vue-and-firebase-project",
+      "url": "https://api.github.com/repos/gorinesia/Vue-and-firebase-project"
+    },
+    "payload": {
+      "push_id": 5641921519,
+      "size": 1,
+      "distinct_size": 1,
+      "ref": "refs/heads/develop",
+      "head": "9c1de60789f051acfb8c9ac3a1abe587ee8fe5a4",
+      "before": "f3e6d973398c03952fd2061271259db7f35dd235",
+      "commits": [
+        {
+          "sha": "9c1de60789f051acfb8c9ac3a1abe587ee8fe5a4",
+          "author": {
+            "email": "gorion.1213@gmail.com",
+            "name": "Akinori Sakakibara"
+          },
+          "message": "corrected about a indent",
+          "distinct": true,
+          "url": "https://api.github.com/repos/gorinesia/Vue-and-firebase-project/commits/9c1de60789f051acfb8c9ac3a1abe587ee8fe5a4"
+        }
+      ]
+    },
+    "public": true,
+    "created_at": "2020-09-05T23:32:12Z"
+  }
+]

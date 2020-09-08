@@ -1,4 +1,4 @@
-<?php declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 namespace ekinhbayar\GitAmpTests\Event\GitHub;
 
@@ -7,11 +7,11 @@ use PHPUnit\Framework\TestCase;
 
 class IssueCommentEventTest extends TestCase
 {
-    private $event;
+    private array $event;
 
-    private $assertEvent;
+    private array $assertEvent;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->event = [
             'id'      => 1,
@@ -25,32 +25,32 @@ class IssueCommentEventTest extends TestCase
         ];
 
         $this->assertEvent = [
-            'id'        => 1,
-            'type'      => 4,
+            'id'          => 1,
+            'type'        => 4,
             'information' => [
-                'url' => 'http://example.com',
+                'url'     => 'http://example.com',
                 'payload' => 'Comment body',
                 'message' => 'PeeHaa commented in test/repo',
             ],
-            'ring'  => [
+            'ring'        => [
                 'animationDuration' => 3000,
                 'radius'            => 80,
             ],
-            'sound' => [
+            'sound'       => [
                 'size' => strlen('Comment body') * 1.1,
                 'type' => 'Clav',
             ],
         ];
     }
 
-    public function testGetAsArrayWithCommentBody()
+    public function testGetAsArrayWithCommentBody(): void
     {
         $event = new IssueCommentEvent($this->event);
 
         $this->assertSame($this->assertEvent, $event->getAsArray());
     }
 
-    public function testGetAsArrayWithoutCommentBody()
+    public function testGetAsArrayWithoutCommentBody(): void
     {
         unset($this->event['comment']['body']);
 
@@ -62,7 +62,7 @@ class IssueCommentEventTest extends TestCase
         $this->assertSame($this->assertEvent, $event->getAsArray());
     }
 
-    public function testGetAsArrayWithCommentBodyEgg()
+    public function testGetAsArrayWithCommentBodyEgg(): void
     {
         $this->event['repo']['name'] = 'ekinhbayar/gitamp';
 
@@ -76,7 +76,7 @@ class IssueCommentEventTest extends TestCase
         $this->assertSame($this->assertEvent, $event->getAsArray());
     }
 
-    public function testGetAsArrayWithoutCommentBodyEgg()
+    public function testGetAsArrayWithoutCommentBodyEgg(): void
     {
         $this->event['repo']['name'] = 'ekinhbayar/gitamp';
 

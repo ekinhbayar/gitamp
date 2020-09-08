@@ -1,43 +1,104 @@
-<?php declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 namespace ekinhbayar\GitAmp\Websocket;
 
-use function Amp\asyncCall;
 use Amp\Delayed;
-use Aerys\Request;
-use Aerys\Response;
-use Aerys\Websocket;
-use Aerys\Websocket\Endpoint;
+use Amp\Http\Server\HttpServer;
+use Amp\Http\Server\Request;
+use Amp\Http\Server\Response;
+use Amp\Http\Status;
+use Amp\Promise;
+use Amp\Success;
+use Amp\Websocket\Client;
+use Amp\Websocket\Server\ClientHandler;
+use Amp\Websocket\Server\Gateway;
+use Amp\Websocket\Server\WebsocketServerObserver;
 use ekinhbayar\GitAmp\Provider\Listener;
 use ekinhbayar\GitAmp\Response\Results;
-use ekinhbayar\GitAmp\Storage\Counter;
+use Psr\Log\LoggerInterface;
+use function Amp\asyncCall;
+use function Amp\call;
 
-class Handler implements Websocket
+class Handler implements ClientHandler, WebsocketServerObserver
 {
-    /** @var Endpoint */
-    private $endpoint;
+    private Gateway $gateway;
 
-    private $counter;
+    private string $origin;
 
-    private $origin;
+    private Listener $provider;
 
-    private $provider;
+    private ?Results $lastEvents = null;
 
-    /** @var Results */
-    private $lastEvents;
+    private LoggerInterface $logger;
 
-    public function __construct(Counter $counter, string $origin, Listener $provider)
+    public function __construct(string $origin, Listener $provider, LoggerInterface $logger)
     {
         $this->origin   = $origin;
-        $this->counter  = $counter;
         $this->provider = $provider;
+        $this->logger   = $logger;
     }
 
-    public function onStart(Endpoint $endpoint)
+    public function handleHandshake(Gateway $gateway, Request $request, Response $response): Promise
     {
-        $this->endpoint = $endpoint;
+        if ($request->getHeader('origin') !== $this->origin) {
+            return $gateway->getErrorHandler()->handleError(Status::FORBIDDEN, 'Forbidden Origin', $request);
+        }
 
-        $this->counter->set(0);
+        return new Success($response);
+    }
+
+    public function handleClient(Gateway $gateway, Client $client, Request $request, Response $response): Promise
+    {
+        $client->onClose(function (Client $client, int $code, string $reason) use ($gateway) {
+            $this->logger->info(
+                \sprintf(
+                    'Client %d disconnected. Code: %d Reason: %s. Total clients: %d',
+                    $client->getId(),
+                    $code,
+                    $reason,
+                    count($gateway->getClients()),
+                )
+            );
+
+            $this->sendConnectedUsersCount(count($gateway->getClients()));
+        });
+
+        $this->logger->info(
+            \sprintf('Client %d connected. Total clients: %d', $client->getId(), count($gateway->getClients())),
+        );
+
+        $this->sendConnectedUsersCount(\count($gateway->getClients()));
+
+        if ($this->lastEvents) {
+            $client->send($this->lastEvents->jsonEncode());
+        }
+
+        return call(function () use ($gateway, $client): \Generator {
+            while ($message = yield $client->receive()) {
+                // intentionally keep receiving, otherwise the connection closes instantly for some reason
+            }
+        });
+    }
+
+    private function emit(Results $events): void
+    {
+        if (!$events->hasEvents()) {
+            return;
+        }
+
+        $this->lastEvents = $events;
+
+        $this->gateway->broadcast($events->jsonEncode());
+    }
+
+    private function sendConnectedUsersCount(int $count): void
+    {
+        $this->gateway->broadcast(\json_encode(['connectedUsers' => $count]));
+    }
+
+    public function onStart(HttpServer $server, Gateway $gateway): Promise
+    {
+        $this->gateway = $gateway;
 
         asyncCall(function () {
             while (true) {
@@ -46,61 +107,12 @@ class Handler implements Websocket
                 yield new Delayed(25000);
             }
         });
+
+        return new Success();
     }
 
-    public function onHandshake(Request $request, Response $response)
+    public function onStop(HttpServer $server, Gateway $gateway): Promise
     {
-        if ($request->getHeader('origin') !== $this->origin) {
-            $response->setStatus(403);
-            $response->end('<h1>origin not allowed</h1>');
-
-            return null;
-        }
-
-        return $request->getConnectionInfo()['client_addr'];
-    }
-
-    public function onOpen(int $clientId, $handshakeData)
-    {
-        $this->counter->increment();
-
-        $this->sendConnectedUsersCount($this->counter->get());
-
-        if ($this->lastEvents) {
-            $this->endpoint->send($this->lastEvents->jsonEncode(), $clientId);
-        }
-    }
-
-    private function emit(Results $events)
-    {
-        if (!$events->hasEvents()) {
-            return;
-        }
-
-        $this->lastEvents = $events;
-
-        $this->endpoint->broadcast($events->jsonEncode());
-    }
-
-    private function sendConnectedUsersCount(int $count)
-    {
-        $this->endpoint->broadcast(\json_encode(['connectedUsers' => $count]));
-    }
-
-    public function onData(int $clientId, Websocket\Message $msg)
-    {
-        // yielding $msg buffers the complete payload into a single string.
-    }
-
-    public function onClose(int $clientId, int $code, string $reason)
-    {
-        $this->counter->decrement();
-
-        $this->sendConnectedUsersCount($this->counter->get());
-    }
-
-    public function onStop()
-    {
-        // intentionally left blank
+        return new Success();
     }
 }

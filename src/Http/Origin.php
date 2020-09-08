@@ -1,10 +1,10 @@
-<?php declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 namespace ekinhbayar\GitAmp\Http;
 
 class Origin
 {
-    private $configuration;
+    private array $configuration;
 
     public function __construct(array $configuration)
     {

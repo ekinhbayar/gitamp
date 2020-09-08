@@ -1,4 +1,4 @@
-<?php declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 namespace ekinhbayar\GitAmpTests\Http;
 
@@ -7,7 +7,7 @@ use PHPUnit\Framework\TestCase;
 
 class OriginTest extends TestCase
 {
-    public function testGetHttpOnStandardPort()
+    public function testGetHttpOnStandardPort(): void
     {
         $origin = new Origin([
             'hostname' => 'gitamp.audio',
@@ -17,7 +17,7 @@ class OriginTest extends TestCase
         $this->assertSame('http://gitamp.audio', $origin->get());
     }
 
-    public function testGetHttpOnNonStandardPort()
+    public function testGetHttpOnNonStandardPort(): void
     {
         $origin = new Origin([
             'hostname' => 'gitamp.audio',
@@ -27,7 +27,7 @@ class OriginTest extends TestCase
         $this->assertSame('http://gitamp.audio:8080', $origin->get());
     }
 
-    public function testGetHttpsOnStandardPort()
+    public function testGetHttpsOnStandardPort(): void
     {
         $origin = new Origin([
             'hostname' => 'gitamp.audio',
@@ -37,7 +37,7 @@ class OriginTest extends TestCase
         $this->assertSame('https://gitamp.audio', $origin->get());
     }
 
-    public function testGetHttpsOnNonStandardPort()
+    public function testGetHttpsOnNonStandardPort(): void
     {
         $origin = new Origin([
             'hostname' => 'gitamp.audio',

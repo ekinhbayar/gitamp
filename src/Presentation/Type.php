@@ -1,12 +1,13 @@
-<?php declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 namespace ekinhbayar\GitAmp\Presentation;
 
 class Type
 {
-    private $type;
+    private int $type;
 
-    public function __construct(int $type) {
+    public function __construct(int $type)
+    {
         $this->type = $type;
     }
 
