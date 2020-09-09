@@ -19,13 +19,9 @@ Requires:
 
 - Run `composer update`
 - Copy the config.sample.php file to config.php and change the settings
-- Run the server using `vendor/bin/aerys -c server.php`
+- Run the server using `php server.php`
 - Open your browser and go to http://localhost:1337 (for default settings)
 - Profit!
-
-## Development
-
-- Run the server using `vendor/bin/aerys -c server.php -d` for debugging output
 
 ## GitAmp as a Service
 
@@ -51,4 +47,4 @@ For true non-blocking execution, install one of the following:
 
 All features requests, bug reports or questions can be posted in [GitHub issues](https://github.com/ekinhbayar/gitamp/issues).
 
-For security related reports please send a mail to gitamp-security@pieterhordijk.com instead of using GitHub's issues.
+For security related reports please send a mail to gitamp-security@ekins.space instead of using GitHub's issues.
