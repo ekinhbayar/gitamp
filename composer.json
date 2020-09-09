@@ -39,8 +39,7 @@
         "daverandom/exceptional-json": "^1",
         "monolog/monolog": "^2",
         "nikic/fast-route": "^1",
-        "psr/log": "^1",
-        "rdlowrey/auryn": "^1"
+        "psr/log": "^1"
     },
     "require-dev": {
         "maglnet/composer-require-checker": "^2.1",
