@@ -38,40 +38,42 @@ class GitHub implements Listener
         $this->logger        = $logger;
     }
 
-    private function request(): \Generator
+    private function request(): Promise
     {
-        try {
-            $request = new Request(self::API_ENDPOINT, 'GET');
+        return call(function () {
+            try {
+                $request = new Request(self::API_ENDPOINT, 'GET');
 
-            $request->setHeaders($this->getAuthHeader());
+                $request->setHeaders($this->getAuthHeader());
 
-            $response = yield $this->client->request($request);
-        } catch (\Throwable $e) {
-            $this->logger->error('Failed to send GET request to API endpoint', ['exception' => $e]);
+                $response = yield $this->client->request($request);
+            } catch (\Throwable $e) {
+                $this->logger->error('Failed to send GET request to API endpoint', ['exception' => $e]);
 
-            throw new RequestFailedException('Failed to send GET request to API endpoint', $e->getCode(), $e);
-        }
+                throw new RequestFailedException('Failed to send GET request to API endpoint', $e->getCode(), $e);
+            }
 
-        /** @var Response $result */
-        if ($response->getStatus() !== 200) {
-            $message = \sprintf(
-                'A non-200 response status (%s - %s) was encountered',
-                $response->getStatus(),
-                $response->getReason(),
-            );
+            /** @var Response $result */
+            if ($response->getStatus() !== 200) {
+                $message = \sprintf(
+                    'A non-200 response status (%s - %s) was encountered',
+                    $response->getStatus(),
+                    $response->getReason(),
+                );
 
-            $this->logger->critical($message, ['response' => $response]);
+                $this->logger->critical($message, ['response' => $response]);
 
-            throw new RequestFailedException($message);
-        }
+                throw new RequestFailedException($message);
+            }
 
-        return $response;
+            return $response;
+        });
     }
 
     public function listen(): Promise
     {
         return call(function () {
-            $response = yield from $this->request();
+            $response = yield $this->request();
 
             return yield $this->resultFactory->build(self::EVENT_NAMESPACE, $response);
         });
