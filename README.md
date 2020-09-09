@@ -13,7 +13,7 @@ Clone of [github.audio](https://github.audio).
 
 Requires:
 
- - PHP 7
+ - PHP 7.4+
 
 ## Usage
 
