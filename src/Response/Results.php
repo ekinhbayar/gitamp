@@ -3,10 +3,12 @@
 namespace ekinhbayar\GitAmp\Response;
 
 use Amp\Http\Client\Response;
+use Amp\Promise;
 use ekinhbayar\GitAmp\Event\Factory as EventFactory;
 use ekinhbayar\GitAmp\Event\UnknownEventException;
 use ExceptionalJSON\DecodeErrorException;
 use Psr\Log\LoggerInterface;
+use function Amp\call;
 
 class Results
 {
@@ -22,21 +24,26 @@ class Results
         $this->logger       = $logger;
     }
 
-    public function appendResponse(string $eventNamespace, Response $response): \Generator
+    /**
+     * @return Promise<null>
+     */
+    public function appendResponse(string $eventNamespace, Response $response): Promise
     {
-        try {
-            $bufferedResponse = yield $response->getBody()->buffer();
+        return call(function () use ($eventNamespace, $response) {
+            try {
+                $bufferedResponse = yield $response->getBody()->buffer();
 
-            $events = \json_try_decode($bufferedResponse, true);
-        } catch (DecodeErrorException $e) {
-            $this->logger->emergency('Failed to decode response body as JSON', ['exception' => $e]);
+                $events = \json_try_decode($bufferedResponse, true);
+            } catch (DecodeErrorException $e) {
+                $this->logger->emergency('Failed to decode response body as JSON', ['exception' => $e]);
 
-            throw new DecodingFailedException('Failed to decode response body as JSON', $e->getCode(), $e);
-        }
+                throw new DecodingFailedException('Failed to decode response body as JSON', $e->getCode(), $e);
+            }
 
-        foreach ($events as $event) {
-            $this->appendEvent($eventNamespace, $event);
-        }
+            foreach ($events as $event) {
+                $this->appendEvent($eventNamespace, $event);
+            }
+        });
     }
 
     private function appendEvent(string $eventNamespace, array $event): void

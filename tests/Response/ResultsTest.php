@@ -75,7 +75,7 @@ class ResultsTest extends TestCase
         $this->expectExceptionMessage('Failed to decode response body as JSON');
 
         Loop::run(function () use ($response) {
-            yield from (new Results(new Factory(), $this->logger))->appendResponse('Foo', $response);
+            yield (new Results(new Factory(), $this->logger))->appendResponse('Foo', $response);
         });
     }
 
@@ -102,7 +102,7 @@ class ResultsTest extends TestCase
         ;
 
         Loop::run(function () use ($eventFactory, $response) {
-            yield from (new Results($eventFactory, $this->logger))
+            yield (new Results($eventFactory, $this->logger))
                 ->appendResponse('ekinhbayar\GitAmp\Event\GitHub', $response);
         });
     }
@@ -139,7 +139,7 @@ class ResultsTest extends TestCase
         $results = new Results($eventFactory, $this->logger);
 
         Loop::run(function () use ($results, $response) {
-            yield from $results->appendResponse('ekinhbayar\GitAmp\Event\GitHub', $response);
+            yield $results->appendResponse('ekinhbayar\GitAmp\Event\GitHub', $response);
         });
 
         $this->assertTrue($results->hasEvents());
@@ -187,7 +187,7 @@ class ResultsTest extends TestCase
         $results = new Results($eventFactory, $this->logger);
 
         Loop::run(function () use ($results, $response) {
-            yield from $results->appendResponse('ekinhbayar\GitAmp\Event\GitHub', $response);
+            yield $results->appendResponse('ekinhbayar\GitAmp\Event\GitHub', $response);
         });
 
         $this->assertSame('[{"foo":"bar"}]', $results->jsonEncode());

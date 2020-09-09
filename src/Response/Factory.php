@@ -25,7 +25,7 @@ class Factory
         return call(function() use ($eventNamespace, $response) {
             $results = new Results($this->eventFactory, $this->logger);
 
-            yield from $results->appendResponse($eventNamespace, $response);
+            yield $results->appendResponse($eventNamespace, $response);
 
             return $results;
         });

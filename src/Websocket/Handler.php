@@ -49,7 +49,28 @@ class Handler implements ClientHandler, WebsocketServerObserver
 
     public function handleClient(Gateway $gateway, Client $client, Request $request, Response $response): Promise
     {
-        $client->onClose(function (Client $client, int $code, string $reason) use ($gateway) {
+        return call(function () use ($gateway, $client, $request, $response) {
+            $client->onClose(function (Client $client, int $code, string $reason) use ($gateway) {
+                yield $this->processDisconnectingClient($gateway, $client, $code, $reason);
+            });
+
+            $this->logger->info(
+                \sprintf('Client %d connected. Total clients: %d', $client->getId(), count($gateway->getClients())),
+            );
+
+            yield $this->sendConnectedUsersCount(\count($gateway->getClients()));
+
+            if ($this->lastEvents) {
+                $client->send($this->lastEvents->jsonEncode());
+            }
+
+            yield $client->receive();
+        });
+    }
+
+    private function processDisconnectingClient(Gateway $gateway, Client  $client, int $code, string $reason): Promise
+    {
+        return call(function () use ($gateway, $client, $code, $reason) {
             $this->logger->info(
                 \sprintf(
                     'Client %d disconnected. Code: %d Reason: %s. Total clients: %d',
@@ -60,40 +81,24 @@ class Handler implements ClientHandler, WebsocketServerObserver
                 )
             );
 
-            $this->sendConnectedUsersCount(count($gateway->getClients()));
-        });
-
-        $this->logger->info(
-            \sprintf('Client %d connected. Total clients: %d', $client->getId(), count($gateway->getClients())),
-        );
-
-        $this->sendConnectedUsersCount(\count($gateway->getClients()));
-
-        if ($this->lastEvents) {
-            $client->send($this->lastEvents->jsonEncode());
-        }
-
-        return call(function () use ($gateway, $client): \Generator {
-            while ($message = yield $client->receive()) {
-                // intentionally keep receiving, otherwise the connection closes instantly for some reason
-            }
+            yield $this->sendConnectedUsersCount(count($gateway->getClients()));
         });
     }
 
-    private function emit(Results $events): void
+    private function emit(Results $events): Promise
     {
         if (!$events->hasEvents()) {
-            return;
+            return new Success();
         }
 
         $this->lastEvents = $events;
 
-        $this->gateway->broadcast($events->jsonEncode());
+        return $this->gateway->broadcast($events->jsonEncode());
     }
 
-    private function sendConnectedUsersCount(int $count): void
+    private function sendConnectedUsersCount(int $count): Promise
     {
-        $this->gateway->broadcast(\json_encode(['connectedUsers' => $count]));
+        return $this->gateway->broadcast(\json_encode(['connectedUsers' => $count]));
     }
 
     public function onStart(HttpServer $server, Gateway $gateway): Promise
