@@ -21,7 +21,7 @@ class WatchEvent extends BaseEvent
     {
         parent::__construct(
             (int) $event['id'],
-            new Type(7),
+            new Type(Type::STARTED_WATCHING),
             new Information($this->buildUrl($event), $this->buildPayload(), $this->buildMessage($event)),
             new Ring(3000, 80),
             $this->buildSound($event),

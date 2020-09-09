@@ -21,7 +21,7 @@ class IssuesEvent extends BaseEvent
     {
         parent::__construct(
             (int) $event['id'],
-            new Type(3),
+            new Type(Type::ISSUE_ACTION),
             new Information(
                 $event['payload']['issue']['html_url'],
                 $event['payload']['issue']['title'],

@@ -21,7 +21,7 @@ class IssueCommentEvent extends BaseEvent
     {
         parent::__construct(
             (int) $event['id'],
-            new Type(4),
+            new Type(Type::COMMENTED_ON_ISSUE),
             new Information(
                 $event['payload']['issue']['html_url'],
                 $this->buildPayload($event),

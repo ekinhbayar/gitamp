@@ -21,7 +21,7 @@ class CreateEvent extends BaseEvent
     {
         parent::__construct(
             (int) $event['id'],
-            new Type(6),
+            new Type(Type::REPOSITORY_CREATED),
             new Information($this->buildUrl($event), $this->buildPayload($event), $this->buildMessage($event)),
             new Ring(3000, 80),
             $this->buildSound($event),
