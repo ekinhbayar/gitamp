@@ -21,7 +21,7 @@ class PullRequestEvent extends BaseEvent
     {
         parent::__construct(
             (int) $event['id'],
-            new Type(2),
+            new Type(Type::PR_ACTION),
             new Information(
                 $event['payload']['pull_request']['html_url'],
                 $event['payload']['pull_request']['title'],

@@ -21,7 +21,7 @@ class PushEvent extends BaseEvent
     {
         parent::__construct(
             (int) $event['id'],
-            new Type(1),
+            new Type(Type::PUSH_TO_REPOSITORY),
             new Information($this->buildUrl($event), $this->buildPayload($event), $this->buildMessage($event)),
             new Ring(3000, 80),
             $this->buildSound($event),

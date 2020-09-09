@@ -21,7 +21,7 @@ class ForkEvent extends BaseEvent
     {
         parent::__construct(
             (int) $event['id'],
-            new Type(5),
+            new Type(Type::REPOSITORY_FORKED),
             new Information($this->buildUrl($event), $this->buildPayload(), $this->buildMessage($event)),
             new Ring(3000, 80),
             $this->buildSound($event),
