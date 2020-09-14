@@ -13,6 +13,7 @@ use Amp\Websocket\Client;
 use Amp\Websocket\Server\ClientHandler;
 use Amp\Websocket\Server\Gateway;
 use Amp\Websocket\Server\WebsocketServerObserver;
+use ekinhbayar\GitAmp\Configuration;
 use ekinhbayar\GitAmp\Provider\Listener;
 use ekinhbayar\GitAmp\Response\Results;
 use Psr\Log\LoggerInterface;
@@ -23,24 +24,24 @@ class Handler implements ClientHandler, WebsocketServerObserver
 {
     private Gateway $gateway;
 
-    private string $origin;
-
     private Listener $provider;
+
+    private Configuration $configuration;
 
     private ?Results $lastEvents = null;
 
     private LoggerInterface $logger;
 
-    public function __construct(string $origin, Listener $provider, LoggerInterface $logger)
+    public function __construct(Listener $provider, Configuration $configuration, LoggerInterface $logger)
     {
-        $this->origin   = $origin;
-        $this->provider = $provider;
-        $this->logger   = $logger;
+        $this->provider      = $provider;
+        $this->configuration = $configuration;
+        $this->logger        = $logger;
     }
 
     public function handleHandshake(Gateway $gateway, Request $request, Response $response): Promise
     {
-        if ($request->getHeader('origin') !== $this->origin) {
+        if (!$this->configuration->websocketAddressExists($request->getHeader('origin'))) {
             return $gateway->getErrorHandler()->handleError(Status::FORBIDDEN, 'Forbidden Origin', $request);
         }
 
