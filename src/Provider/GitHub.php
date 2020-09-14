@@ -2,9 +2,10 @@
 
 namespace ekinhbayar\GitAmp\Provider;
 
-use Amp\Http\Client\HttpClient;
+use Amp\Http\Client\DelegateHttpClient;
 use Amp\Http\Client\Request;
 use Amp\Http\Client\Response;
+use Amp\NullCancellationToken;
 use Amp\Promise;
 use ekinhbayar\GitAmp\Github\Credentials;
 use ekinhbayar\GitAmp\Response\Factory;
@@ -18,16 +19,16 @@ class GitHub implements Listener
     private const API_ENDPOINT = 'https://api.github.com/events';
     private const API_VERSION  = 'v3';
 
-    private HttpClient      $client;
+    private DelegateHttpClient $client;
 
-    private Credentials     $credentials;
+    private Credentials $credentials;
 
-    private Factory         $resultFactory;
+    private Factory $resultFactory;
 
     private LoggerInterface $logger;
 
     public function __construct(
-        HttpClient $client,
+        DelegateHttpClient $client,
         Credentials $credentials,
         Factory $resultFactory,
         LoggerInterface $logger
@@ -46,7 +47,7 @@ class GitHub implements Listener
 
                 $request->setHeaders($this->getAuthHeader());
 
-                $response = yield $this->client->request($request);
+                $response = yield $this->client->request($request, new NullCancellationToken());
             } catch (\Throwable $e) {
                 $this->logger->error('Failed to send GET request to API endpoint', ['exception' => $e]);
 
