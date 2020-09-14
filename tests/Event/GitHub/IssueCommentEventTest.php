@@ -45,7 +45,7 @@ class IssueCommentEventTest extends TestCase
 
     public function testGetAsArrayWithCommentBody(): void
     {
-        $event = new IssueCommentEvent($this->event);
+        $event = new IssueCommentEvent($this->event, []);
 
         $this->assertSame($this->assertEvent, $event->getAsArray());
     }
@@ -57,7 +57,7 @@ class IssueCommentEventTest extends TestCase
         $this->assertEvent['information']['payload'] = 'Issue title';
         $this->assertEvent['sound']['size']          = strlen('Issue title') * 1.1;
 
-        $event = new IssueCommentEvent($this->event);
+        $event = new IssueCommentEvent($this->event, ['ekinhbayar/gitamp']);
 
         $this->assertSame($this->assertEvent, $event->getAsArray());
     }
@@ -71,7 +71,7 @@ class IssueCommentEventTest extends TestCase
         $this->assertEvent['sound']['type']          = 'ClavEgg';
         $this->assertEvent['sound']['size']          = 1.0;
 
-        $event = new IssueCommentEvent($this->event);
+        $event = new IssueCommentEvent($this->event, ['ekinhbayar/gitamp']);
 
         $this->assertSame($this->assertEvent, $event->getAsArray());
     }
@@ -89,7 +89,7 @@ class IssueCommentEventTest extends TestCase
 
         $this->assertEvent['information']['payload'] = 'Issue title';
 
-        $event = new IssueCommentEvent($this->event);
+        $event = new IssueCommentEvent($this->event, ['ekinhbayar/gitamp']);
 
         $this->assertSame($this->assertEvent, $event->getAsArray());
     }

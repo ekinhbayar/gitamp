@@ -16,6 +16,9 @@ final class Configuration
     /** @var array<ServerAddress> */
     private array $bind = [];
 
+    /** @var array<string> */
+    private array $specialRepositories = [];
+
     private Token $githubToken;
 
     public function __construct(Token $githubToken)
@@ -66,6 +69,21 @@ final class Configuration
     public function getServerAddresses(): array
     {
         return $this->bind;
+    }
+
+    public function addSpecialRepository(string $repository): self
+    {
+        $this->specialRepositories[] = $repository;
+
+        return $this;
+    }
+
+    /**
+     * @return array<string>
+     */
+    public function getSpecialRepositories(): array
+    {
+        return $this->specialRepositories;
     }
 
     public function getGithubToken(): Token

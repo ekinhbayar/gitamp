@@ -41,7 +41,7 @@ class CreateEventTest extends TestCase
 
     public function testGetAsArrayWithPayloadDescription(): void
     {
-        $event = new CreateEvent($this->event);
+        $event = new CreateEvent($this->event, []);
 
         $this->assertSame($this->assertEvent, $event->getAsArray());
     }
@@ -52,7 +52,7 @@ class CreateEventTest extends TestCase
 
         $this->assertEvent['information']['payload'] = $this->assertEvent['information']['url'];
 
-        $event = new CreateEvent($this->event);
+        $event = new CreateEvent($this->event, ['ekinhbayar/gitamp']);
 
         $this->assertSame($this->assertEvent, $event->getAsArray());
     }
@@ -65,7 +65,7 @@ class CreateEventTest extends TestCase
         $this->assertEvent['information']['message'] = 'PeeHaa created ekinhbayar/gitamp';
         $this->assertEvent['sound']['type']          = 'SwellEgg';
 
-        $event = new CreateEvent($this->event);
+        $event = new CreateEvent($this->event, ['ekinhbayar/gitamp']);
 
         $this->assertSame($this->assertEvent, $event->getAsArray());
     }
@@ -82,7 +82,7 @@ class CreateEventTest extends TestCase
 
         $this->assertEvent['information']['payload'] = $this->assertEvent['information']['url'];
 
-        $event = new CreateEvent($this->event);
+        $event = new CreateEvent($this->event, ['ekinhbayar/gitamp']);
 
         $this->assertSame($this->assertEvent, $event->getAsArray());
     }

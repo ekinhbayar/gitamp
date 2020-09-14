@@ -43,7 +43,7 @@ class PushEventTest extends TestCase
 
     public function testGetAsArrayWithCommitMessage(): void
     {
-        $event = new PushEvent($this->event);
+        $event = new PushEvent($this->event, []);
 
         $this->assertSame($this->assertEvent, $event->getAsArray());
     }
@@ -55,7 +55,7 @@ class PushEventTest extends TestCase
         $this->assertEvent['information']['payload'] = 'https://github.com/PeeHaa';
         $this->assertEvent['sound']['size']          = strlen('https://github.com/PeeHaa') * 1.1;
 
-        $event = new PushEvent($this->event);
+        $event = new PushEvent($this->event, ['ekinhbayar/gitamp']);
 
         $this->assertSame($this->assertEvent, $event->getAsArray());
     }
@@ -69,7 +69,7 @@ class PushEventTest extends TestCase
         $this->assertEvent['sound']['type']          = 'CelestaEgg';
         $this->assertEvent['sound']['size']          = 1.0;
 
-        $event = new PushEvent($this->event);
+        $event = new PushEvent($this->event, ['ekinhbayar/gitamp']);
 
         $this->assertSame($this->assertEvent, $event->getAsArray());
     }
@@ -87,7 +87,7 @@ class PushEventTest extends TestCase
         $this->assertEvent['information']['payload'] = 'https://github.com/PeeHaa';
         $this->assertEvent['sound']['size']          = 1.0;
 
-        $event = new PushEvent($this->event);
+        $event = new PushEvent($this->event, ['ekinhbayar/gitamp']);
 
         $this->assertSame($this->assertEvent, $event->getAsArray());
     }

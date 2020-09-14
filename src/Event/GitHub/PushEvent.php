@@ -4,35 +4,40 @@ namespace ekinhbayar\GitAmp\Event\GitHub;
 
 use ekinhbayar\GitAmp\Event\BaseEvent;
 use ekinhbayar\GitAmp\Presentation\Information;
-use ekinhbayar\GitAmp\Presentation\Type;
 use ekinhbayar\GitAmp\Presentation\Ring;
 use ekinhbayar\GitAmp\Presentation\Sound\BaseSound;
 use ekinhbayar\GitAmp\Presentation\Sound\Celesta;
 use ekinhbayar\GitAmp\Presentation\Sound\CelestaEgg;
+use ekinhbayar\GitAmp\Presentation\Type;
 
 class PushEvent extends BaseEvent
 {
-    private const SPECIAL_REPOSITORIES = [
-        'ekinhbayar/gitamp',
-        'amphp/amp',
-    ];
-
-    public function __construct(array $event)
+    /**
+     * @param array<string,mixed> $event
+     * @param array<string> $specialRepositories
+     */
+    public function __construct(array $event, array $specialRepositories)
     {
         parent::__construct(
             (int) $event['id'],
             new Type(Type::PUSH_TO_REPOSITORY),
             new Information($this->buildUrl($event), $this->buildPayload($event), $this->buildMessage($event)),
             new Ring(3000, 80),
-            $this->buildSound($event),
+            $this->buildSound($event, $specialRepositories),
         );
     }
 
+    /**
+     * @param array<string,mixed> $event
+     */
     private function buildUrl(array $event): string
     {
         return 'https://github.com/' . $event['repo']['name'];
     }
 
+    /**
+     * @param array<string,mixed> $event
+     */
     private function buildPayload(array $event): string
     {
         if (isset($event['payload']['commits'][0]['message'])) {
@@ -42,14 +47,21 @@ class PushEvent extends BaseEvent
         return 'https://github.com/' . $event['actor']['login'];
     }
 
+    /**
+     * @param array<string,mixed> $event
+     */
     private function buildMessage(array $event): string
     {
         return \sprintf('%s pushed to %s', $event['actor']['login'], $event['repo']['name']);
     }
 
-    private function buildSound(array $event): BaseSound
+    /**
+     * @param array<string,mixed> $event
+     * @param array<string> $specialRepositories
+     */
+    private function buildSound(array $event, array $specialRepositories): BaseSound
     {
-        if (\in_array($event['repo']['name'], self::SPECIAL_REPOSITORIES, true)) {
+        if (in_array($event['repo']['name'], $specialRepositories, true)) {
             return new CelestaEgg();
         }
 
