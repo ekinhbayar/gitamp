@@ -194,8 +194,6 @@ class HandlerTest extends TestCase
 
     public function testHandleClientWithExistingEvents(): void
     {
-        //$this->markTestSkipped('Need to come back to this');
-
         $results = $this->createMock(Results::class);
 
         $results
