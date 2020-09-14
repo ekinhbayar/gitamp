@@ -5,7 +5,8 @@ namespace ekinhbayar\GitAmp\Response;
 use Amp\Http\Client\Response;
 use Amp\Promise;
 use ekinhbayar\GitAmp\Event\Factory as EventFactory;
-use ekinhbayar\GitAmp\Event\UnknownEventException;
+use ekinhbayar\GitAmp\Exception\DecodingFailed;
+use ekinhbayar\GitAmp\Exception\UnknownEvent;
 use ExceptionalJSON\DecodeErrorException;
 use Psr\Log\LoggerInterface;
 use function Amp\call;
@@ -37,7 +38,7 @@ class Results
             } catch (DecodeErrorException $e) {
                 $this->logger->emergency('Failed to decode response body as JSON', ['exception' => $e]);
 
-                throw new DecodingFailedException('Failed to decode response body as JSON', $e->getCode(), $e);
+                throw new DecodingFailed('Failed to decode response body as JSON', $e->getCode(), $e);
             }
 
             foreach ($events as $event) {
@@ -50,7 +51,7 @@ class Results
     {
         try {
             $this->events[] = $this->eventFactory->build($eventNamespace, $event);
-        } catch (UnknownEventException $e) {
+        } catch (UnknownEvent $e) {
             //$this->logger->debug('Unknown event encountered', ['exception' => $e]);
         }
     }

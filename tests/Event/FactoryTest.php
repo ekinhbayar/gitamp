@@ -4,14 +4,14 @@ namespace ekinhbayar\GitAmpTests\Event;
 
 use ekinhbayar\GitAmp\Event\Factory;
 use ekinhbayar\GitAmp\Event\GitHub\CreateEvent;
-use ekinhbayar\GitAmp\Event\UnknownEventException;
+use ekinhbayar\GitAmp\Exception\UnknownEvent;
 use PHPUnit\Framework\TestCase;
 
 class FactoryTest extends TestCase
 {
     public function testBuildThrowsOnUnknownEvent(): void
     {
-        $this->expectException(UnknownEventException::class);
+        $this->expectException(UnknownEvent::class);
 
         (new Factory())->build('Foo', ['type' => 'UnknownEvent']);
     }

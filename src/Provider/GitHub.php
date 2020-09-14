@@ -6,6 +6,7 @@ use Amp\Http\Client\HttpClient;
 use Amp\Http\Client\Request;
 use Amp\Http\Client\Response;
 use Amp\Promise;
+use ekinhbayar\GitAmp\Exception\RequestFailed;
 use ekinhbayar\GitAmp\Github\Credentials;
 use ekinhbayar\GitAmp\Response\Factory;
 use Psr\Log\LoggerInterface;
@@ -50,7 +51,7 @@ class GitHub implements Listener
             } catch (\Throwable $e) {
                 $this->logger->error('Failed to send GET request to API endpoint', ['exception' => $e]);
 
-                throw new RequestFailedException('Failed to send GET request to API endpoint', $e->getCode(), $e);
+                throw new RequestFailed('Failed to send GET request to API endpoint', $e->getCode(), $e);
             }
 
             /** @var Response $result */
@@ -63,7 +64,7 @@ class GitHub implements Listener
 
                 $this->logger->critical($message, ['response' => $response]);
 
-                throw new RequestFailedException($message);
+                throw new RequestFailed($message);
             }
 
             return $response;

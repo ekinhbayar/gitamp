@@ -2,6 +2,8 @@
 
 namespace ekinhbayar\GitAmp\Event;
 
+use ekinhbayar\GitAmp\Exception\UnknownEvent;
+
 class Factory
 {
     public function build(string $namespace, array $event): Event
@@ -9,7 +11,7 @@ class Factory
         $eventType = $namespace . '\\' . $event['type'];
 
         if (!$this->isValidType($eventType)) {
-            throw new UnknownEventException($event['type']);
+            throw new UnknownEvent($event['type']);
         }
 
         return new $eventType($event);

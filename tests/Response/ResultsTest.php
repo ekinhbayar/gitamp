@@ -9,11 +9,11 @@ use Amp\ByteStream\Payload;
 use Amp\Loop;
 use Amp\Success;
 use ekinhbayar\GitAmp\Event\GitHub\PullRequestEvent;
-use ekinhbayar\GitAmp\Event\UnknownEventException;
+use ekinhbayar\GitAmp\Exception\DecodingFailed;
+use ekinhbayar\GitAmp\Exception\UnknownEvent;
 use PHPUnit\Framework\TestCase;
 use ekinhbayar\GitAmp\Event\Factory;
 use ekinhbayar\GitAmp\Response\Results;
-use ekinhbayar\GitAmp\Response\DecodingFailedException;
 use Psr\Log\LoggerInterface;
 
 class ResultsTest extends TestCase
@@ -71,7 +71,7 @@ class ResultsTest extends TestCase
 
         $response = new Response('2', 200, 'OK', [], $message, new Request('foo'));
 
-        $this->expectException(DecodingFailedException::class);
+        $this->expectException(DecodingFailed::class);
         $this->expectExceptionMessage('Failed to decode response body as JSON');
 
         Loop::run(function () use ($response) {
@@ -98,12 +98,12 @@ class ResultsTest extends TestCase
         $eventFactory
             ->expects($this->once())
             ->method('build')
-            ->willThrowException(new UnknownEventException())
+            ->willThrowException(new UnknownEvent('EventName'))
         ;
 
         Loop::run(function () use ($eventFactory, $response) {
             yield (new Results($eventFactory, $this->logger))
-                ->appendResponse('ekinhbayar\GitAmp\Event\GitHub', $response);
+                ->appendResponse('EventName', $response);
         });
     }
 
