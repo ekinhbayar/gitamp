@@ -4,8 +4,8 @@ namespace ekinhbayar\GitAmpTests;
 
 use Amp\Loop;
 use ekinhbayar\GitAmp\Configuration;
+use ekinhbayar\GitAmp\Exception\RequestFailed;
 use ekinhbayar\GitAmp\Github\Token;
-use ekinhbayar\GitAmp\Provider\RequestFailedException;
 use ekinhbayar\GitAmp\Server;
 use ekinhbayar\GitAmp\ServerAddress;
 use League\Uri\Uri;
@@ -16,7 +16,7 @@ class ServerTest extends TestCase
 {
     public function testStartStartsServer(): void
     {
-        $this->expectException(RequestFailedException::class);
+        $this->expectException(RequestFailed::class);
         $this->expectExceptionMessage('A non-200 response status (401 - Unauthorized) was encountered');
 
         $configuration = (new Configuration(new Token('12345')))

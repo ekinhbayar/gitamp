@@ -2,14 +2,10 @@
 
 namespace ekinhbayar\GitAmpTests\Provider;
 
-use Amp\ByteStream\Payload;
-use Amp\Http\Client\HttpClient;
 use Amp\Http\Client\HttpClientBuilder;
-use Amp\Http\Client\Response;
-use Amp\ByteStream\InMemoryStream;
 use Amp\Promise;
 use Amp\Success;
-use ekinhbayar\GitAmp\Provider\RequestFailedException;
+use ekinhbayar\GitAmp\Exception\RequestFailed;
 use ekinhbayar\GitAmp\Github\Token;
 use ekinhbayar\GitAmp\Provider\GitHub;
 use ekinhbayar\GitAmp\Response\Factory;
@@ -46,7 +42,7 @@ class GitHubTest extends TestCase
 
         $gitamp = new GitHub($httpClient, $this->credentials, $this->factory, $this->logger);
 
-        $this->expectException(RequestFailedException::class);
+        $this->expectException(RequestFailed::class);
         $this->expectExceptionMessage('Failed to send GET request to API endpoint');
 
         wait($gitamp->listen());
@@ -62,7 +58,7 @@ class GitHubTest extends TestCase
 
         $gitamp = new GitHub($httpClient, $this->credentials, $this->factory, $this->logger);
 
-        $this->expectException(RequestFailedException::class);
+        $this->expectException(RequestFailed::class);
         $this->expectExceptionMessage('A non-200 response status (403 - Forbidden Origin) was encountered');
 
         wait($gitamp->listen());
