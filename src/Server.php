@@ -7,13 +7,15 @@ use Amp\Http\Server\HttpServer;
 use Amp\Http\Server\Router;
 use Amp\Http\Server\StaticContent\DocumentRoot;
 use Amp\Promise;
+use Amp\Socket\BindContext;
 use Amp\Socket\Server as SocketServer;
+use Amp\Socket\ServerTlsContext;
 use Amp\Websocket\Server\Websocket;
+use Psr\Log\LoggerInterface;
 use ekinhbayar\GitAmp\Event\Factory as EventFactory;
 use ekinhbayar\GitAmp\Provider\GitHub;
 use ekinhbayar\GitAmp\Response\Factory as EventCollectionFactory;
 use ekinhbayar\GitAmp\Websocket\Handler;
-use Psr\Log\LoggerInterface;
 
 final class Server
 {
@@ -39,10 +41,21 @@ final class Server
      */
     private function getSockets(): array
     {
-        return array_map(
+        $sockets = array_map(
             fn (ServerAddress $address) => SocketServer::listen($address->getUri()),
             $this->configuration->getServerAddresses(),
         );
+
+        $sockets = array_merge($sockets, array_map(
+            fn (SslServerAddress $address) => SocketServer::listen(
+                $address->getUri(),
+                (new BindContext())
+                    ->withTlsContext((new ServerTlsContext())->withDefaultCertificate($address->getCertificate())),
+            ),
+            $this->configuration->getSslServerAddresses(),
+        ));
+
+        return $sockets;
     }
 
     private function getRouter(): Router

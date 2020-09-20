@@ -8,6 +8,8 @@ use ekinhbayar\GitAmp\Github\Token;
 /**
  * Use a personal access token for authentication
  * https://github.com/settings/tokens
+ * To bind to HTTPS servers, use bindSsl like below.
+ * bindSsl(new SslServerAddress('127.0.0.1', 1338, new Amp\Socket\Certificate('/../cert.pem')))
  */
 return (new Configuration(new Token('123456')))
     ->addWebsocketAddress(Uri::createFromString('https://gitamp.audio'))
