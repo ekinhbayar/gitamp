@@ -1,4 +1,6 @@
-# GitAmp
+![`ekinhbayar/gitamp`](./public/images/GitAmp-logo-white.png)
+
+---
 
 [![Build Status](https://travis-ci.org/ekinhbayar/gitamp.svg?branch=master)](https://travis-ci.org/ekinhbayar/gitamp)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/ekinhbayar/gitamp/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/ekinhbayar/gitamp/?branch=master)
@@ -31,7 +33,7 @@ To run GitAmp as a systemd unit:
 - Replace the paths with your installation location.
 - Enable it by running `systemctl enable gitamp` && start with `systemctl start gitamp`
 
-If you want to run it after reboots as well, symlink the service file under `multi-user.target.wants` via 
+If you want to run it after reboots as well, symlink the service file under `multi-user.target.wants` via
 
 `ln -sf /etc/systemd/system/gitamp.service /etc/systemd/system/multi-user.target.wants/gitamp.service`
 
