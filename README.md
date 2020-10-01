@@ -1,4 +1,4 @@
-![`ekinhbayar/gitamp`](./public/images/GitAmp-logo-white.png)
+![`ekinhbayar/gitamp`](./public/images/GitAmp-logo-black.png)
 
 ---
 
