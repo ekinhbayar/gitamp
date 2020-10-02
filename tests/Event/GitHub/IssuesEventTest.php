@@ -44,7 +44,7 @@ class IssuesEventTest extends TestCase
 
     public function testGetAsArray(): void
     {
-        $event = new IssuesEvent($this->event);
+        $event = new IssuesEvent($this->event, []);
 
         $this->assertSame($this->assertEvent, $event->getAsArray());
     }
@@ -58,7 +58,7 @@ class IssuesEventTest extends TestCase
         $this->assertEvent['sound']['type']          = 'ClavEgg';
         $this->assertEvent['sound']['size']          = 1.0;
 
-        $event = new IssuesEvent($this->event);
+        $event = new IssuesEvent($this->event, ['ekinhbayar/gitamp']);
 
         $this->assertSame($this->assertEvent, $event->getAsArray());
     }

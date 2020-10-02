@@ -44,7 +44,7 @@ class PullRequestEventTest extends TestCase
 
     public function testGetAsArray(): void
     {
-        $event = new PullRequestEvent($this->event);
+        $event = new PullRequestEvent($this->event, []);
 
         $this->assertSame($this->assertEvent, $event->getAsArray());
     }
@@ -57,7 +57,7 @@ class PullRequestEventTest extends TestCase
         $this->assertEvent['information']['message'] = 'PeeHaa The action a PR for ekinhbayar/gitamp';
         $this->assertEvent['sound']['type']          = 'SwellEgg';
 
-        $event = new PullRequestEvent($this->event);
+        $event = new PullRequestEvent($this->event, ['ekinhbayar/gitamp']);
 
         $this->assertSame($this->assertEvent, $event->getAsArray());
     }

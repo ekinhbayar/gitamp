@@ -60,7 +60,7 @@ final class Server
         $gitHubListener = new GitHub(
             HttpClientBuilder::buildDefault(),
             $this->configuration->getGithubToken(),
-            new EventCollectionFactory(new EventFactory(), $this->logger),
+            new EventCollectionFactory(new EventFactory($this->configuration->getSpecialRepositories()), $this->logger),
             $this->logger,
         );
 

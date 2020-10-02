@@ -12,12 +12,11 @@ use ekinhbayar\GitAmp\Presentation\Type;
 
 class IssuesEvent extends BaseEvent
 {
-    private const SPECIAL_REPOSITORIES = [
-        'ekinhbayar/gitamp',
-        'amphp/amp',
-    ];
-
-    public function __construct(array $event)
+    /**
+     * @param array<string,mixed> $event
+     * @param array<string> $specialRepositories
+     */
+    public function __construct(array $event, array $specialRepositories)
     {
         parent::__construct(
             (int) $event['id'],
@@ -25,13 +24,16 @@ class IssuesEvent extends BaseEvent
             new Information(
                 $event['payload']['issue']['html_url'],
                 $event['payload']['issue']['title'],
-                $this->buildMessage($event)
+                $this->buildMessage($event),
             ),
             new Ring(3000, 80),
-            $this->buildSound($event),
+            $this->buildSound($event, $specialRepositories),
         );
     }
 
+    /**
+     * @param array<string,mixed> $event
+     */
     private function buildMessage(array $event): string
     {
         return \sprintf(
@@ -42,9 +44,13 @@ class IssuesEvent extends BaseEvent
         );
     }
 
-    private function buildSound(array $event): BaseSound
+    /**
+     * @param array<string,mixed> $event
+     * @param array<string> $specialRepositories
+     */
+    private function buildSound(array $event, array $specialRepositories): BaseSound
     {
-        if (\in_array($event['repo']['name'], self::SPECIAL_REPOSITORIES, true)) {
+        if (in_array($event['repo']['name'], $specialRepositories, true)) {
             return new ClavEgg();
         }
 

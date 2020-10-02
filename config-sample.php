@@ -12,4 +12,6 @@ use ekinhbayar\GitAmp\Github\Token;
 return (new Configuration(new Token('123456')))
     ->addWebsocketAddress(Uri::createFromString('https://gitamp.audio'))
     ->bind(new ServerAddress('127.0.0.1', 1337))
+    ->addSpecialRepository('ekinhbayar/gitamp')
+    ->addSpecialRepository('amphp/amp')
 ;

@@ -75,7 +75,7 @@ class ResultsTest extends TestCase
         $this->expectExceptionMessage('Failed to decode response body as JSON');
 
         Loop::run(function () use ($response) {
-            yield (new Results(new Factory(), $this->logger))->appendResponse('Foo', $response);
+            yield (new Results(new Factory([]), $this->logger))->appendResponse('Foo', $response);
         });
     }
 
@@ -109,7 +109,7 @@ class ResultsTest extends TestCase
 
     public function testHasEventsFalse(): void
     {
-        $results = new Results(new Factory(), $this->logger);
+        $results = new Results(new Factory([]), $this->logger);
 
         $this->assertFalse($results->hasEvents());
     }
@@ -147,7 +147,7 @@ class ResultsTest extends TestCase
 
     public function testJsonEncodeWithoutEvents(): void
     {
-        $results = new Results(new Factory(), $this->logger);
+        $results = new Results(new Factory([]), $this->logger);
 
         $this->assertSame('[]', $results->jsonEncode());
     }

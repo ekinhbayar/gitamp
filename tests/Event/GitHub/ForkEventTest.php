@@ -40,7 +40,7 @@ class ForkEventTest extends TestCase
 
     public function testGetAsArray(): void
     {
-        $event = new ForkEvent($this->event);
+        $event = new ForkEvent($this->event, []);
 
         $this->assertSame($this->assertEvent, $event->getAsArray());
     }
@@ -53,7 +53,7 @@ class ForkEventTest extends TestCase
         $this->assertEvent['information']['message'] = 'PeeHaa forked ekinhbayar/gitamp';
         $this->assertEvent['sound']['type']          = 'SwellEgg';
 
-        $event = new ForkEvent($this->event);
+        $event = new ForkEvent($this->event, ['ekinhbayar/gitamp']);
 
         $this->assertSame($this->assertEvent, $event->getAsArray());
     }

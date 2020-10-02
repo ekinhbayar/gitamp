@@ -13,7 +13,7 @@ class FactoryTest extends TestCase
     {
         $this->expectException(UnknownEvent::class);
 
-        (new Factory())->build('Foo', ['type' => 'UnknownEvent']);
+        (new Factory([]))->build('Foo', ['type' => 'UnknownEvent']);
     }
 
     public function testBuildReturnsEvent(): void
@@ -25,6 +25,6 @@ class FactoryTest extends TestCase
             'actor' => ['login' => 'PeeHaa'],
         ];
 
-        $this->assertInstanceOf(CreateEvent::class, (new Factory())->build('ekinhbayar\GitAmp\Event\GitHub', $event));
+        $this->assertInstanceOf(CreateEvent::class, (new Factory([]))->build('ekinhbayar\GitAmp\Event\GitHub', $event));
     }
 }

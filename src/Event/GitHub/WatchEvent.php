@@ -12,40 +12,52 @@ use ekinhbayar\GitAmp\Presentation\Sound\SwellEgg;
 
 class WatchEvent extends BaseEvent
 {
-    private const SPECIAL_REPOSITORIES = [
-        'ekinhbayar/gitamp',
-        'amphp/amp',
-    ];
-
-    public function __construct(array $event)
+    /**
+     * @param array<string,mixed> $event
+     * @param array<string> $specialRepositories
+     */
+    public function __construct(array $event, array $specialRepositories)
     {
         parent::__construct(
             (int) $event['id'],
             new Type(Type::STARTED_WATCHING),
             new Information($this->buildUrl($event), $this->buildPayload(), $this->buildMessage($event)),
             new Ring(3000, 80),
-            $this->buildSound($event),
+            $this->buildSound($event, $specialRepositories),
         );
     }
 
+    /**
+     * @param array<string,mixed> $event
+     */
     private function buildUrl(array $event): string
     {
         return 'https://github.com/' . $event['repo']['name'];
     }
 
+    /**
+     * @param array<string,mixed> $event
+     */
     private function buildPayload(): string
     {
         return 'not sure if stupid but works anyway';
     }
 
+    /**
+     * @param array<string,mixed> $event
+     */
     private function buildMessage(array $event): string
     {
         return \sprintf('%s watched %s', $event['actor']['login'], $event['repo']['name']);
     }
 
-    private function buildSound(array $event): BaseSound
+    /**
+     * @param array<string,mixed> $event
+     * @param array<string> $specialRepositories
+     */
+    private function buildSound(array $event, array $specialRepositories): BaseSound
     {
-        if (\in_array($event['repo']['name'], self::SPECIAL_REPOSITORIES, true)) {
+        if (in_array($event['repo']['name'], $specialRepositories, true)) {
             return new SwellEgg();
         }
 

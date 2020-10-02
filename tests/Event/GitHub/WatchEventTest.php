@@ -41,7 +41,7 @@ class WatchEventTest extends TestCase
 
     public function testGetAsArray(): void
     {
-        $event = new WatchEvent($this->event);
+        $event = new WatchEvent($this->event, []);
 
         $this->assertSame($this->assertEvent, $event->getAsArray());
     }
@@ -54,7 +54,7 @@ class WatchEventTest extends TestCase
         $this->assertEvent['information']['message'] = 'PeeHaa watched ekinhbayar/gitamp';
         $this->assertEvent['sound']['type']          = 'SwellEgg';
 
-        $event = new WatchEvent($this->event);
+        $event = new WatchEvent($this->event, ['ekinhbayar/gitamp']);
 
         $this->assertSame($this->assertEvent, $event->getAsArray());
     }

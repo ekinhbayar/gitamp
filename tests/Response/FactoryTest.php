@@ -43,7 +43,7 @@ class FactoryTest extends TestCase
 
         $logger = $this->createMock(LoggerInterface::class);
 
-        $factory = new Factory(new EventFactory(), $logger);
+        $factory = new Factory(new EventFactory([]), $logger);
 
         $results = wait($factory->build('ekinhbayar\GitAmp\Event\GitHub', $response));
 
@@ -77,7 +77,7 @@ class FactoryTest extends TestCase
 
         $logger = $this->createMock(LoggerInterface::class);
 
-        $results = (new Factory(new EventFactory(), $logger))->build('ekinhbayar\GitAmp\Event\GitHub', $response);
+        $results = (new Factory(new EventFactory([]), $logger))->build('ekinhbayar\GitAmp\Event\GitHub', $response);
 
         $this->assertInstanceOf(Results::class, wait($results));
     }

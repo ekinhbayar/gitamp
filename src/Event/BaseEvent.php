@@ -28,6 +28,9 @@ class BaseEvent implements Event
         $this->sound       = $sound;
     }
 
+    /**
+     * @return array<string,mixed>
+     */
     public function getAsArray(): array
     {
         return [
