@@ -2,9 +2,9 @@
 
 namespace ekinhbayar\GitAmp;
 
-use ekinhbayar\GitAmp\Github\Token;
 use League\Uri\Contracts\UriInterface;
 use Monolog\Logger;
+use ekinhbayar\GitAmp\Github\Token;
 
 final class Configuration
 {
@@ -18,6 +18,9 @@ final class Configuration
 
     /** @var array<string> */
     private array $specialRepositories = [];
+
+    /** @var array<SslServerAddress> */
+    private array $bindSsl = [];
 
     private Token $githubToken;
 
@@ -63,12 +66,27 @@ final class Configuration
         return $this;
     }
 
+    public function bindSsl(SslServerAddress $sslServerAddress): self
+    {
+        $this->bindSsl[] = $sslServerAddress;
+
+        return $this;
+    }
+
     /**
      * @return array<ServerAddress>
      */
     public function getServerAddresses(): array
     {
         return $this->bind;
+    }
+
+    /**
+     * @return array<SslServerAddress>
+     */
+    public function getSslServerAddresses(): array
+    {
+        return $this->bindSsl;
     }
 
     public function addSpecialRepository(string $repository): self
