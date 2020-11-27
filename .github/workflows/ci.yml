@@ -44,6 +44,8 @@ jobs:
         php-versions: ['7.4', '8.0']
         deps: [lowest, highest, locked]
         include:
+          - php-versions: '8.0'
+            platform-req-arg: --ignore-platform-req=php
           - deps: lowest
             deps-arg: --prefer-lowest
           - deps: locked
@@ -82,7 +84,7 @@ jobs:
       - name: Install ${{ matrix.deps }} dependencies
         env:
           COMPOSER_COMMAND: ${{ matrix.composer-command || env.COMPOSER_COMMAND }}
-        run: $COMPOSER_COMMAND $COMPOSER_ARGS ${{ matrix.deps-arg }}
+        run: $COMPOSER_COMMAND $COMPOSER_ARGS ${{ matrix.deps-arg }} ${{ matrix.platform-req-arg }}
 
       - name: Run tests
         run: vendor/bin/phpunit --coverage-text --coverage-clover=coverage.clover
