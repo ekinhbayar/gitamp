@@ -1,0 +1,93 @@
+name: CI
+
+on: [pull_request, push]
+
+env:
+  COMPOSER_COMMAND: composer update
+  COMPOSER_ARGS: --no-interaction --no-progress
+
+jobs:
+  Dependencies:
+    runs-on: ubuntu-latest
+    name: Dependency Checks
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '7.4'
+          coverage: none
+
+      - name: Get composer cache directory
+        id: composer-cache
+        run: echo "::set-output name=dir::$(composer config cache-files-dir)"
+
+      - name: Cache composer dependencies
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Install dependencies
+        run: composer install $COMPOSER_ARGS
+
+      - name: Run require check
+        run: ./vendor/bin/composer-require-checker
+
+  Tests:
+    strategy:
+      fail-fast: false
+      matrix:
+        php-versions: ['7.4', '8.0']
+        deps: [lowest, highest, locked]
+        include:
+          - deps: lowest
+            deps-arg: --prefer-lowest
+          - deps: locked
+            composer-command: composer install
+            hash-file: '**/composer.lock'
+    runs-on: ubuntu-latest
+    name: Test on PHP ${{ matrix.php-versions }} with deps ${{ matrix.deps }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup PHP ${{ matrix.php-versions }}
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-versions }}
+          coverage: pcov
+        env:
+          update: true
+
+      - name: Get composer cache directory
+        id: composer-cache
+        run: echo "::set-output name=dir::$(composer config cache-files-dir)"
+
+      - name: Cache composer dependencies
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: >-
+            ${{ format('{0}-composer-{1}-{2}',
+            runner.os,
+            matrix.deps,
+            hashFiles(matrix.hash-file || '**/composer.json')
+            ) }}
+          restore-keys: ${{ runner.os }}-composer-${{ matrix.deps }}-
+
+      - name: Install ${{ matrix.deps }} dependencies
+        env:
+          COMPOSER_COMMAND: ${{ matrix.composer-command || env.COMPOSER_COMMAND }}
+        run: $COMPOSER_COMMAND $COMPOSER_ARGS ${{ matrix.deps-arg }}
+
+      - name: Run tests
+        run: vendor/bin/phpunit --coverage-text --coverage-clover=coverage.clover
+
+      - name: Upload coverage to Scrutinizer
+        run: |
+          wget https://scrutinizer-ci.com/ocular.phar
+          php ocular.phar code-coverage:upload --format=php-clover coverage.clover

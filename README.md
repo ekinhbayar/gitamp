@@ -1,8 +1,7 @@
 ![`ekinhbayar/gitamp`](./public/images/GitAmp-logo-black.png)
 
 ---
-
-[![Build Status](https://travis-ci.org/ekinhbayar/gitamp.svg?branch=master)](https://travis-ci.org/ekinhbayar/gitamp)
+[![CI Status](https://github.com/ekinhbayar/gitamp/workflows/CI/badge.svg)](https://github.com/ekinhbayar/gitamp/actions?query=workflow%3ACI)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/ekinhbayar/gitamp/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/ekinhbayar/gitamp/?branch=master)
 [![Code Coverage](https://scrutinizer-ci.com/g/ekinhbayar/gitamp/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/ekinhbayar/gitamp/?branch=master)
 [![Code Climate](https://codeclimate.com/github/ekinhbayar/gitamp/badges/gpa.svg)](https://codeclimate.com/github/ekinhbayar/gitamp)
