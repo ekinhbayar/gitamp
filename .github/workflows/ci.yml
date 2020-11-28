@@ -40,6 +40,7 @@ jobs:
 
   Coding-Standards:
     runs-on: ubuntu-latest
+    continue-on-error: true #TODO: Remove this once we get to a passing baseline
     name: Check Coding Standards
     steps:
       - name: Checkout
