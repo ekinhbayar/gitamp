@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "19cd09ce70cedc3f10d53b48e792805f",
+    "content-hash": "aee003a894f2f5595e659e9d6bf9e457",
     "packages": [
         {
             "name": "amphp/amp",
@@ -794,6 +794,10 @@
                 "server",
                 "static"
             ],
+            "support": {
+                "issues": "https://github.com/amphp/http-server-static-content/issues",
+                "source": "https://github.com/amphp/http-server-static-content/tree/master"
+            },
             "time": "2019-11-05T23:30:41+00:00"
         },
         {
@@ -1480,6 +1484,10 @@
                 }
             ],
             "description": "JSON encoding and decoding that throws exceptions on failure",
+            "support": {
+                "issues": "https://github.com/DaveRandom/ExceptionalJSON/issues",
+                "source": "https://github.com/DaveRandom/ExceptionalJSON/tree/v1.0.4"
+            },
             "time": "2018-06-11T11:25:57+00:00"
         },
         {
