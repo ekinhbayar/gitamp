@@ -7,12 +7,10 @@
     <arg name="parallel" value="75"/>
     <arg value="np"/>
 
-    <file>./bin</file>
-    <file>./config/dependencies</file>
     <file>./src</file>
     <file>./tests</file>
-    <file>./bootstrap.php</file>
-    <file>./routes.php</file>
+    <file>./config-sample.php</file>
+    <file>./server.php</file>
 
     <rule ref="Generic.Formatting.SpaceAfterCast">
         <properties>
