@@ -47,6 +47,7 @@ class HandlerTest extends TestCase
             ->addWebsocketAddress(Uri::createFromString('https://gitamp.audio'))
             ->bind(new ServerAddress('127.0.0.1', 1337))
         ;
+        $results = $this->createMock(Results::class);
 
         $this->logger  = $this->createMock(Logger::class);
         $this->gateway = $this->createMock(Gateway::class);
@@ -60,7 +61,7 @@ class HandlerTest extends TestCase
             }
         ), $this->logger);
 
-        $this->handler = new Handler($this->listener, $configuration, $this->logger);
+        $this->handler = new Handler($this->listener, $configuration, $results, $this->logger);
     }
 
     public function testHandleHandshakeReturnsForbiddenOnInvalidOrigin(): void

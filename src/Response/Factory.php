@@ -20,10 +20,15 @@ class Factory
         $this->logger       = $logger;
     }
 
-    public function build(string $eventNamespace, Response $response): Promise
+    public function build(): Results
+    {
+        return new Results($this->eventFactory, $this->logger);
+    }
+
+    public function buildFromResponse(string $eventNamespace, Response $response): Promise
     {
         return call(function() use ($eventNamespace, $response) {
-            $results = new Results($this->eventFactory, $this->logger);
+            $results = $this->build();
 
             yield $results->appendResponse($eventNamespace, $response);
 

@@ -77,7 +77,7 @@ class GitHub implements Listener
         return call(function () {
             $response = yield $this->request();
 
-            return yield $this->resultFactory->build(self::EVENT_NAMESPACE, $response);
+            return yield $this->resultFactory->buildFromResponse(self::EVENT_NAMESPACE, $response);
         });
     }
 

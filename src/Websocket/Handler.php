@@ -28,14 +28,19 @@ class Handler implements ClientHandler, WebsocketServerObserver
 
     private Configuration $configuration;
 
-    private ?Results $lastEvents = null;
+    private Results $lastEvents;
 
     private LoggerInterface $logger;
 
-    public function __construct(Listener $provider, Configuration $configuration, LoggerInterface $logger)
-    {
+    public function __construct(
+        Listener $provider,
+        Configuration $configuration,
+        Results $results,
+        LoggerInterface $logger
+    ) {
         $this->provider      = $provider;
         $this->configuration = $configuration;
+        $this->lastEvents    = $results;
         $this->logger        = $logger;
     }
 
@@ -61,9 +66,7 @@ class Handler implements ClientHandler, WebsocketServerObserver
 
             yield $this->sendConnectedUsersCount(\count($gateway->getClients()));
 
-            if ($this->lastEvents) {
-                $client->send($this->lastEvents->jsonEncode());
-            }
+            $client->send($this->lastEvents->jsonEncode());
 
             yield $client->receive();
         });
