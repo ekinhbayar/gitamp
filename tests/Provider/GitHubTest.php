@@ -88,7 +88,7 @@ class GitHubTest extends TestCase
 
         $this->factory
             ->expects($this->once())
-            ->method('build')
+            ->method('buildFromResponse')
             ->will($this->returnValue(new Success($this->createMock(Results::class))))
         ;
 

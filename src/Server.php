@@ -70,14 +70,24 @@ final class Server
 
     private function getWebSocket(): Websocket
     {
-        $gitHubListener = new GitHub(
-            HttpClientBuilder::buildDefault(),
-            $this->configuration->getGithubToken(),
-            new EventCollectionFactory(new EventFactory($this->configuration->getSpecialRepositories()), $this->logger),
+        $eventCollectionFactory = new EventCollectionFactory(
+            new EventFactory($this->configuration->getSpecialRepositories()),
             $this->logger,
         );
 
-        $clientHandler = new Handler($gitHubListener, $this->configuration, $this->logger);
+        $gitHubListener = new GitHub(
+            HttpClientBuilder::buildDefault(),
+            $this->configuration->getGithubToken(),
+            $eventCollectionFactory,
+            $this->logger,
+        );
+
+        $clientHandler = new Handler(
+            $gitHubListener,
+            $this->configuration,
+            $eventCollectionFactory->build(),
+            $this->logger,
+        );
 
         return new Websocket($clientHandler);
     }
